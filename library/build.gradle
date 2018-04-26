@@ -46,3 +46,4 @@ dependencies {
     compile 'com.heima.iou:hmloggerlocal:1.0.0'
 
 }
+apply from: './maven_local.gradle'

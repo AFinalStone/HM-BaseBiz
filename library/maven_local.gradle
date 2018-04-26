@@ -1,0 +1,9 @@
+apply plugin: 'maven'
+uploadArchives {
+    repositories.mavenDeployer {
+        pom.version = '1.0.0'
+        pom.artifactId = 'hmbasebizlocal'
+        pom.groupId = 'com.heima.iou'
+        repository(url: "file:///Users/hjy/.m2/repository/")
+    }
+}
