@@ -64,6 +64,7 @@ public interface BaseContract {
 
     interface BasePresenter {
 
+        void onDestroy();
     }
 
 }

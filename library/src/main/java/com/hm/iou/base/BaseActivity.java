@@ -1,5 +1,8 @@
 package com.hm.iou.base;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,6 +12,11 @@ import android.view.WindowManager;
 
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.base.mvp.MvpActivityPresenter;
+import com.hm.iou.sharedata.UserManager;
+import com.hm.iou.tools.KeyboardUtil;
+import com.hm.iou.tools.ToastUtil;
+import com.hm.iou.uikit.dialog.IOSAlertDialog;
+import com.hm.iou.uikit.loading.LoadingDialogUtil;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import butterknife.ButterKnife;
@@ -23,6 +31,9 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
     private Unbinder mUnbinder;
 
     protected T mPresenter;
+
+    private Dialog mLoadingDialog;
+    private boolean mRemindUserNotLogin;        //是否已经弹出过提醒用户未登录的对话框，防止重复弹出
 
     /**
      * 获取当前页面的layout id
@@ -40,6 +51,7 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
+        ActivityManager.getInstance().addActivity(this);
         mUnbinder = ButterKnife.bind(this);
         mPresenter = initPresenter();
         initEventAndData(savedInstanceState);
@@ -48,7 +60,11 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mPresenter != null) {
+            mPresenter.onDestroy();
+        }
         mUnbinder.unbind();
+        ActivityManager.getInstance().removeActivity(this);
     }
 
     /**
@@ -65,27 +81,35 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
 
     @Override
     public void showLoadingView() {
-
+        if (mLoadingDialog == null) {
+            mLoadingDialog = LoadingDialogUtil.showLoading(this);
+        }
+        mLoadingDialog.show();
     }
 
     @Override
     public void showLoadingView(String msg) {
-
+        if (mLoadingDialog == null) {
+            mLoadingDialog = LoadingDialogUtil.showLoading(this, msg, false);
+        } else {
+            mLoadingDialog.show();
+        }
     }
 
     @Override
     public void dismissLoadingView() {
-
+        LoadingDialogUtil.dismissLoading(mLoadingDialog);
+        mLoadingDialog = null;
     }
 
     @Override
     public void toastMessage(String msg) {
-
+        ToastUtil.showMessage(this, msg);
     }
 
     @Override
     public void toastMessage(int resId) {
-
+        ToastUtil.showMessage(this, resId);
     }
 
     @Override
@@ -95,11 +119,44 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
 
     @Override
     public void hideSoftKeyboard() {
-
+        KeyboardUtil.hideKeyboard(this);
     }
 
     @Override
     public void showSoftKeyboard() {
+        KeyboardUtil.openKeyboard(this);
+    }
 
+    @Override
+    public void showUserNotLogin(String errMsg) {
+        if (mRemindUserNotLogin) {
+            return;
+        }
+        UserManager.getInstance(BaseActivity.this).logout();
+        mRemindUserNotLogin = true;
+        new IOSAlertDialog.Builder(this)
+                .setTitle("下线通知")
+                .setMessage(errMsg)
+                .setPositiveButton("重新登录", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityManager.getInstance().exitAllActivities();
+                        //TODO 需要用路由跳转到登录页
+                        try {
+                            startActivity(new Intent(BaseActivity.this,
+                                    Class.forName("com.hm.iou.hmreceipt.ui.activity.login.LoginSelectActivity")));
+                        } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                })
+                .setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityManager.getInstance().exitAllActivities();
+                    }
+                })
+                .setCancelable(false)
+                .show();
     }
 }

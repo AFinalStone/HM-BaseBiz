@@ -23,7 +23,7 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestCon
 
     @Override
     protected TestPresenter initPresenter() {
-        return new TestPresenter(this);
+        return new TestPresenter(this, this);
     }
 
     @Override

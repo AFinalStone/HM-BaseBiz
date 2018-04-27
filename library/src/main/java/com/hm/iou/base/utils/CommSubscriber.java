@@ -41,14 +41,10 @@ public abstract class CommSubscriber<T> extends ResourceSubscriber<T> {
     @Override
     protected void onStart() {
         super.onStart();
-        if (mView == null)
-            return;
     }
 
     @Override
     public void onComplete() {
-        if (mView == null)
-            return;
     }
 
     @Override
