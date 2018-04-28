@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.base.mvp.MvpFragmentPresenter;
-import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.sharedata.UserManager;
 import com.hm.iou.tools.KeyboardUtil;
 import com.hm.iou.tools.ToastUtil;
@@ -63,8 +62,14 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mContentView = inflater.inflate(getLayoutId(), container, false);
-        mPresenter = initPresenter();
+        //如果是在ViewPager里，或者Fragment恢复现场，不需要重新创建View
+        if (mContentView == null) {
+            mContentView = inflater.inflate(getLayoutId(), container, false);
+        }
+        ViewGroup parent = (ViewGroup) mContentView.getParent();
+        if (parent != null) {
+            parent.removeView(mContentView);
+        }
         return mContentView;
     }
 
@@ -72,6 +77,10 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
+        //如果已经创建过Presenter，则不重新创建了
+        if (mPresenter == null) {
+            mPresenter = initPresenter();
+        }
         initEventAndData(savedInstanceState);
     }
 
