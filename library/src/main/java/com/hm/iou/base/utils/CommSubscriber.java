@@ -52,6 +52,12 @@ public abstract class CommSubscriber<T> extends ResourceSubscriber<T> {
     public void onError(Throwable t) {
         if (mView == null)
             return;
+        //RxJava2里map操作时不能return null值，这里做了个特殊处理
+        if (t instanceof ResponseDataEmptyException) {
+            handleResult(null);
+            return;
+        }
+
         String code = null;
         String errMsg;
         if (t instanceof ApiException) {
