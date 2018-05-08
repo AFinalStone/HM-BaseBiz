@@ -1,5 +1,6 @@
 package com.hm.iou.base;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.hm.iou.base.mvp.BaseContract;
@@ -27,6 +29,8 @@ import butterknife.Unbinder;
  */
 
 public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxAppCompatActivity implements BaseContract.BaseView {
+
+    private Activity mContext;
 
     private Unbinder mUnbinder;
 
@@ -50,7 +54,11 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
         setContentView(getLayoutId());
+        transparentStatusBar();
+        initStatusBarDarkFont(true);
+
         ActivityManager.getInstance().addActivity(this);
         mUnbinder = ButterKnife.bind(this);
         mPresenter = initPresenter();
@@ -76,6 +84,31 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setNavigationBarColor(color);
+        }
+    }
+
+    /**
+     * 使状态栏透明
+     */
+    protected void transparentStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+    }
+
+    /**
+     * 设置状态栏字体为深色
+     */
+    protected void initStatusBarDarkFont(boolean isDarkFont) {
+        //全屏
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (isDarkFont) {
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            }
         }
     }
 
