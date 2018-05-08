@@ -87,11 +87,17 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         if (mPresenter != null) {
             mPresenter.onDestroy();
         }
         if (mUnbinder != null) {
             mUnbinder.unbind();
+            mUnbinder = null;
         }
     }
 
