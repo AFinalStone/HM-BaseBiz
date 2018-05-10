@@ -63,7 +63,7 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
         super(context, attrs);
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         mGestureDetector = new GestureDetector(context, this);
-        LayoutInflater.from(context).inflate(R.layout.layout_image_cropper, this);
+        LayoutInflater.from(context).inflate(R.layout.base_layout_image_cropper, this);
         findViewById(R.id.btn_cutCancer).setOnClickListener(this);
         findViewById(R.id.btn_cutFinish).setOnClickListener(this);
 
