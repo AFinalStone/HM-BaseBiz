@@ -4,6 +4,12 @@
 
     <application >
 
+        <!-- 基础的WebView -->
+        <activity
+            android:name="com.hm.iou.base.webview.BaseWebviewActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait" />
+
         <!-- 为了Android7.0之后正常获取相册和相机 -->
         <provider
             android:name="android.support.v4.content.FileProvider"

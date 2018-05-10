@@ -48,12 +48,14 @@ dependencies {
 
     //EventBus
     compile 'org.greenrobot:eventbus:3.0.0'
+    //luban压缩图片
+    compile 'top.zibin:Luban:1.1.3'
 
     compile 'com.heima.iou:hmsharedatalocal:1.0.0'
     compile 'com.heima.iou:hmnetworklocal:1.0.0'
     compile 'com.heima.iou:hmloggerlocal:1.0.0'
     compile 'com.heima.iou:hmtoolslocal:1.0.0'
     compile 'com.heima.iou:hmuikitlocal:1.0.0'
-
+    compile 'com.heima.iou:hmsocialsharelocal:1.0.0'
 }
 apply from: './maven_local.gradle'

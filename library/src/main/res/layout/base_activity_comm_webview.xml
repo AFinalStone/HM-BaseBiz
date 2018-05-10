@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/uikit_main_bg_color">
+
+    <com.hm.iou.uikit.HMTopBarView
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="72dip"
+        app:titleText=""
+        app:titleBackground="#00000000"
+        >
+    </com.hm.iou.uikit.HMTopBarView>
+
+
+    <FrameLayout
+        android:id="@+id/fl_webview_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topbar">
+
+    </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/pb_webview"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:progressDrawable="@drawable/base_webview_load_progress"
+        android:visibility="gone"
+        android:layout_below="@id/topbar"
+        />
+
+    <com.hm.iou.uikit.HMLoadingView
+        android:id="@+id/lv_webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        >
+    </com.hm.iou.uikit.HMLoadingView>
+
+</RelativeLayout>

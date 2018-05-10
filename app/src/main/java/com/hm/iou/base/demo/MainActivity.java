@@ -51,16 +51,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        int displayDeviceHeight = getResources().getDisplayMetrics().heightPixels - DensityUtil.dip2px(this, 53);
-        mImageCropper = ImageCropper.Helper.with(this).setTranslucentStatusHeight(displayDeviceHeight).create();
-        mImageCropper.setCallback(new ImageCropper.Callback() {
-            @Override
-            public void onPictureCropOut(Bitmap bitmap, String tag) {
-                Log.d("Photo", "图片裁减成功...." + tag);
 
-                mIvPhoto.setImageBitmap(bitmap);
-            }
-        });
     }
 
     @Override
@@ -77,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Photo", "bitmap is " + (bitmap == null ? "null" : " exists"));
                 mIvPhoto.setImageBitmap(bitmap);*/
 
+                initImageCropper();
                 mImageCropper.crop(path, 150, 100, true, "crop");
             }
         } else if (requestCode == 101) {
@@ -87,9 +79,26 @@ public class MainActivity extends AppCompatActivity {
 /*                Bitmap bitmap = BitmapFactory.decodeFile(path);
                 mIvPhoto.setImageBitmap(bitmap);*/
 
+                initImageCropper();
                 mImageCropper.crop(path, 150, 100, false, "crop");
 
             }
         }
     }
+
+    private void initImageCropper() {
+        if (mImageCropper == null) {
+            int displayDeviceHeight = getResources().getDisplayMetrics().heightPixels - DensityUtil.dip2px(this, 53);
+            mImageCropper = ImageCropper.Helper.with(this).setTranslucentStatusHeight(displayDeviceHeight).create();
+            mImageCropper.setCallback(new ImageCropper.Callback() {
+                @Override
+                public void onPictureCropOut(Bitmap bitmap, String tag) {
+                    Log.d("Photo", "图片裁减成功...." + tag);
+
+                    mIvPhoto.setImageBitmap(bitmap);
+                }
+            });
+        }
+    }
+
 }
