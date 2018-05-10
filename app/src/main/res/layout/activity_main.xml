@@ -16,5 +16,31 @@
         android:text="test"
         />
 
+    <Button
+        android:id="@+id/btn_tes2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="camera"
+        />
+
+    <Button
+        android:id="@+id/btn_tes3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="album"
+        />
+
+    <Button
+        android:id="@+id/btn_tes4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="选择图片对话框"
+        />
+
+
+    <ImageView
+        android:id="@+id/iv_photo"
+        android:layout_width="150dip"
+        android:layout_height="150dip" />
 
 </LinearLayout>

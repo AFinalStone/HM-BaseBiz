@@ -1,2 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.hm.iou.base" />
+    package="com.hm.iou.base" >
+
+
+    <application >
+
+        <!-- 为了Android7.0之后正常获取相册和相机 -->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.hm.iou.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+    </application>
+
+</manifest>

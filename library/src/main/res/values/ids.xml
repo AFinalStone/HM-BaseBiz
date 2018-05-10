@@ -1,0 +1,5 @@
+<resources>
+
+    <item name="base_view_image_cropper" type="id" />
+
+</resources>
