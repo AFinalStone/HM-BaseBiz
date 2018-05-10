@@ -22,8 +22,6 @@ import android.widget.LinearLayout;
 
 import com.hm.iou.base.R;
 
-import java.io.IOException;
-
 ;
 
 /**
@@ -87,7 +85,7 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
 
     private void cropInternal(String sourceFilePath, int outputWidth, int outputHeight, boolean isCircleOverlay, String tag) {
         final int mWidth = getWidth();
-        final int mHeight = getHeight();
+        final int mHeight = getWidth();
         if (mWidth * mHeight == 0) return;
 
         setVisibility(View.VISIBLE);
@@ -148,7 +146,9 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
             }
             matrix.postRotate(angle);
             return Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        } catch (OutOfMemoryError e) {
             e.printStackTrace();
         }
         return bmp;
