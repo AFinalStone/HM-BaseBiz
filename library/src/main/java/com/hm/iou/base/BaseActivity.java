@@ -20,6 +20,7 @@ import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.uikit.dialog.IOSAlertDialog;
 import com.hm.iou.uikit.loading.LoadingDialogUtil;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+import com.umeng.analytics.MobclickAgent;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -63,6 +64,18 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
         mUnbinder = ButterKnife.bind(this);
         mPresenter = initPresenter();
         initEventAndData(savedInstanceState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override
