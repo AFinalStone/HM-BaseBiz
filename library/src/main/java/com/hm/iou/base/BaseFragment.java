@@ -31,6 +31,7 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
 
     protected View mContentView;
     protected T mPresenter;
+    protected Activity mActivity;
 
     private Unbinder mUnbinder;
     private Dialog mLoadingDialog;
@@ -62,6 +63,7 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mActivity = getActivity();
         //如果是在ViewPager里，或者Fragment恢复现场，不需要重新创建View
         if (mContentView == null) {
             mContentView = inflater.inflate(getLayoutId(), container, false);
