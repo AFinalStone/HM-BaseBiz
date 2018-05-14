@@ -92,7 +92,7 @@ public abstract class CommSubscriber<T> extends ResourceSubscriber<T> {
             }
         }
 
-        handleException(code, errMsg);
+        handleException(t, code, errMsg);
     }
 
     @Override
@@ -110,8 +110,9 @@ public abstract class CommSubscriber<T> extends ResourceSubscriber<T> {
     /**
      * 请求出现异常回调
      *
+     * @param t    异常信息
      * @param code 错误码
      * @param msg  错误消息
      */
-    public abstract void handleException(String code, String msg);
+    public abstract void handleException(Throwable t, String code, String msg);
 }
