@@ -31,7 +31,7 @@ import butterknife.Unbinder;
 
 public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxAppCompatActivity implements BaseContract.BaseView {
 
-    private Activity mContext;
+    protected Activity mContext;
 
     private Unbinder mUnbinder;
 
