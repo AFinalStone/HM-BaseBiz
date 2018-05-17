@@ -28,7 +28,7 @@ import java.io.File;
 
 public class PhotoUtil {
 
-    private static String FILE_PROVIDER = "com.hm.iou.fileprovider";
+    private static String FILE_PROVIDER_SUFFIX = ".fileprovider";
 
     /**
      * 临时存储拍照后的图片路径
@@ -113,7 +113,8 @@ public class PhotoUtil {
                             CACHE_FILE_BY_CAMERA = new File(FileUtil.getDiskCacheDir(activity) + "/photo.png");
                             Uri imageUri = Uri.fromFile(CACHE_FILE_BY_CAMERA);
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                imageUri = FileProvider.getUriForFile(activity, FILE_PROVIDER, CACHE_FILE_BY_CAMERA);//通过FileProvider创建一个content类型的Uri
+                                String fileProvider = activity.getPackageName() + FILE_PROVIDER_SUFFIX;
+                                imageUri = FileProvider.getUriForFile(activity, fileProvider, CACHE_FILE_BY_CAMERA);//通过FileProvider创建一个content类型的Uri
                             }
                             //调用系统相机
                             Intent intentCamera = new Intent();
@@ -156,7 +157,8 @@ public class PhotoUtil {
                 CACHE_FILE_BY_CAMERA = new File(FileUtil.getDiskCacheDir(fragment.getContext()) + "/photo.png");
                 Uri imageUri = Uri.fromFile(CACHE_FILE_BY_CAMERA);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    imageUri = FileProvider.getUriForFile(fragment.getActivity(), FILE_PROVIDER, CACHE_FILE_BY_CAMERA);//通过FileProvider创建一个content类型的Uri
+                    String fileProvider = activity.getPackageName() + FILE_PROVIDER_SUFFIX;
+                    imageUri = FileProvider.getUriForFile(fragment.getActivity(), fileProvider, CACHE_FILE_BY_CAMERA);//通过FileProvider创建一个content类型的Uri
                 }
                 //调用系统相机
                 Intent intentCamera = new Intent();
