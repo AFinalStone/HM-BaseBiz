@@ -34,4 +34,16 @@ public abstract class MvpFragmentPresenter<T extends BaseContract.BaseView> impl
         return mLifecycleProvider;
     }
 
+    public void onViewCreated() {
+
+    }
+
+    public void onDestroyView() {
+
+    }
+
+    public void onDestroy() {
+
+    }
+
 }

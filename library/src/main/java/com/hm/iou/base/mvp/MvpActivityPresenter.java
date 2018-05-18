@@ -34,4 +34,8 @@ public abstract class MvpActivityPresenter<T extends BaseContract.BaseView> impl
         return mLifecycleProvider;
     }
 
+    public void onDestroy() {
+
+    }
+
 }
