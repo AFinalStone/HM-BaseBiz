@@ -84,13 +84,16 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
             mPresenter = initPresenter();
         }
         initEventAndData(savedInstanceState);
-        mPresenter.onViewCreated();
+        if (mPresenter != null)
+            mPresenter.onViewCreated();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mPresenter.onDestroyView();
+        if (mPresenter != null) {
+            mPresenter.onDestroyView();
+        }
     }
 
     @Override
