@@ -1,14 +1,23 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.hm.iou.base" >
+    package="com.hm.iou.base">
 
 
-    <application >
+    <application>
 
         <!-- 基础的WebView -->
         <activity
             android:name="com.hm.iou.base.webview.BaseWebviewActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait" />
+
+        <!--微信登录回调页面-->
+        <activity
+            android:name="com.hm.iou.wxapi.WXEntryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
 
         <!-- 为了Android7.0之后正常获取相册和相机 -->
         <provider

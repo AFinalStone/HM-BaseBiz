@@ -9,18 +9,18 @@ package com.hm.iou.base.event;
  */
 public class OpenWxResultEvent {
     private String code;
-    private Object object;
+    private String key;
 
-    public OpenWxResultEvent(String code, Object object) {
+    public OpenWxResultEvent(String key, String code) {
+        this.key = key;
         this.code = code;
-        this.object = object;
     }
 
     public String getCode() {
         return code;
     }
 
-    public Object getObject() {
-        return object;
+    public String getKey() {
+        return key;
     }
 }
