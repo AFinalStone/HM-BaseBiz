@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.hm.iou.base.event.OpenWxResultEvent;
+import com.hm.iou.logger.Logger;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
@@ -39,25 +40,25 @@ public class WXEntryActivity extends WXCallbackActivity {
                     String lang = newResp.lang;
                     String contry = newResp.country;
                     String url = newResp.url;
-                    Log.e("WXTest", "onResp code = " + code);
-                    Log.e("WXTest", "onResp state = " + key);
-                    Log.e("WXTest", "onResp lang = " + lang);
-                    Log.e("WXTest", "onResp contry = " + contry);
-                    Log.e("WXTest", "onResp url = " + url);
+                    Logger.d("WXTest", "onResp code = " + code);
+                    Logger.d("WXTest", "onResp state = " + key);
+                    Logger.d("WXTest", "onResp lang = " + lang);
+                    Logger.d("WXTest", "onResp contry = " + contry);
+                    Logger.d("WXTest", "onResp url = " + url);
                     EventBus.getDefault().post(new OpenWxResultEvent(key, code));
                     finish();
                 }
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
-                Log.e("WXTest", "onResp ERR_USER_CANCEL ");
+                Logger.d("WXTest", "onResp ERR_USER_CANCEL ");
                 //发送取消
                 break;
             case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                Log.e("WXTest", "onResp ERR_AUTH_DENIED");
+                Logger.d("WXTest", "onResp ERR_AUTH_DENIED");
                 //发送被拒绝
                 break;
             default:
-                Log.e("WXTest", "onResp default errCode " + baseResp.errCode);
+                Logger.d("WXTest", "onResp default errCode " + baseResp.errCode);
                 //发送返回
                 break;
         }
