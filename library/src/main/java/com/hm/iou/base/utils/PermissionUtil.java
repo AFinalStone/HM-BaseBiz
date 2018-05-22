@@ -22,7 +22,17 @@ public class PermissionUtil {
      * @param activity
      */
     public static void showCameraPermissionDialog(Activity activity) {
-        showPermissionReqDialog(activity, activity.getString(R.string.base_camera_permission_req_msg));
+        showPermissionReqDialog(activity, activity.getString(R.string.base_camera_permission_req_msg), null);
+    }
+
+    /**
+     * 显示需要设置相机权限的dialog，以及回调接口
+     *
+     * @param activity
+     * @param onPermissionDialogClick
+     */
+    public static void showCameraPermissionDialog(Activity activity, OnPermissionDialogClick onPermissionDialogClick) {
+        showPermissionReqDialog(activity, activity.getString(R.string.base_camera_permission_req_msg), onPermissionDialogClick);
     }
 
     /**
@@ -31,7 +41,17 @@ public class PermissionUtil {
      * @param activity
      */
     public static void showStoragePermissionDialog(Activity activity) {
-        showPermissionReqDialog(activity, activity.getString(R.string.base_read_storage_permission_req_msg));
+        showPermissionReqDialog(activity, activity.getString(R.string.base_read_storage_permission_req_msg), null);
+    }
+
+    /**
+     * 显示需要存储权限的dialog
+     *
+     * @param activity
+     * @param onPermissionDialogClick
+     */
+    public static void showStoragePermissionDialog(Activity activity, OnPermissionDialogClick onPermissionDialogClick) {
+        showPermissionReqDialog(activity, activity.getString(R.string.base_read_storage_permission_req_msg), onPermissionDialogClick);
     }
 
     /**
@@ -40,7 +60,18 @@ public class PermissionUtil {
      * @param activity
      */
     public static void showLocationPermissionDialog(Activity activity) {
-        showPermissionReqDialog(activity, activity.getString(R.string.base_location_permission_req_msg));
+        showPermissionReqDialog(activity, activity.getString(R.string.base_location_permission_req_msg), null);
+
+    }
+
+    /**
+     * 显示需要位置权限的dialog
+     *
+     * @param activity
+     * @param onPermissionDialogClick
+     */
+    public static void showLocationPermissionDialog(Activity activity, OnPermissionDialogClick onPermissionDialogClick) {
+        showPermissionReqDialog(activity, activity.getString(R.string.base_location_permission_req_msg), onPermissionDialogClick);
 
     }
 
@@ -49,13 +80,16 @@ public class PermissionUtil {
      *
      * @param activity
      */
-    public static void showPermissionReqDialog(Activity activity, String msg) {
+    public static void showPermissionReqDialog(Activity activity, String msg, OnPermissionDialogClick onPermissionDialogClick) {
         new IOSAlertDialog.Builder(activity)
                 .setTitle(activity.getString(R.string.base_permission_req))
                 .setMessage(msg)
                 .setPositiveButton(activity.getString(R.string.base_go_setting), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        if (onPermissionDialogClick != null) {
+                            onPermissionDialogClick.onPositiveBtnClick();
+                        }
                         dialog.dismiss();
                         toPermissionSetting(activity);
                     }
@@ -63,6 +97,9 @@ public class PermissionUtil {
                 .setNegativeButton(activity.getString(R.string.base_cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        if (onPermissionDialogClick != null) {
+                            onPermissionDialogClick.onNegativeBtnClick();
+                        }
                         dialog.dismiss();
                     }
                 })
@@ -118,6 +155,13 @@ public class PermissionUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public interface OnPermissionDialogClick {
+
+        void onPositiveBtnClick();
+
+        void onNegativeBtnClick();
     }
 
 }
