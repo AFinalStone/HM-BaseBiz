@@ -89,8 +89,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
     protected String mTitle;
     protected String mUrl;
-    protected boolean mShowTitle = true;    //是否显示导航栏中间的标题，默认显示
-    protected boolean mShowDivider = true;  //是否显示导航栏底部的分割线，默认显示
+    protected String mShowTitle = "true";    //是否显示导航栏中间的标题，默认显示
+    protected String mShowDivider = "true";  //是否显示导航栏底部的分割线，默认显示
 
     protected boolean mInited = false;
     protected boolean mNetworkError = false;// 是否网络错误的标记
@@ -124,14 +124,18 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         Intent data = getIntent();
         mTitle = data.getStringExtra(EXTRA_KEY_WEB_TITLE);
         mUrl = data.getStringExtra(EXTRA_KEY_WEB_URL);
-        mShowTitle = data.getBooleanExtra(EXTRA_KEY_SHOW_TITLE, true);
-        mShowDivider = data.getBooleanExtra(EXTRA_KEY_SHOW_DIVIDER, true);
+        String showTitle = data.getStringExtra(EXTRA_KEY_SHOW_TITLE);
+        if (!TextUtils.isEmpty(showTitle))
+            mShowTitle = showTitle;
+        String showDivider = data.getStringExtra(EXTRA_KEY_SHOW_DIVIDER);
+        if (!TextUtils.isEmpty(showDivider))
+            mShowDivider = showDivider;
 
         if (savedInstanceState != null && mUrl == null) {
             mTitle = savedInstanceState.getString(EXTRA_KEY_WEB_TITLE);
             mUrl = savedInstanceState.getString(EXTRA_KEY_WEB_URL);
-            mShowTitle = savedInstanceState.getBoolean(EXTRA_KEY_SHOW_TITLE, true);
-            mShowDivider = savedInstanceState.getBoolean(EXTRA_KEY_SHOW_DIVIDER, true);
+            mShowTitle = savedInstanceState.getString(EXTRA_KEY_SHOW_TITLE, "true");
+            mShowDivider = savedInstanceState.getString(EXTRA_KEY_SHOW_DIVIDER, "true");
         }
 
         //如果网络连接，则直接加载
@@ -142,7 +146,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     }
 
     private void initViews() {
-        if (mShowTitle) {
+        if ("true".equals(mShowTitle)) {
             if (!TextUtils.isEmpty(mTitle)) {
                 mTopBar.setTitle(mTitle);
             } else {
@@ -156,10 +160,10 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
             }
         });
         //如果不显示中间标题，则下面分割线不显示
-        if (!mShowTitle) {
+        if (!"true".equals(mShowTitle)) {
             mTopBar.getDividerView().setVisibility(View.INVISIBLE);
         }
-        if (!mShowDivider) {
+        if (!"true".equals(mShowDivider)) {
             mTopBar.getDividerView().setVisibility(View.INVISIBLE);
         }
         mTopBar.setBackgroundColor(Color.WHITE);
@@ -200,8 +204,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         super.onSaveInstanceState(outState);
         outState.putString(EXTRA_KEY_WEB_TITLE, mTitle);
         outState.putString(EXTRA_KEY_WEB_URL, mUrl);
-        outState.putBoolean(EXTRA_KEY_SHOW_TITLE, mShowTitle);
-        outState.putBoolean(EXTRA_KEY_SHOW_DIVIDER, mShowDivider);
+        outState.putString(EXTRA_KEY_SHOW_TITLE, mShowTitle);
+        outState.putString(EXTRA_KEY_SHOW_DIVIDER, mShowDivider);
     }
 
     @Override
@@ -322,7 +326,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
-                if (mShowTitle && TextUtils.isEmpty(mTitle)) {
+                if ("true".equals(mShowTitle) && TextUtils.isEmpty(mTitle)) {
                     mTopBar.setTitle(title);
                 }
             }

@@ -58,5 +58,6 @@ dependencies {
     compile 'com.heima.iou:hmtoolslocal:1.0.0'
     compile 'com.heima.iou:hmuikitlocal:1.0.0'
     compile 'com.heima.iou:hmsocialsharelocal:1.0.0'
+    compile 'com.heima.iou:hmrouterlocal:1.0.0'
 }
 apply from: './maven_local.gradle'
