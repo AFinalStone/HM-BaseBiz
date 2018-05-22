@@ -44,4 +44,10 @@ public class ActivityManager {
         }
     }
 
+    public boolean isEmpty() {
+        if (allActivities == null || allActivities.isEmpty())
+            return true;
+        return false;
+    }
+
 }
