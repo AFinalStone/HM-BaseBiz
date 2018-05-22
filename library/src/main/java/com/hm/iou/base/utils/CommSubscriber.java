@@ -57,6 +57,10 @@ public abstract class CommSubscriber<T> extends ResourceSubscriber<T> {
             handleResult(null);
             return;
         }
+        //这里使用RXJava实现嵌套网络请求，请求结果不需要继续进行下去，这里只是为了中断整个嵌套链接
+        if (t instanceof RxJavaStopException) {
+            return;
+        }
 
         String code = null;
         String errMsg;
