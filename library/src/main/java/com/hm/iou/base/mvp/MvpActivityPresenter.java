@@ -14,7 +14,7 @@ import com.trello.rxlifecycle2.android.ActivityEvent;
 public abstract class MvpActivityPresenter<T extends BaseContract.BaseView> implements BaseContract.BasePresenter {
 
     protected LifecycleProvider<ActivityEvent> mLifecycleProvider;
-    protected Activity mContext;
+    protected Context mContext;
     protected T mView;
 
     public MvpActivityPresenter(@NonNull Context context, @NonNull T view) {

@@ -10,6 +10,6 @@ public class HMConstants {
 
     public static final String REG_MOBILE = "^[1][0-9]{10}$";
 
-    public static final String REG_EMAIL_NUMBER = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+    public static final String REG_EMAIL_NUMBER = "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+[\\.][a-zA-Z0-9_-]+$";
 
 }
