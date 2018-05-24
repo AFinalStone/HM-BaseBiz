@@ -14,6 +14,7 @@ import android.view.WindowManager;
 
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.base.mvp.MvpActivityPresenter;
+import com.hm.iou.router.Router;
 import com.hm.iou.sharedata.UserManager;
 import com.hm.iou.tools.KeyboardUtil;
 import com.hm.iou.tools.ToastUtil;
@@ -187,13 +188,8 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityManager.getInstance().exitAllActivities();
-                        //TODO 需要用路由跳转到登录页
-                        try {
-                            startActivity(new Intent(BaseActivity.this,
-                                    Class.forName("com.hm.iou.hmreceipt.ui.activity.login.LoginSelectActivity")));
-                        } catch (ClassNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                        Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
+                                .navigation(BaseActivity.this);
                     }
                 })
                 .setNegativeButton("确定", new DialogInterface.OnClickListener() {
