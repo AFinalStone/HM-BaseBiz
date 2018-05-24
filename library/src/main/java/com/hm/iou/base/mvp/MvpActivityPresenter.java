@@ -17,7 +17,7 @@ public abstract class MvpActivityPresenter<T extends BaseContract.BaseView> impl
     protected Activity mContext;
     protected T mView;
 
-    public MvpActivityPresenter(@NonNull Activity context, @NonNull T view) {
+    public MvpActivityPresenter(@NonNull Context context, @NonNull T view) {
         mView = view;
         mContext = context;
         if (view instanceof LifecycleProvider) {
