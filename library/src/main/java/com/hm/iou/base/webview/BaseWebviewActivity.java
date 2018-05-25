@@ -670,7 +670,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
             mImageCropper.setCallback(new ImageCropper.Callback() {
                 @Override
                 public void onPictureCropOut(Bitmap bitmap, String tag) {
-                    File fileCrop = new File(FileUtil.getDiskCacheDir(BaseWebviewActivity.this) + "/photo_crop.png");
+                    File fileCrop = new File(FileUtil.getExternalCacheDirPath(BaseWebviewActivity.this) + "/photo_crop.png");
                     boolean flag = CompressPictureUtil.saveBitmapToTargetFile(fileCrop, bitmap);
                     if (flag) {
                         compressPicture(fileCrop.getAbsolutePath());

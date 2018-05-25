@@ -110,7 +110,7 @@ public class PhotoUtil {
                         }
                         if (HAS_PERMISSION_CAMERA && HAS_PERMISSION_STORAGE) {
                             //拍照后照片存储路径
-                            CACHE_FILE_BY_CAMERA = new File(FileUtil.getDiskCacheDir(activity) + "/photo.png");
+                            CACHE_FILE_BY_CAMERA = new File(FileUtil.getExternalCacheDirPath(activity) + "/photo.png");
                             Uri imageUri = Uri.fromFile(CACHE_FILE_BY_CAMERA);
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                 String fileProvider = activity.getPackageName() + FILE_PROVIDER_SUFFIX;
@@ -154,7 +154,7 @@ public class PhotoUtil {
         rxPermissions.request(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(aBoolean -> {
             if (aBoolean) {
                 //拍照后照片存储路径
-                CACHE_FILE_BY_CAMERA = new File(FileUtil.getDiskCacheDir(fragment.getContext()) + "/photo.png");
+                CACHE_FILE_BY_CAMERA = new File(FileUtil.getExternalCacheDirPath(fragment.getContext()) + "/photo.png");
                 Uri imageUri = Uri.fromFile(CACHE_FILE_BY_CAMERA);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     String fileProvider = activity.getPackageName() + FILE_PROVIDER_SUFFIX;

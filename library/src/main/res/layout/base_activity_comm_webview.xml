@@ -8,11 +8,8 @@
     <com.hm.iou.uikit.HMTopBarView
         android:id="@+id/topbar"
         android:layout_width="match_parent"
-        android:layout_height="72dip"
-        app:titleText=""
-        app:titleBackground="#00000000"
-        >
-    </com.hm.iou.uikit.HMTopBarView>
+        android:layout_height="@dimen/uikit_topbar_height"
+        app:titleBackground="@color/transparent" />
 
 
     <FrameLayout
@@ -28,17 +25,14 @@
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:progressDrawable="@drawable/base_webview_load_progress"
-        android:visibility="gone"
         android:layout_below="@id/topbar"
-        />
+        android:progressDrawable="@drawable/base_webview_load_progress"
+        android:visibility="gone" />
 
     <com.hm.iou.uikit.HMLoadingView
         android:id="@+id/lv_webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        >
-    </com.hm.iou.uikit.HMLoadingView>
+        android:visibility="gone"></com.hm.iou.uikit.HMLoadingView>
 
 </RelativeLayout>

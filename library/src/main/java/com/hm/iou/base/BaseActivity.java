@@ -57,7 +57,10 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        setContentView(getLayoutId());
+        int layoutId = getLayoutId();
+        if (layoutId != 0) {
+            setContentView(getLayoutId());
+        }
         transparentStatusBar();
         initStatusBarDarkFont(true);
 

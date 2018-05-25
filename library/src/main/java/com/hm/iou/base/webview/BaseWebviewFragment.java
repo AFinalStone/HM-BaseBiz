@@ -686,7 +686,7 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
             mImageCropper.setCallback(new ImageCropper.Callback() {
                 @Override
                 public void onPictureCropOut(Bitmap bitmap, String tag) {
-                    File fileCrop = new File(FileUtil.getDiskCacheDir(mActivity) + "/photo_crop.png");
+                    File fileCrop = new File(FileUtil.getExternalCacheDirPath(mActivity) + "/photo_crop.png");
                     boolean flag = CompressPictureUtil.saveBitmapToTargetFile(fileCrop, bitmap);
                     if (flag) {
                         compressPicture(fileCrop.getAbsolutePath());
