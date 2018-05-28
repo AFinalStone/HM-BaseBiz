@@ -55,11 +55,14 @@ public interface BaseContract {
         void showSoftKeyboard();
 
         /**
-         * 显示用户未登录
+         * 显示被踢下线对话框
          *
-         * @param errMsg
+         * @param title 标题
+         * @param errMsg 错误信息
          */
-        void showUserNotLogin(String errMsg);
+        void showKickOfflineDialog(String title, String errMsg);
+
+        void showTokenOverdue();
     }
 
     interface BasePresenter {

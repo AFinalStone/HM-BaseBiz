@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.base.mvp.MvpFragmentPresenter;
+import com.hm.iou.network.HttpReqManager;
+import com.hm.iou.router.Router;
 import com.hm.iou.sharedata.UserManager;
 import com.hm.iou.tools.KeyboardUtil;
 import com.hm.iou.tools.ToastUtil;
@@ -35,7 +37,8 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
 
     private Unbinder mUnbinder;
     private Dialog mLoadingDialog;
-    private boolean mRemindUserNotLogin;        //是否已经弹出过提醒用户未登录的对话框，防止重复弹出
+    private boolean mRemindKickOff;
+    private boolean mShowTokenOverdue;
 
     /**
      * 获取当前页面的layout id
@@ -174,38 +177,50 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
     }
 
     @Override
-    public void showUserNotLogin(String errMsg) {
+    public void showKickOfflineDialog(String title, String errMsg) {
         if (getActivity() == null) {
             return;
         }
-        if (mRemindUserNotLogin) {
+        if (mRemindKickOff) {
             return;
         }
-        UserManager.getInstance(getActivity()).logout();
-        mRemindUserNotLogin = true;
+        clearUserData();
+        mRemindKickOff = true;
         new IOSAlertDialog.Builder(getActivity())
-                .setTitle("下线通知")
+                .setTitle(title)
                 .setMessage(errMsg)
                 .setPositiveButton("重新登录", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityManager.getInstance().exitAllActivities();
-                        //TODO 需要用路由跳转到登录页
-                        try {
-                            startActivity(new Intent(getActivity(),
-                                    Class.forName("com.hm.iou.hmreceipt.ui.activity.login.LoginSelectActivity")));
-                        } catch (ClassNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                })
-                .setNegativeButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ActivityManager.getInstance().exitAllActivities();
+                        Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
+                                .navigation(getActivity());
                     }
                 })
                 .setCancelable(false)
                 .show();
     }
+
+    @Override
+    public void showTokenOverdue() {
+        if (getActivity() == null) {
+            return;
+        }
+        if (mShowTokenOverdue) {
+            return;
+        }
+        clearUserData();
+        mShowTokenOverdue = true;
+        ActivityManager.getInstance().exitAllActivities();
+        Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
+                .navigation(getActivity());
+    }
+
+    private void clearUserData() {
+        UserManager.getInstance(getActivity()).logout();
+        HttpReqManager.getInstance().setUserId("");
+        HttpReqManager.getInstance().setToken("");
+        mRemindKickOff = true;
+    }
+
 }

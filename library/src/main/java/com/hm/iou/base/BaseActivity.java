@@ -14,6 +14,7 @@ import android.view.WindowManager;
 
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.base.mvp.MvpActivityPresenter;
+import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.router.Router;
 import com.hm.iou.sharedata.UserManager;
 import com.hm.iou.tools.KeyboardUtil;
@@ -39,7 +40,8 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
     protected T mPresenter;
 
     private Dialog mLoadingDialog;
-    private boolean mRemindUserNotLogin;        //是否已经弹出过提醒用户未登录的对话框，防止重复弹出
+    private boolean mRemindKickOff;
+    private boolean mShowTokenOverdue;
 
     /**
      * 获取当前页面的layout id
@@ -178,14 +180,14 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
     }
 
     @Override
-    public void showUserNotLogin(String errMsg) {
-        if (mRemindUserNotLogin) {
+    public void showKickOfflineDialog(String title, String errMsg) {
+        if (mRemindKickOff) {
             return;
         }
-        UserManager.getInstance(BaseActivity.this).logout();
-        mRemindUserNotLogin = true;
+        mRemindKickOff = true;
+        clearUserData();
         new IOSAlertDialog.Builder(this)
-                .setTitle("下线通知")
+                .setTitle(title)
                 .setMessage(errMsg)
                 .setPositiveButton("重新登录", new DialogInterface.OnClickListener() {
                     @Override
@@ -195,13 +197,26 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
                                 .navigation(BaseActivity.this);
                     }
                 })
-                .setNegativeButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ActivityManager.getInstance().exitAllActivities();
-                    }
-                })
                 .setCancelable(false)
                 .show();
     }
+
+    @Override
+    public void showTokenOverdue() {
+        if (mShowTokenOverdue) {
+            return;
+        }
+        mShowTokenOverdue = true;
+        clearUserData();
+        ActivityManager.getInstance().exitAllActivities();
+        Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
+                .navigation(BaseActivity.this);
+    }
+
+    private void clearUserData() {
+        UserManager.getInstance(BaseActivity.this).logout();
+        HttpReqManager.getInstance().setUserId("");
+        HttpReqManager.getInstance().setToken("");
+    }
+
 }

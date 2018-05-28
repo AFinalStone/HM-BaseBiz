@@ -6,6 +6,7 @@ import com.hm.iou.base.constants.HMConstants;
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.network.exception.ApiException;
+import com.hm.iou.sharedata.UserManager;
 
 import io.reactivex.subscribers.ResourceSubscriber;
 
@@ -67,17 +68,12 @@ public abstract class CommSubscriber<T> extends ResourceSubscriber<T> {
         if (t instanceof ApiException) {
             ApiException apiException = (ApiException) t;
             code = apiException.getCode();
-            if (HMConstants.USER_NOT_LOGIN.equals(code)) {
-                //用户未登录，或登录过期，清除网络请求框架里的userId、token
-                HttpReqManager.getInstance().setToken(null);
-                HttpReqManager.getInstance().setUserId(null);
-
-                String line = System.getProperties().getProperty("line.separator");
-                String msg = "您的账号在别处登录，您被迫下线。" + line + "若非本人操作，请尽快修改密码。";
-                mView.showUserNotLogin(msg);
-
-                //TODO 服务端需要返回提示信息
-                //mView.showUserNotLogin(apiException.getMessage());
+            if (("" + HMConstants.ERR_CODE_TOKEN_OVERDUE).equals(code)) {
+                mView.showTokenOverdue();
+                return;
+            }
+            if (("" + HMConstants.ERR_CODE_KICK_OFFLINE).equals(code)) {
+                mView.showKickOfflineDialog("账号登录异常", apiException.getMessage());
                 return;
             }
             errMsg = t.getMessage();

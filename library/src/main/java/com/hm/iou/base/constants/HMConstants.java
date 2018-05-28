@@ -6,7 +6,10 @@ package com.hm.iou.base.constants;
 
 public class HMConstants {
 
-    public static final String USER_NOT_LOGIN = "9995";//用户未登录
+    //用户被踢下线
+    public static final int ERR_CODE_KICK_OFFLINE = 202001;
+    //token过期
+    public static final int ERR_CODE_TOKEN_OVERDUE = 202007;
 
     public static final String REG_MOBILE = "^[1][0-9]{10}$";
 
