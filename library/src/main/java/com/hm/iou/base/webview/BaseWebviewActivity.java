@@ -71,6 +71,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     public static final String EXTRA_KEY_WEB_URL = "url";
     public static final String EXTRA_KEY_SHOW_TITLE = "showtitle";      //是否显示中间标题
     public static final String EXTRA_KEY_SHOW_DIVIDER = "showdivider";  //是否显示分割线
+    public static final String EXTRA_KEY_SHOW_TITLE_BAR = "showtitlebar";  //是否显示整个导航栏
 
     private static final int REQ_CODE_FILE_CHOOSER = 100;
     private static final int REQ_CDOE_CAMERA = 101;
@@ -91,6 +92,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     protected String mUrl;
     protected String mShowTitle = "true";    //是否显示导航栏中间的标题，默认显示
     protected String mShowDivider = "true";  //是否显示导航栏底部的分割线，默认显示
+    protected String mShowTitleBar = "true";  //是否显示整个导航栏
 
     protected boolean mInited = false;
     protected boolean mNetworkError = false;// 是否网络错误的标记
@@ -130,12 +132,16 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         String showDivider = data.getStringExtra(EXTRA_KEY_SHOW_DIVIDER);
         if (!TextUtils.isEmpty(showDivider))
             mShowDivider = showDivider;
+        String showTitleBar = data.getStringExtra(EXTRA_KEY_SHOW_TITLE_BAR);
+        if (!TextUtils.isEmpty(showTitleBar))
+            mShowTitleBar = showTitleBar;
 
         if (savedInstanceState != null && mUrl == null) {
             mTitle = savedInstanceState.getString(EXTRA_KEY_WEB_TITLE);
             mUrl = savedInstanceState.getString(EXTRA_KEY_WEB_URL);
             mShowTitle = savedInstanceState.getString(EXTRA_KEY_SHOW_TITLE, "true");
             mShowDivider = savedInstanceState.getString(EXTRA_KEY_SHOW_DIVIDER, "true");
+            mShowTitleBar = savedInstanceState.getString(EXTRA_KEY_SHOW_TITLE_BAR, "true");
         }
 
         //如果网络连接，则直接加载
@@ -166,8 +172,10 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         if (!"true".equals(mShowDivider)) {
             mTopBar.getDividerView().setVisibility(View.INVISIBLE);
         }
+        if (!"true".equals(mShowTitleBar)) {
+            mTopBar.setVisibility(View.GONE);
+        }
         mTopBar.setBackgroundColor(Color.WHITE);
-
         initWebview();
     }
 
@@ -206,6 +214,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         outState.putString(EXTRA_KEY_WEB_URL, mUrl);
         outState.putString(EXTRA_KEY_SHOW_TITLE, mShowTitle);
         outState.putString(EXTRA_KEY_SHOW_DIVIDER, mShowDivider);
+        outState.putString(EXTRA_KEY_SHOW_TITLE_BAR, mShowTitleBar);
     }
 
     @Override
