@@ -9,8 +9,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.base.mvp.MvpActivityPresenter;
@@ -82,6 +84,13 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
+    }
+
+    //点击键盘外侧把当前键盘隐藏
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        KeyboardUtil.hideKeyboard(mContext);
+        return super.onTouchEvent(event);
     }
 
     @Override
