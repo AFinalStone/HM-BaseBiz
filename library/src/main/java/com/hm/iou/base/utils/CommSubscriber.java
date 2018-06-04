@@ -7,6 +7,9 @@ import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.network.exception.ApiException;
 import com.hm.iou.sharedata.UserManager;
+import com.hm.iou.sharedata.event.LogoutEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import io.reactivex.subscribers.ResourceSubscriber;
 
@@ -70,10 +73,13 @@ public abstract class CommSubscriber<T> extends ResourceSubscriber<T> {
             code = apiException.getCode();
             if (("" + HMConstants.ERR_CODE_TOKEN_OVERDUE).equals(code)) {
                 mView.showTokenOverdue();
+                //发出事件通知
+                EventBus.getDefault().post(new LogoutEvent());
                 return;
             }
             if (("" + HMConstants.ERR_CODE_KICK_OFFLINE).equals(code)) {
                 mView.showKickOfflineDialog("账号登录异常", apiException.getMessage());
+                EventBus.getDefault().post(new LogoutEvent());
                 return;
             }
             errMsg = t.getMessage();
