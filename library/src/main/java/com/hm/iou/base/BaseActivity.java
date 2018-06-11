@@ -191,7 +191,7 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
 
     @Override
     public void showKickOfflineDialog(String title, String errMsg) {
-        if (mRemindKickOff) {
+        if (mRemindKickOff || mShowTokenOverdue || mRemindAccountFreeze) {
             return;
         }
         mRemindKickOff = true;
@@ -202,9 +202,7 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
                 .setPositiveButton("重新登录", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ActivityManager.getInstance().exitAllActivities();
-                        Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
-                                .navigation(BaseActivity.this);
+                        exitAndToLoginPage();
                     }
                 })
                 .setCancelable(false)
@@ -213,19 +211,17 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
 
     @Override
     public void showTokenOverdue() {
-        if (mShowTokenOverdue) {
+        if (mRemindKickOff || mShowTokenOverdue || mRemindAccountFreeze) {
             return;
         }
         mShowTokenOverdue = true;
         clearUserData();
-        ActivityManager.getInstance().exitAllActivities();
-        Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
-                .navigation(BaseActivity.this);
+        exitAndToLoginPage();
     }
 
     @Override
     public void showAccountFreezeDialog(String title, String errMsg) {
-        if (mRemindAccountFreeze) {
+        if (mRemindKickOff || mShowTokenOverdue || mRemindAccountFreeze) {
             return;
         }
         mRemindAccountFreeze = true;
@@ -236,7 +232,7 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
                 .setNegativeButton("退出账号", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ActivityManager.getInstance().exitAllActivities();
+                        exitAndToLoginPage();
                     }
                 })
                 .setCancelable(false)
@@ -247,6 +243,12 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
         UserManager.getInstance(BaseActivity.this).logout();
         HttpReqManager.getInstance().setUserId("");
         HttpReqManager.getInstance().setToken("");
+    }
+
+    private void exitAndToLoginPage() {
+        ActivityManager.getInstance().exitAllActivities();
+        Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
+                .navigation(BaseActivity.this);
     }
 
 }
