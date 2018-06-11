@@ -82,6 +82,11 @@ public abstract class CommSubscriber<T> extends ResourceSubscriber<T> {
                 EventBus.getDefault().post(new LogoutEvent());
                 return;
             }
+            if (("" + HMConstants.ERR_CODE_ACCOUNT_FREEZE).equals(code)) {
+                mView.showAccountFreezeDialog("官方私信", apiException.getMessage());
+                EventBus.getDefault().post(new LogoutEvent());
+                return;
+            }
             errMsg = t.getMessage();
         } else {
             errMsg = "出现异常，请稍后重试";

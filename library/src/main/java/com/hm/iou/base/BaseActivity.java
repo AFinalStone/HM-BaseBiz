@@ -43,6 +43,7 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
 
     private Dialog mLoadingDialog;
     private boolean mRemindKickOff;
+    private boolean mRemindAccountFreeze;
     private boolean mShowTokenOverdue;
 
     /**
@@ -220,6 +221,26 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
         ActivityManager.getInstance().exitAllActivities();
         Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
                 .navigation(BaseActivity.this);
+    }
+
+    @Override
+    public void showAccountFreezeDialog(String title, String errMsg) {
+        if (mRemindAccountFreeze) {
+            return;
+        }
+        mRemindAccountFreeze = true;
+        clearUserData();
+        new IOSAlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(errMsg)
+                .setNegativeButton("退出账号", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityManager.getInstance().exitAllActivities();
+                    }
+                })
+                .setCancelable(false)
+                .show();
     }
 
     private void clearUserData() {

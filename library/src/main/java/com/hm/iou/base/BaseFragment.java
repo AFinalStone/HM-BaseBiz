@@ -39,6 +39,7 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
     private Dialog mLoadingDialog;
     private boolean mRemindKickOff;
     private boolean mShowTokenOverdue;
+    private boolean mRemindAccountFreeze;
 
     /**
      * 获取当前页面的layout id
@@ -195,6 +196,26 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
                         ActivityManager.getInstance().exitAllActivities();
                         Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
                                 .navigation(getActivity());
+                    }
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+    @Override
+    public void showAccountFreezeDialog(String title, String errMsg) {
+        if (mRemindAccountFreeze) {
+            return;
+        }
+        mRemindAccountFreeze = true;
+        clearUserData();
+        new IOSAlertDialog.Builder(getActivity())
+                .setTitle(title)
+                .setMessage(errMsg)
+                .setNegativeButton("退出账号", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityManager.getInstance().exitAllActivities();
                     }
                 })
                 .setCancelable(false)

@@ -10,6 +10,8 @@ public class HMConstants {
     public static final int ERR_CODE_KICK_OFFLINE = 202001;
     //token过期
     public static final int ERR_CODE_TOKEN_OVERDUE = 202007;
+    //用户账号被冻结
+    public static final int ERR_CODE_ACCOUNT_FREEZE = 202013;
 
     public static final String REG_MOBILE = "^[1][0-9]{10}$";
 

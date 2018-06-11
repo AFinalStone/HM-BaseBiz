@@ -57,10 +57,18 @@ public interface BaseContract {
         /**
          * 显示被踢下线对话框
          *
-         * @param title 标题
+         * @param title  标题
          * @param errMsg 错误信息
          */
         void showKickOfflineDialog(String title, String errMsg);
+
+        /**
+         * 显示账号被冻结
+         *
+         * @param title  标题
+         * @param errMsg 错误信息
+         */
+        void showAccountFreezeDialog(String title, String errMsg);
 
         void showTokenOverdue();
     }
