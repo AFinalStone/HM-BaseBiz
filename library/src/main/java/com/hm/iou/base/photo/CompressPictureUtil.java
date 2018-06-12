@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import top.zibin.luban.Luban;
 
@@ -27,14 +28,19 @@ public class CompressPictureUtil {
     /**
      * 压缩图片
      *
-     * @param context 上下文
-     * @param picturePath 图片路径
+     * @param context          上下文
+     * @param picturePath      图片路径
      * @param compressListener
      */
-    public static void compressPic(Context context, String picturePath, OnCompressListener compressListener) {
+    public static void compressPic(final Context context, String picturePath, final OnCompressListener compressListener) {
         Flowable.just(picturePath)
                 .observeOn(Schedulers.io())
-                .map(path -> Luban.with(context).load(path).get(path))
+                .map(new Function<String, File>() {
+                    @Override
+                    public File apply(String path) throws Exception {
+                        return Luban.with(context).load(path).get(path);
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<File>() {
                     @Override

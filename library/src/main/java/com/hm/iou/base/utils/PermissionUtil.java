@@ -80,7 +80,7 @@ public class PermissionUtil {
      *
      * @param activity
      */
-    public static void showPermissionReqDialog(Activity activity, String msg, OnPermissionDialogClick onPermissionDialogClick) {
+    public static void showPermissionReqDialog(final Activity activity, String msg, final OnPermissionDialogClick onPermissionDialogClick) {
         new IOSAlertDialog.Builder(activity)
                 .setTitle(activity.getString(R.string.base_permission_req))
                 .setMessage(msg)

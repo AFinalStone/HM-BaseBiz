@@ -23,17 +23,11 @@ android {
         }
     }
 
-    //使得AS支持lamb语法
-    compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
-    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -52,6 +46,7 @@ dependencies {
     //luban压缩图片
     compile 'top.zibin:Luban:1.1.3'
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
+
 
     compile 'com.heima.iou:hmsharedatalocal:1.0.0'
     compile 'com.heima.iou:hmnetworklocal:1.0.0'

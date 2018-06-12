@@ -22,9 +22,12 @@ import com.hm.iou.tools.FileUtil;
 import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.uikit.dialog.IOSActionSheetItem;
 import com.hm.iou.uikit.dialog.IOSActionSheetTitleDialog;
+import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
+
+import io.reactivex.functions.Consumer;
 
 public class PhotoUtil {
 
@@ -45,7 +48,7 @@ public class PhotoUtil {
      * @param cameraReqCode 打开相机的请求码
      * @param albumReqCode  打开相册的请求码
      */
-    public static void showSelectDialog(Activity activity, int cameraReqCode, int albumReqCode) {
+    public static void showSelectDialog(final Activity activity, final int cameraReqCode, final int albumReqCode) {
         new IOSActionSheetTitleDialog.Builder(activity)
                 .addSheetItem(IOSActionSheetItem.create("打开相机").setItemClickListener(new DialogInterface.OnClickListener() {
                     @Override
@@ -71,7 +74,7 @@ public class PhotoUtil {
      * @param cameraReqCode 打开相机的请求码
      * @param albumReqCode  打开相册的请求码
      */
-    public static void showSelectDialog(Fragment fragment, int cameraReqCode, int albumReqCode) {
+    public static void showSelectDialog(final Fragment fragment, final int cameraReqCode, final int albumReqCode) {
         new IOSActionSheetTitleDialog.Builder(fragment.getActivity())
                 .addSheetItem(IOSActionSheetItem.create("打开相机").setItemClickListener(new DialogInterface.OnClickListener() {
                     @Override
@@ -96,47 +99,50 @@ public class PhotoUtil {
      * @param activity    当前activity
      * @param requestCode 调用系统相机请求码
      */
-    public static void openCamera(Activity activity, int requestCode) {
+    public static void openCamera(final Activity activity, final int requestCode) {
         HAS_PERMISSION_CAMERA = false;
         HAS_PERMISSION_STORAGE = false;
         RxPermissions rxPermissions = new RxPermissions(activity);
         rxPermissions.requestEach(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .subscribe(permission -> {
-                    if (permission.granted) {
-                        if (Manifest.permission.CAMERA.equals(permission.name)) {
-                            HAS_PERMISSION_CAMERA = true;
+                .subscribe(new Consumer<Permission>() {
+                    @Override
+                    public void accept(Permission permission) throws Exception {
+                        if (permission.granted) {
+                            if (Manifest.permission.CAMERA.equals(permission.name)) {
+                                HAS_PERMISSION_CAMERA = true;
+                            } else {
+                                HAS_PERMISSION_STORAGE = true;
+                            }
+                            if (HAS_PERMISSION_CAMERA && HAS_PERMISSION_STORAGE) {
+                                //拍照后照片存储路径
+                                CACHE_FILE_BY_CAMERA = new File(FileUtil.getExternalCacheDirPath(activity) + "/photo.png");
+                                Uri imageUri = Uri.fromFile(CACHE_FILE_BY_CAMERA);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    String fileProvider = activity.getPackageName() + FILE_PROVIDER_SUFFIX;
+                                    imageUri = FileProvider.getUriForFile(activity, fileProvider, CACHE_FILE_BY_CAMERA);//通过FileProvider创建一个content类型的Uri
+                                }
+                                //调用系统相机
+                                Intent intentCamera = new Intent();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                    //添加这一句表示对目标应用临时授权该Uri所代表的文件
+                                    intentCamera.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                }
+                                intentCamera.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                                //将拍照结果保存至photo_file的Uri中，不保留在相册中
+                                intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                                try {
+                                    activity.startActivityForResult(intentCamera, requestCode);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    ToastUtil.showMessage(activity, activity.getString(R.string.base_open_camera_fail));
+                                }
+                            }
                         } else {
-                            HAS_PERMISSION_STORAGE = true;
-                        }
-                        if (HAS_PERMISSION_CAMERA && HAS_PERMISSION_STORAGE) {
-                            //拍照后照片存储路径
-                            CACHE_FILE_BY_CAMERA = new File(FileUtil.getExternalCacheDirPath(activity) + "/photo.png");
-                            Uri imageUri = Uri.fromFile(CACHE_FILE_BY_CAMERA);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                String fileProvider = activity.getPackageName() + FILE_PROVIDER_SUFFIX;
-                                imageUri = FileProvider.getUriForFile(activity, fileProvider, CACHE_FILE_BY_CAMERA);//通过FileProvider创建一个content类型的Uri
+                            if (Manifest.permission.CAMERA.equals(permission.name)) {
+                                PermissionUtil.showCameraPermissionDialog(activity);
+                            } else {
+                                PermissionUtil.showStoragePermissionDialog(activity);
                             }
-                            //调用系统相机
-                            Intent intentCamera = new Intent();
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                //添加这一句表示对目标应用临时授权该Uri所代表的文件
-                                intentCamera.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            }
-                            intentCamera.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-                            //将拍照结果保存至photo_file的Uri中，不保留在相册中
-                            intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                            try {
-                                activity.startActivityForResult(intentCamera, requestCode);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                ToastUtil.showMessage(activity, activity.getString(R.string.base_open_camera_fail));
-                            }
-                        }
-                    } else {
-                        if (Manifest.permission.CAMERA.equals(permission.name)) {
-                            PermissionUtil.showCameraPermissionDialog(activity);
-                        } else {
-                            PermissionUtil.showStoragePermissionDialog(activity);
                         }
                     }
                 });
@@ -148,35 +154,38 @@ public class PhotoUtil {
      * @param fragment    当前Fragment
      * @param requestCode 调用系统相机请求码
      */
-    public static void openCamera(Fragment fragment, int requestCode) {
-        Activity activity = fragment.getActivity();
+    public static void openCamera(final Fragment fragment, final int requestCode) {
+        final Activity activity = fragment.getActivity();
         RxPermissions rxPermissions = new RxPermissions(fragment.getActivity());
-        rxPermissions.request(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(aBoolean -> {
-            if (aBoolean) {
-                //拍照后照片存储路径
-                CACHE_FILE_BY_CAMERA = new File(FileUtil.getExternalCacheDirPath(fragment.getContext()) + "/photo.png");
-                Uri imageUri = Uri.fromFile(CACHE_FILE_BY_CAMERA);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    String fileProvider = activity.getPackageName() + FILE_PROVIDER_SUFFIX;
-                    imageUri = FileProvider.getUriForFile(fragment.getActivity(), fileProvider, CACHE_FILE_BY_CAMERA);//通过FileProvider创建一个content类型的Uri
+        rxPermissions.request(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Consumer<Boolean>() {
+            @Override
+            public void accept(Boolean aBoolean) throws Exception {
+                if (aBoolean) {
+                    //拍照后照片存储路径
+                    CACHE_FILE_BY_CAMERA = new File(FileUtil.getExternalCacheDirPath(fragment.getContext()) + "/photo.png");
+                    Uri imageUri = Uri.fromFile(CACHE_FILE_BY_CAMERA);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        String fileProvider = activity.getPackageName() + FILE_PROVIDER_SUFFIX;
+                        imageUri = FileProvider.getUriForFile(fragment.getActivity(), fileProvider, CACHE_FILE_BY_CAMERA);//通过FileProvider创建一个content类型的Uri
+                    }
+                    //调用系统相机
+                    Intent intentCamera = new Intent();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        //添加这一句表示对目标应用临时授权该Uri所代表的文件
+                        intentCamera.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    }
+                    intentCamera.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                    //将拍照结果保存至photo_file的Uri中，不保留在相册中
+                    intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    try {
+                        fragment.startActivityForResult(intentCamera, requestCode);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        ToastUtil.showMessage(activity, activity.getString(R.string.base_open_camera_fail));
+                    }
+                } else {
+                    PermissionUtil.showCameraPermissionDialog(activity);
                 }
-                //调用系统相机
-                Intent intentCamera = new Intent();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    //添加这一句表示对目标应用临时授权该Uri所代表的文件
-                    intentCamera.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                }
-                intentCamera.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-                //将拍照结果保存至photo_file的Uri中，不保留在相册中
-                intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                try {
-                    fragment.startActivityForResult(intentCamera, requestCode);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    ToastUtil.showMessage(activity, activity.getString(R.string.base_open_camera_fail));
-                }
-            } else {
-                PermissionUtil.showCameraPermissionDialog(activity);
             }
         });
     }
@@ -200,18 +209,22 @@ public class PhotoUtil {
      * @param activity    当前activity
      * @param requestCode 打开相册的请求码
      */
-    public static void openAlbum(Activity activity, int requestCode) {
+    public static void openAlbum(final Activity activity, final int requestCode) {
         RxPermissions rxPermissions = new RxPermissions(activity);
-        rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(aBoolean -> {
-                    if (aBoolean) {
-                        Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                        photoPickerIntent.setType("image/*");
-                        activity.startActivityForResult(photoPickerIntent, requestCode);
-                    } else {
-                        PermissionUtil.showStoragePermissionDialog(activity);
-                    }
-                }
-        );
+        rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .subscribe(new Consumer<Boolean>() {
+                               @Override
+                               public void accept(Boolean aBoolean) throws Exception {
+                                   if (aBoolean) {
+                                       Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                                       photoPickerIntent.setType("image/*");
+                                       activity.startActivityForResult(photoPickerIntent, requestCode);
+                                   } else {
+                                       PermissionUtil.showStoragePermissionDialog(activity);
+                                   }
+                               }
+                           }
+                );
     }
 
 
@@ -221,19 +234,24 @@ public class PhotoUtil {
      * @param fragment    当前fragment
      * @param requestCode 打开相册的请求码
      */
-    public static void openAlbum(Fragment fragment, int requestCode) {
-        Activity activity = fragment.getActivity();
+    public static void openAlbum(final Fragment fragment, final int requestCode) {
+        final Activity activity = fragment.getActivity();
         RxPermissions rxPermissions = new RxPermissions(activity);
-        rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(aBoolean -> {
-                    if (aBoolean) {
-                        Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                        photoPickerIntent.setType("image/*");
-                        fragment.startActivityForResult(photoPickerIntent, requestCode);
-                    } else {
-                        PermissionUtil.showStoragePermissionDialog(activity);
-                    }
-                }
-        );
+        rxPermissions.request(
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                .subscribe(new Consumer<Boolean>() {
+                               @Override
+                               public void accept(Boolean aBoolean) throws Exception {
+                                   if (aBoolean) {
+                                       Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                                       photoPickerIntent.setType("image/*");
+                                       fragment.startActivityForResult(photoPickerIntent, requestCode);
+                                   } else {
+                                       PermissionUtil.showStoragePermissionDialog(activity);
+                                   }
+                               }
+                           }
+                );
     }
 
     /**

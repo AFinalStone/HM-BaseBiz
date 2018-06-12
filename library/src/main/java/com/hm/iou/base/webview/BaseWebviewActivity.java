@@ -732,7 +732,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
     //设置右侧按钮的点击事件
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEventSetRightBtn(WebViewRightButtonEvent event) {
+    public void onEventSetRightBtn(final WebViewRightButtonEvent event) {
         if (StringUtil.getUnnullString(event.getTag()).equals(mPageTag)) {
             mTopBar.setRightText(event.getMessage());
             mTopBar.setOnMenuClickListener(new HMTopBarView.OnTopBarMenuClickListener() {

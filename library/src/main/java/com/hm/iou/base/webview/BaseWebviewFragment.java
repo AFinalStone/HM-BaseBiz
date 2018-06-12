@@ -745,7 +745,7 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
 
     //设置右侧按钮的点击事件
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEventSetRightBtn(WebViewRightButtonEvent event) {
+    public void onEventSetRightBtn(final WebViewRightButtonEvent event) {
         if (mTopBar == null)
             return;
         if (StringUtil.getUnnullString(event.getTag()).equals(mPageTag)) {

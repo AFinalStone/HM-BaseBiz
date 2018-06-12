@@ -180,7 +180,7 @@ public class WebViewJsObject {
      * @return
      */
     @JavascriptInterface
-    public void shareImageView(String imageUrl) {
+    public void shareImageView(final String imageUrl) {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -203,7 +203,7 @@ public class WebViewJsObject {
      * @param phoneNume
      */
     @JavascriptInterface
-    public void nativeCallPhone(String phoneNume) {
+    public void nativeCallPhone(final String phoneNume) {
         Logger.d(TAG, "nativeCallPhone-->phoneNume " + phoneNume);
         mHandler.post(new Runnable() {
             @Override
