@@ -577,8 +577,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
                 if ("about:blank".equals(url)) {
                     return false; // 不需要处理空白页
                 }
-                launchBrowser(BaseWebviewActivity.this, url);
-                return true;
+//                launchBrowser(BaseWebviewActivity.this, url);
+                return false;
             }
 
         });

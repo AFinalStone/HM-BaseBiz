@@ -182,7 +182,7 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
         if (getActivity() == null) {
             return;
         }
-        if (mRemindKickOff) {
+        if (mRemindKickOff || mShowTokenOverdue || mRemindAccountFreeze) {
             return;
         }
         clearUserData();
@@ -193,9 +193,7 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
                 .setPositiveButton("重新登录", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ActivityManager.getInstance().exitAllActivities();
-                        Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
-                                .navigation(getActivity());
+                        exitAndToLoginPage();
                     }
                 })
                 .setCancelable(false)
@@ -204,7 +202,7 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
 
     @Override
     public void showAccountFreezeDialog(String title, String errMsg) {
-        if (mRemindAccountFreeze) {
+        if (mRemindKickOff || mShowTokenOverdue || mRemindAccountFreeze) {
             return;
         }
         mRemindAccountFreeze = true;
@@ -215,7 +213,7 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
                 .setNegativeButton("退出账号", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ActivityManager.getInstance().exitAllActivities();
+                        exitAndToLoginPage();
                     }
                 })
                 .setCancelable(false)
@@ -227,21 +225,24 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
         if (getActivity() == null) {
             return;
         }
-        if (mShowTokenOverdue) {
+        if (mRemindKickOff || mShowTokenOverdue || mRemindAccountFreeze) {
             return;
         }
         clearUserData();
         mShowTokenOverdue = true;
-        ActivityManager.getInstance().exitAllActivities();
-        Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
-                .navigation(getActivity());
+        exitAndToLoginPage();
     }
 
     private void clearUserData() {
         UserManager.getInstance(getActivity()).logout();
         HttpReqManager.getInstance().setUserId("");
         HttpReqManager.getInstance().setToken("");
-        mRemindKickOff = true;
+    }
+
+    private void exitAndToLoginPage() {
+        ActivityManager.getInstance().exitAllActivities();
+        Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
+                .navigation(getActivity());
     }
 
 }

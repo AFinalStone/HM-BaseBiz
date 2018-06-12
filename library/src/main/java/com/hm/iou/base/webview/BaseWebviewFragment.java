@@ -584,8 +584,8 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
                 if ("about:blank".equals(url)) {
                     return false; // 不需要处理空白页
                 }
-                launchBrowser(mActivity, url);
-                return true;
+//                launchBrowser(mActivity, url);
+                return false;
             }
 
         });
