@@ -19,12 +19,15 @@ import com.hm.iou.base.mvp.MvpActivityPresenter;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.router.Router;
 import com.hm.iou.sharedata.UserManager;
+import com.hm.iou.sharedata.event.LogoutEvent;
 import com.hm.iou.tools.KeyboardUtil;
 import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.uikit.dialog.IOSAlertDialog;
 import com.hm.iou.uikit.loading.LoadingDialogUtil;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 import com.umeng.analytics.MobclickAgent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -241,6 +244,7 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
 
     private void clearUserData() {
         UserManager.getInstance(BaseActivity.this).logout();
+        EventBus.getDefault().post(new LogoutEvent());
         HttpReqManager.getInstance().setUserId("");
         HttpReqManager.getInstance().setToken("");
     }
