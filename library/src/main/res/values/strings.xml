@@ -9,4 +9,7 @@
     <string name="base_read_storage_permission_req_msg">在设置-应用—借条管家权限中开启存储空间权限，以正常使用借条管家功能</string>
     <string name="base_location_permission_req_msg">在设置-应用—借条管家权限中开启位置信息权限，以正常获取常驻城市</string>
 
+    <string name="base_customer_service">客服</string>
+    <string name="base_customer_service_code">jietiaoguanjia2018</string>
+
 </resources>
