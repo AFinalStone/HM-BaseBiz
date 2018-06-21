@@ -1,20 +1,32 @@
 package com.hm.iou.base.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 import com.hm.iou.base.R;
 import com.hm.iou.uikit.dialog.IOSAlertDialog;
+import com.hm.iou.uikit.dialog.PermissionDialog;
 
 /**
  * Created by hjy on 18/5/9.<br>
  */
 
 public class PermissionUtil {
+
+    public interface OnPermissionDialogClick {
+
+        void onPositiveBtnClick();
+
+        void onNegativeBtnClick();
+    }
 
     /**
      * 显示需要设置相机权限的dialog
@@ -157,11 +169,57 @@ public class PermissionUtil {
         }
     }
 
-    public interface OnPermissionDialogClick {
-
-        void onPositiveBtnClick();
-
-        void onNegativeBtnClick();
+    public static boolean isPermissionGranted(Context activity, String permission) {
+        return ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
+    /**
+     * 在申请权限之前，显示权限提醒对话框
+     *
+     * @param context
+     * @param icon
+     * @param title
+     * @param msg
+     * @param listener
+     */
+    public static void showPermissionRemindDialog(Context context, int icon, String title, String msg, final OnPermissionDialogClick listener) {
+        new PermissionDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(msg)
+                .setPermissionIcon(icon)
+                .setCancelable(false)
+                .setOnClickListener(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (listener != null) {
+                            if (which == DialogInterface.BUTTON_POSITIVE) {
+                                listener.onPositiveBtnClick();
+                            } else if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                listener.onNegativeBtnClick();
+                            }
+                        }
+                    }
+                })
+                .create().show();
+    }
+
+    public static void showLocationRemindDialog(Context context, OnPermissionDialogClick listener) {
+        showPermissionRemindDialog(context, R.mipmap.base_permission_location, "开启位置权限",
+                "我们需要获得该权限，才能为您提供省市头条信息及附近律师。", listener);
+    }
+
+    public static void showCalendarRemindDialog(Context context, OnPermissionDialogClick listener) {
+        showPermissionRemindDialog(context, R.mipmap.base_permission_calendar, "开启日历权限",
+                "我们需要获得该权限，才能为您提供智能日期提醒服务。", listener);
+    }
+
+    public static void showCameraRemindDialog(Context context, OnPermissionDialogClick listener) {
+        showPermissionRemindDialog(context, R.mipmap.base_permission_camera, "开启摄像权限",
+                "我们需要获得该权限，才能为您提供拍摄照片服务及扫一扫功能。", listener);
+    }
+
+    public static void showStorageRemindDialog(Context context, OnPermissionDialogClick listener) {
+        showPermissionRemindDialog(context, R.mipmap.base_permission_album, "开启读写手机存储权限",
+                "我们需要获得该权限，才能为您提供从相册选取照片、拍摄照片及下载分享等功能。", listener);
+    }
 }

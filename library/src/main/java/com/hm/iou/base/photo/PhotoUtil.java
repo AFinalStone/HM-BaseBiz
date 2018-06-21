@@ -19,6 +19,7 @@ import android.support.v4.content.FileProvider;
 import com.hm.iou.base.R;
 import com.hm.iou.base.utils.PermissionUtil;
 import com.hm.iou.tools.FileUtil;
+import com.hm.iou.tools.SystemUtil;
 import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.uikit.dialog.IOSActionSheetItem;
 import com.hm.iou.uikit.dialog.IOSActionSheetTitleDialog;
@@ -28,6 +29,8 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import java.io.File;
 
 import io.reactivex.functions.Consumer;
+
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
 public class PhotoUtil {
 
@@ -54,14 +57,42 @@ public class PhotoUtil {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        openCamera(activity, cameraReqCode);
+                        if (PermissionUtil.isPermissionGranted(activity, Manifest.permission.CAMERA)) {
+                            openCamera(activity, cameraReqCode);
+                        } else {
+                            PermissionUtil.showCameraRemindDialog(activity, new PermissionUtil.OnPermissionDialogClick() {
+                                @Override
+                                public void onPositiveBtnClick() {
+                                    openCamera(activity, cameraReqCode);
+                                }
+
+                                @Override
+                                public void onNegativeBtnClick() {
+
+                                }
+                            });
+                        }
                     }
                 }))
                 .addSheetItem(IOSActionSheetItem.create("打开相册").setItemClickListener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        openAlbum(activity, albumReqCode);
+                        if (PermissionUtil.isPermissionGranted(activity, READ_EXTERNAL_STORAGE)) {
+                            openAlbum(activity, albumReqCode);
+                        } else {
+                            PermissionUtil.showStorageRemindDialog(activity, new PermissionUtil.OnPermissionDialogClick() {
+                                @Override
+                                public void onPositiveBtnClick() {
+                                    openAlbum(activity, albumReqCode);
+                                }
+
+                                @Override
+                                public void onNegativeBtnClick() {
+
+                                }
+                            });
+                        }
                     }
                 }))
                 .show();
@@ -80,14 +111,42 @@ public class PhotoUtil {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        openCamera(fragment, cameraReqCode);
+                        if (PermissionUtil.isPermissionGranted(fragment.getActivity(), Manifest.permission.CAMERA)) {
+                            openCamera(fragment.getActivity(), cameraReqCode);
+                        } else {
+                            PermissionUtil.showCameraRemindDialog(fragment.getActivity(), new PermissionUtil.OnPermissionDialogClick() {
+                                @Override
+                                public void onPositiveBtnClick() {
+                                    openCamera(fragment.getActivity(), cameraReqCode);
+                                }
+
+                                @Override
+                                public void onNegativeBtnClick() {
+
+                                }
+                            });
+                        }
                     }
                 }))
                 .addSheetItem(IOSActionSheetItem.create("打开相册").setItemClickListener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        openAlbum(fragment, albumReqCode);
+                        if (PermissionUtil.isPermissionGranted(fragment.getActivity(), READ_EXTERNAL_STORAGE)) {
+                            openAlbum(fragment, albumReqCode);
+                        } else {
+                            PermissionUtil.showStorageRemindDialog(fragment.getActivity(), new PermissionUtil.OnPermissionDialogClick() {
+                                @Override
+                                public void onPositiveBtnClick() {
+                                    openAlbum(fragment.getActivity(), albumReqCode);
+                                }
+
+                                @Override
+                                public void onNegativeBtnClick() {
+
+                                }
+                            });
+                        }
                     }
                 }))
                 .show();
@@ -211,7 +270,7 @@ public class PhotoUtil {
      */
     public static void openAlbum(final Activity activity, final int requestCode) {
         RxPermissions rxPermissions = new RxPermissions(activity);
-        rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+        rxPermissions.request(READ_EXTERNAL_STORAGE)
                 .subscribe(new Consumer<Boolean>() {
                                @Override
                                public void accept(Boolean aBoolean) throws Exception {
@@ -238,7 +297,7 @@ public class PhotoUtil {
         final Activity activity = fragment.getActivity();
         RxPermissions rxPermissions = new RxPermissions(activity);
         rxPermissions.request(
-                Manifest.permission.READ_EXTERNAL_STORAGE)
+                READ_EXTERNAL_STORAGE)
                 .subscribe(new Consumer<Boolean>() {
                                @Override
                                public void accept(Boolean aBoolean) throws Exception {
