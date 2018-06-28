@@ -4,38 +4,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.hm.iou.base.demo.MainActivity"
     android:orientation="vertical"
     android:paddingTop="24dip"
-    >
+    tools:context="com.hm.iou.base.demo.MainActivity">
 
     <Button
         android:id="@+id/btn_test"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="test"
-        />
+        android:text="test" />
 
     <Button
         android:id="@+id/btn_tes2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="camera"
-        />
+        android:text="camera" />
 
     <Button
         android:id="@+id/btn_tes3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="album"
-        />
+        android:text="album" />
 
     <Button
         android:id="@+id/btn_tes4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="选择图片对话框"
-        />
+        android:text="选择图片对话框" />
+
+    <Button
+        android:id="@+id/btn_tes5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="图片查看对话框" />
 
 
     <ImageView

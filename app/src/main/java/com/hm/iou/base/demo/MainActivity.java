@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
+import com.hm.iou.base.photo.SelectPicDialog;
 import com.hm.iou.tools.DensityUtil;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,6 +49,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 PhotoUtil.showSelectDialog(MainActivity.this, 100, 101);
+            }
+        });
+        findViewById(R.id.btn_tes5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SelectPicDialog.createDialog(MainActivity.this, "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1530164549688&di=1c59fb642db7d4279efd9eeaaea62765&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimgad%2Fpic%2Fitem%2F8b82b9014a90f60314b73db13312b31bb151edc5.jpg", new SelectPicDialog.OnSelectListener() {
+                    @Override
+                    public void onDelete() {
+
+                    }
+
+                    @Override
+                    public void onReSelect() {
+
+                    }
+                }).show();
             }
         });
 

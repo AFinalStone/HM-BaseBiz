@@ -28,7 +28,7 @@ public class SelectPicDialog extends Dialog {
     }
 
     public static SelectPicDialog createDialog(Context context, String picPath, final OnSelectListener onSelectListener) {
-        final SelectPicDialog dialog = new SelectPicDialog(context, com.hm.iou.uikit.R.style.UikitAppTheme);
+        final SelectPicDialog dialog = new SelectPicDialog(context, R.style.UikitAlertDialogStyle);
         // 获取Dialog布局
         View view = LayoutInflater.from(context).inflate(R.layout.base_dialog_select_pic, null);
         ImageView photoView = view.findViewById(R.id.photoView);
