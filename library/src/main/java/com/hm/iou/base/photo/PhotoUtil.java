@@ -53,7 +53,7 @@ public class PhotoUtil {
      */
     public static void showSelectDialog(final Activity activity, final int cameraReqCode, final int albumReqCode) {
         new IOSActionSheetTitleDialog.Builder(activity)
-                .addSheetItem(IOSActionSheetItem.create("打开相机").setItemClickListener(new DialogInterface.OnClickListener() {
+                .addSheetItem(IOSActionSheetItem.create("拍照").setItemClickListener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -74,7 +74,7 @@ public class PhotoUtil {
                         }
                     }
                 }))
-                .addSheetItem(IOSActionSheetItem.create("打开相册").setItemClickListener(new DialogInterface.OnClickListener() {
+                .addSheetItem(IOSActionSheetItem.create("从相册中选择").setItemClickListener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -107,7 +107,7 @@ public class PhotoUtil {
      */
     public static void showSelectDialog(final Fragment fragment, final int cameraReqCode, final int albumReqCode) {
         new IOSActionSheetTitleDialog.Builder(fragment.getActivity())
-                .addSheetItem(IOSActionSheetItem.create("打开相机").setItemClickListener(new DialogInterface.OnClickListener() {
+                .addSheetItem(IOSActionSheetItem.create("拍照").setItemClickListener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -128,7 +128,7 @@ public class PhotoUtil {
                         }
                     }
                 }))
-                .addSheetItem(IOSActionSheetItem.create("打开相册").setItemClickListener(new DialogInterface.OnClickListener() {
+                .addSheetItem(IOSActionSheetItem.create("从相册中选择").setItemClickListener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
