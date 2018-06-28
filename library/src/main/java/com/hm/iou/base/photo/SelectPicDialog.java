@@ -10,8 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 
+import com.github.chrisbanes.photoview.PhotoView;
 import com.hm.iou.base.R;
 import com.hm.iou.tools.ImageLoader;
 
@@ -31,7 +32,9 @@ public class SelectPicDialog extends Dialog {
         final SelectPicDialog dialog = new SelectPicDialog(context, R.style.UikitAlertDialogStyle);
         // 获取Dialog布局
         View view = LayoutInflater.from(context).inflate(R.layout.base_dialog_select_pic, null);
-        ImageView photoView = view.findViewById(R.id.photoView);
+        PhotoView photoView = view.findViewById(R.id.photoView);
+        LinearLayout liBottom = view.findViewById(R.id.ll_bottom);
+
         ImageLoader.getInstance(context).displayImage(picPath, photoView);
         view.findViewById(R.id.iv_back).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,35 +42,30 @@ public class SelectPicDialog extends Dialog {
                 dialog.dismiss();
             }
         });
-        view.findViewById(R.id.tv_delete).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                onSelectListener.onDelete();
-            }
-        });
-        view.findViewById(R.id.tv_reelect).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                onSelectListener.onReSelect();
-            }
-        });
-
-        View dividerView = view.findViewById(R.id.view_divider);
-        View bottomLayout = view.findViewById(R.id.ll_pic_bottom);
-        if (onSelectListener == null) {
-            dividerView.setVisibility(View.GONE);
-            bottomLayout.setVisibility(View.GONE);
+        if (onSelectListener != null) {
+            liBottom.setVisibility(View.VISIBLE);
+            view.findViewById(R.id.btn_delete).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                    onSelectListener.onDelete();
+                }
+            });
+            view.findViewById(R.id.btn_reSelect).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                    onSelectListener.onReSelect();
+                }
+            });
         }
-
         // 定义Dialog布局和参数
         dialog.setContentView(view);
         Window dialogWindow = dialog.getWindow();
-        dialogWindow.setGravity(Gravity.LEFT | Gravity.BOTTOM);
+        dialogWindow.setGravity(Gravity.BOTTOM);
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.x = 0;
-        lp.y = 0;
+        lp.width = WindowManager.LayoutParams.FILL_PARENT;
+        lp.height = WindowManager.LayoutParams.FILL_PARENT;
         dialogWindow.setAttributes(lp);
 
         //获取设备的宽度
