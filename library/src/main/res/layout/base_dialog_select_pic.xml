@@ -14,7 +14,7 @@
         android:id="@+id/iv_back"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_margin="5dp"
+        android:layout_margin="15dp"
         android:background="?android:attr/selectableItemBackground"
         android:gravity="center"
         android:src="@mipmap/uikit_ic_menu_back_white_circle" />

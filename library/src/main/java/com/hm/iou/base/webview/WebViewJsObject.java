@@ -18,12 +18,17 @@ import com.hm.iou.network.HttpRequestConfig;
 import com.hm.iou.sharedata.UserManager;
 import com.hm.iou.sharedata.model.UserInfo;
 import com.hm.iou.socialshare.ShareDataTypeEnum;
+import com.hm.iou.socialshare.bean.PlatFormBean;
+import com.hm.iou.socialshare.business.view.SharePlatformDialog;
+import com.hm.iou.socialshare.dict.PlatformEnum;
 import com.hm.iou.tools.StringUtil;
 import com.orhanobut.logger.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -184,14 +189,24 @@ public class WebViewJsObject {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Intent intent = new Intent(mActivity, Class.forName("com.hm.iou.hmreceipt.ui.activity.ShareDataActivity"));
-                    intent.putExtra("intent_share_iou_type", ShareDataTypeEnum.shareFunIOU);
-                    intent.putExtra("intent_image_url", imageUrl);
-                    mActivity.startActivity(intent);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    Intent intent = new Intent(mActivity, Class.forName("com.hm.iou.hmreceipt.ui.activity.ShareDataActivity"));
+//                    intent.putExtra("intent_share_iou_type", ShareDataTypeEnum.shareFunIOU);
+//                    intent.putExtra("intent_image_url", imageUrl);
+//                    mActivity.startActivity(intent);
+//                } catch (ClassNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+                List<PlatFormBean> list = new ArrayList<>();
+                list.add(new PlatFormBean(PlatformEnum.SAVE));
+                list.add(new PlatFormBean(PlatformEnum.WEIXIN));
+                list.add(new PlatFormBean(PlatformEnum.WEIXIN_CIRCLE));
+                list.add(new PlatFormBean(PlatformEnum.WEIBO));
+                list.add(new PlatFormBean(PlatformEnum.QQ));
+                new SharePlatformDialog.Builder(mActivity)
+                        .setPicUrl(imageUrl)
+                        .setPlatforms(list)
+                        .show();
             }
         });
     }
