@@ -108,7 +108,11 @@ public abstract class CommSubscriber<T> extends ResourceSubscriber<T> {
 
     @Override
     public void onNext(T t) {
-        handleResult(t);
+        try {
+            handleResult(t);
+        } catch (Exception e) {
+            handleException(e, null, e.getMessage());
+        }
     }
 
     /**
