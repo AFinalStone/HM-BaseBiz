@@ -1,17 +1,34 @@
 package com.hm.iou.base.demo;
 
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.hm.iou.base.BaseBizAppLike;
 import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
 import com.hm.iou.base.photo.SelectPicDialog;
+import com.hm.iou.base.version.CheckVersionResBean;
+import com.hm.iou.base.version.VersionApi;
+import com.hm.iou.logger.Logger;
+import com.hm.iou.network.HttpReqManager;
+import com.hm.iou.network.HttpRequestConfig;
+import com.hm.iou.sharedata.UserManager;
+import com.hm.iou.sharedata.model.BaseResponse;
 import com.hm.iou.tools.DensityUtil;
+import com.hm.iou.tools.SPUtil;
+import com.hm.iou.tools.SystemUtil;
+
+import java.util.UUID;
+
+import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +39,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Logger.init(this, true);
+        BaseBizAppLike baseBizAppLike = new BaseBizAppLike();
+        baseBizAppLike.onCreate(this);
+        baseBizAppLike.initServer("https://testapi.54jietiao.com",
+                "https://testapi.54jietiao.com",
+                "https://testapi.54jietiao.com");
+        initNetwork();
+
+
         findViewById(R.id.btn_test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,6 +95,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.check_version).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                VersionApi.checkVersion()
+                        .subscribe(new Consumer<BaseResponse<CheckVersionResBean>>() {
+                            @Override
+                            public void accept(BaseResponse<CheckVersionResBean> checkVersionResBeanBaseResponse) throws Exception {
+
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+
+                            }
+                        });
+            }
+        });
 
     }
 
@@ -116,6 +160,38 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    /**
+     * 初始化新的网络框架
+     */
+    private void initNetwork() {
+        String deviceId = SPUtil.getString(this, "sysconfig", "deviceId");
+        if (TextUtils.isEmpty(deviceId)) {
+            //采用自己生产的UUID来当做设备唯一ID，存储在SharedPreferenes里，应用卸载重装会重新生成
+            deviceId = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+            SPUtil.put(this, "sysconfig", "deviceId", deviceId);
+        }
+
+        String channel = "official";
+        try {
+            ApplicationInfo appInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+            channel = appInfo.metaData.getString("UMENG_CHANNEL");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        UserManager userManager = UserManager.getInstance(this);
+        HttpRequestConfig config = new HttpRequestConfig.Builder(this)
+                .setDebug(BuildConfig.DEBUG)
+                .setAppChannel(channel)
+                .setAppVersion(SystemUtil.getCurrentAppVersionName(this))
+                .setDeviceId(deviceId)
+                .setBaseUrl("https://testapi.54jietiao.com")
+                .setUserId(userManager.getUserInfo().getUserId())
+                .setToken(userManager.getUserInfo().getToken())
+                .build();
+        HttpReqManager.init(config);
     }
 
 }
