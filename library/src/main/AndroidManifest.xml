@@ -9,16 +9,19 @@
             android:name="com.hm.iou.base.webview.BaseWebviewActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait" />
-
-        <!--微信登录回调页面-->
+        <!--微信支付回调页面-->
         <activity
-            android:name="com.hm.iou.wxapi.WXEntryActivity"
+            android:name=".wxapi.WXPayEntryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+        <!--微信登录绑定分享回调页面-->
+        <activity
+            android:name=".wxapi.WXEntryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
-
         <!-- 为了Android7.0之后正常获取相册和相机 -->
         <provider
             android:name="android.support.v4.content.FileProvider"
