@@ -3,14 +3,15 @@ package com.hm.iou.wxapi;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 
 import com.hm.iou.base.R;
 import com.hm.iou.base.event.OpenWxResultEvent;
 import com.hm.iou.logger.Logger;
 import com.hm.iou.tools.ToastUtil;
+import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelpay.PayReq;
@@ -31,11 +32,21 @@ import org.greenrobot.eventbus.EventBus;
 public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 
     private static final String APP_ID = "wx54a8a6252c69ea7c";
+    private IWXAPI mIWXAPI;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.base_activity_wx_pay);
+        mIWXAPI = WXAPIFactory.createWXAPI(this, APP_ID);
+        mIWXAPI.handleIntent(getIntent(), this);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        mIWXAPI.handleIntent(intent, this);
     }
 
     @Override
@@ -54,19 +65,24 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
         Logger.d("微信回调ErrorCode" + baseResp.errCode);
         Logger.d("微信回调Type" + baseResp.getType());
         Logger.d("微信回调ErrStr" + baseResp.errStr);
-        if (baseResp instanceof PayResp) {
+        if (baseResp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX) {
             //微信支付
             switch (baseResp.errCode) {
                 case BaseResp.ErrCode.ERR_OK:
-                    Logger.d("WXPay", "微信支付测试");
+                    Logger.d("WXPay", "用户支付成功");
                     String key = ((PayResp) baseResp).extData;
                     OpenWxResultEvent event = new OpenWxResultEvent();
                     event.setKey(key);
                     event.setIfPaySuccess(true);
                     EventBus.getDefault().post(event);
                     break;
+                case BaseResp.ErrCode.ERR_USER_CANCEL:
+                    Logger.d("WXPay", "用户取消操作");
+                    ToastUtil.showMessage(this, "用户取消操作");
+                    break;
                 default:
-                    ToastUtil.showMessage(this, baseResp.errStr);
+                    Logger.d("WXPay", "发生异常，请稍后再试");
+                    ToastUtil.showMessage(this, "发生异常，请稍后再试");
             }
         }
         finish();
