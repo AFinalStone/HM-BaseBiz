@@ -174,7 +174,7 @@ public class PhotoUtil {
                             }
                             if (HAS_PERMISSION_CAMERA && HAS_PERMISSION_STORAGE) {
                                 //拍照后照片存储路径
-                                CACHE_FILE_BY_CAMERA = new File(FileUtil.getExternalCacheDirPath(activity) + "/photo.png");
+                                CACHE_FILE_BY_CAMERA = new File(FileUtil.getExternalCacheDirPath(activity) + "/photo.jpg");
                                 Uri imageUri = Uri.fromFile(CACHE_FILE_BY_CAMERA);
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                     String fileProvider = activity.getPackageName() + FILE_PROVIDER_SUFFIX;
@@ -221,7 +221,7 @@ public class PhotoUtil {
             public void accept(Boolean aBoolean) throws Exception {
                 if (aBoolean) {
                     //拍照后照片存储路径
-                    CACHE_FILE_BY_CAMERA = new File(FileUtil.getExternalCacheDirPath(fragment.getContext()) + "/photo.png");
+                    CACHE_FILE_BY_CAMERA = new File(FileUtil.getExternalCacheDirPath(fragment.getContext()) + "/photo.jpg");
                     Uri imageUri = Uri.fromFile(CACHE_FILE_BY_CAMERA);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         String fileProvider = activity.getPackageName() + FILE_PROVIDER_SUFFIX;
