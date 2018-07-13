@@ -42,7 +42,6 @@ public class WXEntryActivity extends WXCallbackActivity {
      */
     @Override
     public void onResp(BaseResp baseResp) {
-        super.onResp(baseResp);
         Logger.d("微信回调ErrorCode" + baseResp.errCode);
         Logger.d("微信回调Type" + baseResp.getType());
         Logger.d("微信回调ErrStr" + baseResp.errStr);
@@ -74,6 +73,7 @@ public class WXEntryActivity extends WXCallbackActivity {
                     break;
             }
         }
+        super.onResp(baseResp);
     }
 
     /**
