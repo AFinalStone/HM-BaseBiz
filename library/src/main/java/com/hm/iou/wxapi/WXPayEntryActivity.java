@@ -1,6 +1,7 @@
 package com.hm.iou.wxapi;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,7 +28,7 @@ import org.greenrobot.eventbus.EventBus;
  * @author syl
  * @time 2018/7/13 上午9:50
  */
-public class WXPayEntryActivity extends AppCompatActivity implements IWXAPIEventHandler {
+public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 
     private static final String APP_ID = "wx54a8a6252c69ea7c";
 
