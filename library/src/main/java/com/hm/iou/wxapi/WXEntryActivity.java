@@ -1,4 +1,4 @@
-package com.hm.iou.base.wxapi;
+package com.hm.iou.wxapi;
 
 
 import android.content.Context;

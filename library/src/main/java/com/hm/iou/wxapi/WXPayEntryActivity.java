@@ -1,4 +1,4 @@
-package com.hm.iou.base.wxapi;
+package com.hm.iou.wxapi;
 
 
 import android.content.Context;
@@ -19,9 +19,9 @@ import org.greenrobot.eventbus.EventBus;
 
 
 /**
- * @author AFinalStone
- * @time 2018/7/12 下午10:14
  * 微信支付的回调页面
+ * @author syl
+ * @time 2018/7/13 上午9:50
  */
 public class WXPayEntryActivity extends AppCompatActivity implements IWXAPIEventHandler {
 

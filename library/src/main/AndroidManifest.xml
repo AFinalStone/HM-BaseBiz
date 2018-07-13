@@ -11,13 +11,13 @@
             android:screenOrientation="portrait" />
         <!--微信支付回调页面-->
         <activity
-            android:name=".wxapi.WXPayEntryActivity"
+            android:name="com.hm.iou.wxapi.WXPayEntryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:screenOrientation="portrait" />
         <!--微信登录绑定分享回调页面-->
         <activity
-            android:name=".wxapi.WXEntryActivity"
+            android:name="com.hm.iou.wxapi.WXEntryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:screenOrientation="portrait"
