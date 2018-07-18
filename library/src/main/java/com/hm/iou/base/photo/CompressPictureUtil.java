@@ -2,6 +2,7 @@ package com.hm.iou.base.photo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 
 import com.hm.iou.tools.ToastUtil;
 
@@ -33,6 +34,10 @@ public class CompressPictureUtil {
      * @param compressListener
      */
     public static void compressPic(final Context context, String picturePath, final OnCompressListener compressListener) {
+        if (context == null || TextUtils.isEmpty(picturePath)) {
+
+            return;
+        }
         Flowable.just(picturePath)
                 .observeOn(Schedulers.io())
                 .map(new Function<String, File>() {
