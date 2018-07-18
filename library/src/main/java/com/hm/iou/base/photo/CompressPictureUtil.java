@@ -34,7 +34,7 @@ public class CompressPictureUtil {
      * @param compressListener
      */
     public static void compressPic(final Context context, String picturePath, final OnCompressListener compressListener) {
-        if (TextUtils.isEmpty(picturePath)) {
+        if (context == null || TextUtils.isEmpty(picturePath)) {
             ToastUtil.showMessage(context, "图片获取失败");
             return;
         }
