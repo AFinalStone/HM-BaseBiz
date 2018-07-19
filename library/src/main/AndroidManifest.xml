@@ -9,12 +9,6 @@
             android:name="com.hm.iou.base.webview.BaseWebviewActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait" />
-        <!--微信支付回调页面-->
-        <activity
-            android:name="com.hm.iou.wxapi.WXPayEntryActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="true"
-            android:screenOrientation="portrait" />
         <!--微信登录绑定分享回调页面-->
         <activity
             android:name="com.hm.iou.wxapi.WXEntryActivity"
