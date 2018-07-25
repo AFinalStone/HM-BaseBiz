@@ -42,14 +42,13 @@ public class WXEntryActivity extends WXCallbackActivity {
      */
     @Override
     public void onResp(BaseResp baseResp) {
-        Logger.d("微信回调ErrorCode" + baseResp.errCode);
-        Logger.d("微信回调Type" + baseResp.getType());
-        Logger.d("微信回调ErrStr" + baseResp.errStr);
+        Logger.d("微信回调: ErrorCode=" + baseResp.errCode);
+        Logger.d("微信回调: Type=" + baseResp.getType());
+        Logger.d("微信回调: ErrStr=" + baseResp.errStr);
         if (baseResp instanceof SendAuth.Resp) {
             //微信登录
             switch (baseResp.errCode) {
                 case BaseResp.ErrCode.ERR_OK:
-                    Logger.d("WXLogin", "微信登录测试");
                     SendAuth.Resp newResp = (SendAuth.Resp) baseResp;
                     //获取微信传回的code
                     String code = newResp.code;
@@ -69,7 +68,7 @@ public class WXEntryActivity extends WXCallbackActivity {
                     finish();
                     break;
                 default:
-                    ToastUtil.showMessage(this, baseResp.errStr);
+//                    ToastUtil.showMessage(this, baseResp.errStr);
                     break;
             }
         }
