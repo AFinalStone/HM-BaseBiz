@@ -190,28 +190,22 @@ public class WebViewJsObject {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-//                try {
-//                    Intent intent = new Intent(mActivity, Class.forName("com.hm.iou.hmreceipt.ui.activity.ShareDataActivity"));
-//                    intent.putExtra("intent_share_iou_type", ShareDataTypeEnum.shareFunIOU);
-//                    intent.putExtra("intent_image_url", imageUrl);
-//                    mActivity.startActivity(intent);
-//                } catch (ClassNotFoundException e) {
-//                    e.printStackTrace();
-//                }
                 List<PlatFormBean> list = new ArrayList<>();
                 list.add(new PlatFormBean(PlatformEnum.SAVE));
                 list.add(new PlatFormBean(PlatformEnum.WEIXIN));
                 list.add(new PlatFormBean(PlatformEnum.WEIXIN_CIRCLE));
                 list.add(new PlatFormBean(PlatformEnum.WEIBO));
                 list.add(new PlatFormBean(PlatformEnum.QQ));
-                final SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
+                SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setPicUrl(imageUrl)
                         .setPlatforms(list)
                         .show();
                 dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
-                    public void onDismiss(DialogInterface dialogInterface) {
-                        dialog.onDestroy();
+                    public void onDismiss(DialogInterface dialog) {
+                        if (dialog != null && dialog instanceof SharePlatformDialog) {
+                            ((SharePlatformDialog) dialog).onDestroy();
+                        }
                     }
                 });
             }
