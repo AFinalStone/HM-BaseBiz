@@ -15,6 +15,9 @@ import com.umeng.socialize.weixin.view.WXCallbackActivity;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+
 
 /**
  * @author AFinalStone
@@ -113,5 +116,26 @@ public class WXEntryActivity extends WXCallbackActivity {
         return iwxapi;
     }
 
+    /**
+     * 清除微信memory leak
+     */
+    public static void cleanWXLeak() {
+        try {
+            Class clazz = com.tencent.a.a.a.a.g.class;
+            Field field = clazz.getDeclaredField("V");
+            field.setAccessible(true);
+            Object obj = field.get(clazz);
+            if (obj != null) {
+                com.tencent.a.a.a.a.g g = (com.tencent.a.a.a.a.g) obj;
+                Field mapField = clazz.getDeclaredField("U");
+                mapField.setAccessible(true);
+                Map map = (Map) mapField.get(g);
+                map.clear();
+            }
+            field.set(clazz, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }
