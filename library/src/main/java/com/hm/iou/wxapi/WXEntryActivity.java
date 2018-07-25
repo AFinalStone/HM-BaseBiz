@@ -82,6 +82,7 @@ public class WXEntryActivity extends WXCallbackActivity {
      * @param context
      * @param key     额外辅助字段
      */
+    @Deprecated
     public static void openWx(Context context, String key) {
         IWXAPI iwxapi = WXAPIFactory.createWXAPI(context, APP_ID, true);
         iwxapi.registerApp(APP_ID);
@@ -92,5 +93,26 @@ public class WXEntryActivity extends WXCallbackActivity {
         req.state = key;
         iwxapi.sendReq(req);
     }
+
+    /**
+     * 掉起微信授权
+     *
+     * @param context Activity
+     * @param key     业务发起方自定义key，用来标识业务
+     * @return
+     */
+    public static IWXAPI openWxAuth(Context context, String key) {
+        IWXAPI iwxapi = WXAPIFactory.createWXAPI(context, APP_ID, true);
+        iwxapi.registerApp(APP_ID);
+
+        //发起登录请求
+        final SendAuth.Req req = new SendAuth.Req();
+        req.scope = "snsapi_userinfo";
+        req.state = key;
+        iwxapi.sendReq(req);
+
+        return iwxapi;
+    }
+
 
 }

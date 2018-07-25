@@ -1,6 +1,7 @@
 package com.hm.iou.base.webview;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -203,10 +204,16 @@ public class WebViewJsObject {
                 list.add(new PlatFormBean(PlatformEnum.WEIXIN_CIRCLE));
                 list.add(new PlatFormBean(PlatformEnum.WEIBO));
                 list.add(new PlatFormBean(PlatformEnum.QQ));
-                new SharePlatformDialog.Builder(mActivity)
+                final SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setPicUrl(imageUrl)
                         .setPlatforms(list)
                         .show();
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        dialog.onDestroy();
+                    }
+                });
             }
         });
     }
