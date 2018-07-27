@@ -1,5 +1,7 @@
 package com.hm.iou.base.constants;
 
+import java.io.File;
+
 /**
  * Created by hjy on 18/4/26.<br>
  */
@@ -16,5 +18,8 @@ public class HMConstants {
     public static final String REG_MOBILE = "^[1][0-9]{10}$";
 
     public static final String REG_EMAIL_NUMBER = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]+$";
+
+    public static final String EXTERNAL_CACHE_DIR = "54jietiao";
+    public static final String IMAGE_CACHE_DIR = EXTERNAL_CACHE_DIR + File.separator + "image";
 
 }
