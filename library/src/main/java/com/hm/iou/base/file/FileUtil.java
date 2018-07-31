@@ -2,8 +2,10 @@ package com.hm.iou.base.file;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -11,6 +13,9 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import com.hm.iou.base.constants.HMConstants;
+import com.hm.iou.tools.ToastUtil;
+import com.hm.iou.uikit.loading.LoadingDialogUtil;
+import com.squareup.picasso.Picasso;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
@@ -21,7 +26,11 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author : syl
@@ -43,42 +52,88 @@ public class FileUtil {
             public void accept(Boolean aBoolean) throws Exception {
                 if (aBoolean) {
                     //保存图片
-                    downloadPic(activity.getApplicationContext(), pictureUrl);
+                    downloadPic(activity, pictureUrl);
                 } else {
-                    Toast.makeText(activity, "请开启读写手机存储权限", Toast.LENGTH_SHORT).show();
+                    toastResult(activity, "请开启读写手机存储权限");
                 }
             }
         });
     }
 
-    private static void downloadPic(final Context context, final String url) {
-        toastResultShort(context, "开始保存图片，请稍候...");
-        new Thread(new Runnable() {
+    /**
+     * 保存图片
+     *
+     * @param activity
+     * @param bitmap
+     */
+    public static void savePicture(final Activity activity, final Bitmap bitmap) {
+        if (bitmap == null)
+            return;
+        RxPermissions rxPermissions = new RxPermissions(activity);
+        rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Consumer<Boolean>() {
             @Override
-            public void run() {
-                try {
-                    InputStream is = getImageStream(url);
-                    if (is != null) {
-                        File dir = new File(Environment.getExternalStorageDirectory(), HMConstants.IMAGE_CACHE_DIR);
+            public void accept(Boolean aBoolean) throws Exception {
+                if (aBoolean) {
+                    try {
+                        //保存图片
+                        File dir = new File(Environment.getExternalStorageDirectory(), "54jietiao" + File.separator + "image");
                         if (!dir.exists()) {
                             dir.mkdirs();
                         }
                         File file = new File(dir, System.currentTimeMillis() + ".jpg");
-                        saveInputStreamToFile(is, file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(file));
+                        //通知扫描存储卡设备
+                        Uri uri = Uri.fromFile(file);
+                        activity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+                        toastResult(activity, "图片保存路径为" + file.getAbsolutePath());
+                        return;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    toastResult(activity, "图片保存失败");
+                } else {
+                    toastResult(activity, "请开启读写手机存储权限");
+                }
+            }
+        });
+    }
+
+    private static void downloadPic(final Activity context, final String url) {
+        final Dialog dialog = LoadingDialogUtil.showLoading(context, "图片保存中...", false);
+        Flowable.just(url)
+                .map(new Function<String, File>() {
+                    @Override
+                    public File apply(String s) throws Exception {
+                        Bitmap bmp = Picasso.get().load(url).get();
+                        File dir = new File(Environment.getExternalStorageDirectory(), "54jietiao" + File.separator + "image");
+                        if (!dir.exists()) {
+                            dir.mkdirs();
+                        }
+                        File file = new File(dir, System.currentTimeMillis() + ".jpg");
+                        bmp.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(file));
+                        return file;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<File>() {
+                    @Override
+                    public void accept(File file) throws Exception {
+                        dialog.dismiss();
 
                         //通知扫描存储卡设备
                         Uri uri = Uri.fromFile(file);
                         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
 
-                        toastResult(context, "图片保存路径为" + file.getAbsolutePath());
-                        return;
+                        ToastUtil.showMessage(context, "图片保存路径为" + file.getAbsolutePath());
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                toastResult(context, "图片保存失败");
-            }
-        }).start();
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        dialog.dismiss();
+                        ToastUtil.showMessage(context, "图片保存失败");
+                    }
+                });
     }
 
     private static void toastResult(final Context context, final String msg) {
@@ -88,54 +143,6 @@ public class FileUtil {
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-    private static void toastResultShort(final Context context, final String msg) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private static InputStream getImageStream(String path) throws Exception {
-        URL url = new URL(path);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setConnectTimeout(30000);
-        conn.setReadTimeout(30000);
-        conn.setRequestMethod("GET");
-        if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-            return conn.getInputStream();
-        }
-        return null;
-    }
-
-    private static boolean saveInputStreamToFile(InputStream is, File file) {
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(file);
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = is.read(buffer)) != -1) {
-                fos.write(buffer, 0, len);
-            }
-            return true;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
     }
 
 }
