@@ -42,7 +42,6 @@ import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
-import com.hm.iou.base.webview.event.WebViewTitleBgColorEvent;
 import com.hm.iou.base.webview.event.WebViewTitleTextEvent;
 import com.hm.iou.logger.Logger;
 import com.hm.iou.tools.DensityUtil;
@@ -165,6 +164,22 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
         EventBus.getDefault().register(this);
 
         loadUrl();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (isVisible()) {
+            mWebView.evaluateJavascript("javascript:onResume()", null);
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            mWebView.evaluateJavascript("javascript:onResume()", null);
+        }
     }
 
     private void initViews() {
@@ -315,6 +330,9 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
         mJsObj.setPageTag(mPageTag);
         mWebView.addJavascriptInterface(mJsObj, "HMApplication");
         mWebView.getSettings().setGeolocationEnabled(true);
+
+        String ua = mWebView.getSettings().getUserAgentString();
+        mWebView.getSettings().setUserAgentString(ua + ";HMAndroidWebView");
 
         mWebView.setDownloadListener(new DownloadListener() {
             @Override
@@ -659,7 +677,17 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
      */
     protected void onPictureSelectSuccess(File file) {
         Logger.d("图片选择成功：" + file.getAbsolutePath());
+        StringBuilder sb = new StringBuilder();
+        sb.append("javascript:").append(mJsObj.getPicCallbackName());
+        sb.append("('").append(file.getAbsolutePath()).append("')");
+        String url = sb.toString();
+        Logger.d("图片获取成功：" + url);
+        mWebView.evaluateJavascript(url, new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
 
+            }
+        });
     }
 
     /**
@@ -668,8 +696,8 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
      * @param path
      */
     private void onSelectPhoto(String path) {
-        int width = mJsObj.getCameraCallCutWidth();
-        int height = mJsObj.getCameraCallCutHeight();
+        int width = mJsObj.getPicCropWidth();
+        int height = mJsObj.getPicCropHeight();
         //不进行裁剪操作
         if (width == 0 || height == 0) {
             compressPicture(path);
@@ -743,18 +771,29 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
         }
     }
 
-    //设置右侧按钮的点击事件
+    /**
+     * 设置导航栏右侧菜单
+     *
+     * @param event
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventSetRightBtn(final WebViewRightButtonEvent event) {
-        if (mTopBar == null)
-            return;
         if (StringUtil.getUnnullString(event.getTag()).equals(mPageTag)) {
             mTopBar.setRightText(event.getMessage());
             mTopBar.setOnMenuClickListener(new HMTopBarView.OnTopBarMenuClickListener() {
                 @Override
                 public void onClickTextMenu() {
-                    String function = "javascript:" + event.getRightButtonCallBackName() + "()";
-                    mWebView.loadUrl(function);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("javascript:").append(event.getCallback());
+                    sb.append("('").append(StringUtil.getUnnullString(event.getParams())).append("')");
+                    String url = sb.toString();
+                    Logger.d("设置导航栏右侧菜单：" + url);
+                    mWebView.evaluateJavascript(url, new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+
+                        }
+                    });
                 }
 
                 @Override
@@ -762,21 +801,6 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
 
                 }
             });
-        }
-    }
-
-    //设置标题背景颜色
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEventUpdateTitleBg(WebViewTitleBgColorEvent event) {
-        if (mTopBar == null)
-            return;
-        if (StringUtil.getUnnullString(event.getTag()).equals(mPageTag)) {
-            try {
-                int color = Color.parseColor(event.getColorRGB());
-                mTopBar.setBackgroundColor(color);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 

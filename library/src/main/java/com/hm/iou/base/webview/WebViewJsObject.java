@@ -6,24 +6,28 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 
 import com.google.gson.Gson;
+import com.hm.iou.base.ActivityManager;
+import com.hm.iou.base.constants.HMConstants;
+import com.hm.iou.base.file.FileUtil;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
-import com.hm.iou.base.webview.event.WebViewTitleBgColorEvent;
 import com.hm.iou.base.webview.event.WebViewTitleTextEvent;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.network.HttpRequestConfig;
+import com.hm.iou.router.Router;
 import com.hm.iou.sharedata.UserManager;
+import com.hm.iou.sharedata.event.LogoutEvent;
 import com.hm.iou.sharedata.model.UserInfo;
-import com.hm.iou.socialshare.ShareDataTypeEnum;
 import com.hm.iou.socialshare.bean.PlatFormBean;
 import com.hm.iou.socialshare.business.view.SharePlatformDialog;
 import com.hm.iou.socialshare.dict.PlatformEnum;
-import com.hm.iou.tools.StringUtil;
-import com.orhanobut.logger.Logger;
+import com.hm.iou.tools.SPUtil;
+import com.hm.iou.tools.SystemUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -33,103 +37,48 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by AFinalStone on 2018/4/25.
+ * Created by hjy on 2018/8/1.
  */
 
 public class WebViewJsObject {
 
-    private static final String TAG = "WebViewJsObject";
-
     private Activity mActivity;
-    private String mTag;
+    private String mPageTag;            //用于表示该js object绑定的是哪个WebView
 
     private Handler mHandler;
+    private volatile Gson mGson;
 
-    private String mCameraCallBackName;     //拍照等返回回调H5的方法名
-    private int mCameraCallCutWidth;        //拍照要进行裁切的宽度
-    private int mCameraCallCutHeight;       //拍照要进行裁切的高度
-    private String mShareCallBackName;      //分享回调方法名
-    private String mQrScanCallBackName;     // 扫描回调方法名
+    private String mPicCallbackName;    //拍照等返回回调H5的方法名
+    private int mPicCropWidth;          //拍照要进行裁切的宽度
+    private int mPicCropHeight;         //拍照要进行裁切的高度
+
 
     public WebViewJsObject(Activity activity) {
         mActivity = activity;
-        mHandler = new Handler();
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
     public void setPageTag(String tag) {
-        mTag = tag;
+        mPageTag = tag;
     }
 
-    public String getCameraCallBackName() {
-        return mCameraCallBackName;
+    public String getPicCallbackName() {
+        return mPicCallbackName;
     }
 
-    public int getCameraCallCutWidth() {
-        return mCameraCallCutWidth;
+    public int getPicCropWidth() {
+        return mPicCropWidth;
     }
 
-    public int getCameraCallCutHeight() {
-        return mCameraCallCutHeight;
+    public int getPicCropHeight() {
+        return mPicCropHeight;
     }
 
-    public String getShareCallBackName() {
-        return mShareCallBackName;
-    }
-
-    public String getQrScanCallBackName() {
-        return mQrScanCallBackName;
-    }
-
-
-    /**
-     * 设置WebView的标题文字
-     *
-     * @param name 标题名字
-     */
     @JavascriptInterface
-    public void setWebViewTitleName(String name) {
-        if (TextUtils.isEmpty(name))
-            return;
-        EventBus.getDefault().post(new WebViewTitleTextEvent(mTag, name));
+    public boolean checkLogin() {
+        return UserManager.getInstance(mActivity).isLogin();
     }
 
-    /**
-     * 设置WebView的标题的背景颜色
-     *
-     * @param colorRGB 颜色rgb
-     */
-    @JavascriptInterface
-    public void setWebViewTitleBgColor(String colorRGB) {
-        EventBus.getDefault().post(new WebViewTitleBgColorEvent(mTag, colorRGB));
-    }
-
-    /**
-     * 设置WebView的右上角按钮
-     *
-     * @param btnText      按钮显示的文字
-     * @param functionName 用户点击按钮回调H5的方法名称
-     */
-    @JavascriptInterface
-    public void setWebViewRightButton(String btnText, String functionName) {
-        EventBus.getDefault().post(new WebViewRightButtonEvent(mTag, btnText, functionName));
-    }
-
-    /**
-     * 获取用户信息
-     *
-     * @return {phone:"";token:"";userId:""}
-     */
-    @JavascriptInterface
-    public String getUserInfo() {
-        UserInfo userDataBean = UserManager.getInstance(mActivity).getUserInfo();
-        return new Gson().toJson(userDataBean);
-    }
-
-    /**
-     * 获取请求头信息
-     *
-     * @return 返回请求头Map的json字符串
-     */
     @JavascriptInterface
     public String getHeaders() {
         HttpRequestConfig config = HttpReqManager.getInstance().getRequestConfig();
@@ -144,58 +93,138 @@ public class WebViewJsObject {
         headers.put("appVer", config.getAppVersion());
         headers.put("rptGpsX", config.getGpsX());
         headers.put("rptGpsY", config.getGpsY());
-        return new Gson().toJson(headers);
+        if (mGson == null) {
+            mGson = new Gson();
+        }
+        return mGson.toJson(headers);
     }
 
-
-    /**
-     * 判断用户是否登录
-     *
-     * @return （true为已经登录，false为未登录）
-     */
     @JavascriptInterface
-    public Boolean checkLogin() {
-        return UserManager.getInstance(mActivity).isLogin();
+    public String getUserInfo() {
+        UserInfo userDataBean = UserManager.getInstance(mActivity).getUserInfo();
+        if (mGson == null) {
+            mGson = new Gson();
+        }
+        return mGson.toJson(userDataBean);
     }
 
-    /**
-     * 打开用户登录的页面
-     */
     @JavascriptInterface
-    public void userLoginWindow() {
-        //TODO 采用路由来进行跳转
-    }
-
-    /**
-     * 关闭webview
-     */
-    @JavascriptInterface
-    public void finishView() {
+    public void closeWebView() {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mActivity.finish();
+                if (mActivity != null) {
+                    mActivity.finish();
+                }
             }
         });
     }
 
-    /**
-     * 分享图片
-     *
-     * @param imageUrl 图片链接
-     * @return
-     */
     @JavascriptInterface
-    public void shareImageView(final String imageUrl) {
+    public void callPhone(final String phone) {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
+                try {
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    Uri data = Uri.parse("tel:" + phone);
+                    intent.setData(data);
+                    mActivity.startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void setStorage(String key, String value) {
+        SPUtil.put(mActivity, HMConstants.SP_WEBVIEW, key, value);
+    }
+
+    @JavascriptInterface
+    public String getStorage(String key) {
+        return SPUtil.getString(mActivity, HMConstants.SP_WEBVIEW, key);
+    }
+
+    @JavascriptInterface
+    public void openUrlThroughBrowser(final String url) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                SystemUtil.openWebBrowser(mActivity, url);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void openUrlThroughWebView(final String url) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/webview/index")
+                        .withString("url", url)
+                        .navigation(mActivity);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void navigateByRouter(final String routerUrl) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Router.getInstance().buildWithUrl(routerUrl)
+                        .navigation(mActivity);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void selectPicture(String selectType, int width, int height, String callback) {
+        if (TextUtils.isEmpty(selectType) || TextUtils.isEmpty(callback)) {
+            return;
+        }
+        mPicCallbackName = callback;
+        mPicCropWidth = width;
+        mPicCropHeight = height;
+        EventBus.getDefault().post(new WebViewNativeSelectPicEvent(mPageTag, selectType));
+    }
+
+    @JavascriptInterface
+    public void setNavigationBarRightMenu(String btnText, String functionName, String params) {
+        EventBus.getDefault().post(new WebViewRightButtonEvent(mPageTag, btnText, functionName, params));
+    }
+
+    @JavascriptInterface
+    public void savePicture(final String url) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                FileUtil.savePicture(mActivity, url);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void shareImage(final String imageUrl, final String channels) {
+        if (TextUtils.isEmpty(imageUrl) || TextUtils.isEmpty(channels)) {
+            return;
+        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                String[] channelArr = channels.split(",");
                 List<PlatFormBean> list = new ArrayList<>();
-                list.add(new PlatFormBean(PlatformEnum.SAVE));
-                list.add(new PlatFormBean(PlatformEnum.WEIXIN));
-                list.add(new PlatFormBean(PlatformEnum.WEIXIN_CIRCLE));
-                list.add(new PlatFormBean(PlatformEnum.WEIBO));
-                list.add(new PlatFormBean(PlatformEnum.QQ));
+                for (String channel : channelArr) {
+                    PlatFormBean platform = getPlatform(channel);
+                    if (platform != null) {
+                        list.add(platform);
+                    }
+                }
+                if (list.isEmpty()) {
+                    return;
+                }
                 SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setPicUrl(imageUrl)
                         .setPlatforms(list)
@@ -212,51 +241,128 @@ public class WebViewJsObject {
         });
     }
 
+    private PlatFormBean getPlatform(String channel) {
+        if ("save".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.SAVE);
+        } else if ("weixin".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.WEIXIN);
+        } else if ("wxcircle".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.WEIXIN_CIRCLE);
+        } else if ("weibo".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.WEIBO);
+        } else if ("qq".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.QQ);
+        } else if ("sms".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.SMS);
+        }
+        return null;
+    }
 
-    /**
-     * 拨打电话
-     *
-     * @param phoneNume
-     */
     @JavascriptInterface
-    public void nativeCallPhone(final String phoneNume) {
-        Logger.d(TAG, "nativeCallPhone-->phoneNume " + phoneNume);
+    public void shareLink(final String title, final String desc, final String url, final String channels) {
+        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(desc) || TextUtils.isEmpty(url) || TextUtils.isEmpty(channels)) {
+            return;
+        }
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                Uri data = Uri.parse("tel:" + phoneNume);
-                intent.setData(data);
-                mActivity.startActivity(intent);
+                String[] channelArr = channels.split(",");
+                List<PlatFormBean> list = new ArrayList<>();
+                for (String channel : channelArr) {
+                    PlatFormBean platform = getPlatform(channel);
+                    if (platform != null) {
+                        list.add(platform);
+                    }
+                }
+                if (list.isEmpty()) {
+                    return;
+                }
+                SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
+                        .setWebUrlTitle(title)
+                        .setWebUrlDesc(desc)
+                        .setWebUrl(url)
+                        .setPlatforms(list)
+                        .show();
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        if (dialog != null && dialog instanceof SharePlatformDialog) {
+                            ((SharePlatformDialog) dialog).onDestroy();
+                        }
+                    }
+                });
             }
         });
     }
 
-    /**
-     * 拍照等
-     *
-     * @param callbackName
-     */
     @JavascriptInterface
-    public void nativeSelectPic(String selectType, String width, String height, String callbackName) {
-        Logger.d("selectType " + selectType + " callback: " + callbackName);
-        Logger.d("width " + width + " height: " + height);
-        if (StringUtil.isEmpty(selectType))
+    public void shareText(final String text, final String channels) {
+        if (TextUtils.isEmpty(text) || TextUtils.isEmpty(channels)) {
             return;
-
-        if (StringUtil.isEmpty(callbackName))
-            return;
-
-        mCameraCallBackName = callbackName;
-        try {
-            mCameraCallCutWidth = Integer.parseInt(width);
-            mCameraCallCutHeight = Integer.parseInt(height);
-        } catch (Exception e) {
-            mCameraCallCutWidth = 0;
-            mCameraCallCutHeight = 0;
         }
-        EventBus.getDefault().post(new WebViewNativeSelectPicEvent(mTag, selectType));
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                String[] channelArr = channels.split(",");
+                List<PlatFormBean> list = new ArrayList<>();
+                for (String channel : channelArr) {
+                    PlatFormBean platform = getPlatform(channel);
+                    if (platform != null) {
+                        list.add(platform);
+                    }
+                }
+                if (list.isEmpty()) {
+                    return;
+                }
+                SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
+                        .setText(text)
+                        .setPlatforms(list)
+                        .show();
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        if (dialog != null && dialog instanceof SharePlatformDialog) {
+                            ((SharePlatformDialog) dialog).onDestroy();
+                        }
+                    }
+                });
+            }
+        });
     }
 
+    @JavascriptInterface
+    public void toUserLoginPage() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                //TODO 一个类似iOS在游客模式下，弹出的登录对话框
+                Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
+                        .navigation(mActivity);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void userLogout() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                UserManager.getInstance(mActivity).logout();
+                EventBus.getDefault().post(new LogoutEvent());
+                HttpReqManager.getInstance().setUserId("");
+                HttpReqManager.getInstance().setToken("");
+                ActivityManager.getInstance().exitAllActivities();
+                Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
+                        .navigation(mActivity);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void setWebViewTitle(String title) {
+        if (TextUtils.isEmpty(title))
+            return;
+        EventBus.getDefault().post(new WebViewTitleTextEvent(mPageTag, title));
+    }
 
 }

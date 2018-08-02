@@ -5,12 +5,14 @@ public class WebViewRightButtonEvent {
 
     private String tag;
     private String message;
-    private String rightButtonCallBackName;//右侧按钮被点击回调方法名
+    private String callback;//右侧按钮被点击回调方法名
+    private String params;
 
-    public WebViewRightButtonEvent(String tag, String message, String rightButtonCallBackName) {
+    public WebViewRightButtonEvent(String tag, String message, String callback, String params) {
         this.tag = tag;
         this.message = message;
-        this.rightButtonCallBackName = rightButtonCallBackName;
+        this.callback = callback;
+        this.params = params;
     }
 
     public String getTag() {
@@ -29,11 +31,19 @@ public class WebViewRightButtonEvent {
         this.message = message;
     }
 
-    public String getRightButtonCallBackName() {
-        return rightButtonCallBackName;
+    public String getCallback() {
+        return callback;
     }
 
-    public void setRightButtonCallBackName(String rightButtonCallBackName) {
-        this.rightButtonCallBackName = rightButtonCallBackName;
+    public void setCallback(String callback) {
+        this.callback = callback;
+    }
+
+    public String getParams() {
+        return params;
+    }
+
+    public void setParams(String params) {
+        this.params = params;
     }
 }

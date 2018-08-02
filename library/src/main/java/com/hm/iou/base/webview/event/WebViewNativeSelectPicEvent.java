@@ -1,6 +1,8 @@
 package com.hm.iou.base.webview.event;
 
-
+/**
+ * 调用拍照、相册选取照片通知事件
+ */
 public class WebViewNativeSelectPicEvent {
 
     private String tag;

@@ -42,7 +42,6 @@ import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
-import com.hm.iou.base.webview.event.WebViewTitleBgColorEvent;
 import com.hm.iou.base.webview.event.WebViewTitleTextEvent;
 import com.hm.iou.logger.Logger;
 import com.hm.iou.tools.DensityUtil;
@@ -104,6 +103,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
     private String mPageTag;
     private WebViewJsObject mJsObj;
+
     private ImageCropper mImageCropper;
 
     @Override
@@ -231,6 +231,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     @Override
     protected void onResume() {
         super.onResume();
+        mWebView.evaluateJavascript("javascript:onResume()", null);
     }
 
     @Override
@@ -303,11 +304,15 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         mWebView.getSettings().setAllowFileAccess(true);
 //        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
-        mJsObj = getJsObject();
         mPageTag = System.currentTimeMillis() + "";
+        mJsObj = getJsObject();
         mJsObj.setPageTag(mPageTag);
+
         mWebView.addJavascriptInterface(mJsObj, "HMApplication");
         mWebView.getSettings().setGeolocationEnabled(true);
+
+        String ua = mWebView.getSettings().getUserAgentString();
+        mWebView.getSettings().setUserAgentString(ua + ";HMAndroidWebView");
 
         mWebView.setDownloadListener(new DownloadListener() {
             @Override
@@ -652,7 +657,17 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
      */
     protected void onPictureSelectSuccess(File file) {
         Logger.d("图片选择成功：" + file.getAbsolutePath());
+        StringBuilder sb = new StringBuilder();
+        sb.append("javascript:").append(mJsObj.getPicCallbackName());
+        sb.append("('").append(file.getAbsolutePath()).append("')");
+        String script = sb.toString();
+        Logger.d("图片获取成功：" + script);
+        mWebView.evaluateJavascript(script, new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
 
+            }
+        });
     }
 
     /**
@@ -661,8 +676,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
      * @param path
      */
     private void onSelectPhoto(String path) {
-        int width = mJsObj.getCameraCallCutWidth();
-        int height = mJsObj.getCameraCallCutHeight();
+        int width = mJsObj.getPicCropWidth();
+        int height = mJsObj.getPicCropHeight();
         //不进行裁剪操作
         if (width == 0 || height == 0) {
             compressPicture(path);
@@ -672,6 +687,9 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         mImageCropper.crop(path, width, height, false, "webviewcropper");
     }
 
+    /**
+     * 图片裁剪
+     */
     private void initImageCropper() {
         if (mImageCropper == null) {
             int displayDeviceHeight = getResources().getDisplayMetrics().heightPixels - DensityUtil.dip2px(this, 53);
@@ -691,6 +709,11 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         }
     }
 
+    /**
+     * 图片压缩
+     *
+     * @param path
+     */
     private void compressPicture(String path) {
         CompressPictureUtil.compressPic(this, path, new CompressPictureUtil.OnCompressListener() {
             @Override
@@ -708,7 +731,11 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         }
     }
 
-    //打开相册或者相机
+    /**
+     * 打开相册或者相机
+     *
+     * @param event
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventSelectPhoto(WebViewNativeSelectPicEvent event) {
         if (!StringUtil.getUnnullString(event.getTag()).equals(mPageTag)) {
@@ -730,7 +757,11 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         }
     }
 
-    //设置右侧按钮的点击事件
+    /**
+     * 设置导航栏右侧菜单
+     *
+     * @param event
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventSetRightBtn(final WebViewRightButtonEvent event) {
         if (StringUtil.getUnnullString(event.getTag()).equals(mPageTag)) {
@@ -738,8 +769,17 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
             mTopBar.setOnMenuClickListener(new HMTopBarView.OnTopBarMenuClickListener() {
                 @Override
                 public void onClickTextMenu() {
-                    String function = "javascript:" + event.getRightButtonCallBackName() + "()";
-                    mWebView.loadUrl(function);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("javascript:").append(event.getCallback());
+                    sb.append("('").append(StringUtil.getUnnullString(event.getParams())).append("')");
+                    String script = sb.toString();
+                    Logger.d("设置导航栏右侧菜单：" + script);
+                    mWebView.evaluateJavascript(script, new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+
+                        }
+                    });
                 }
 
                 @Override
@@ -747,19 +787,6 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
                 }
             });
-        }
-    }
-
-    //设置标题背景颜色
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEventUpdateTitleBg(WebViewTitleBgColorEvent event) {
-        if (StringUtil.getUnnullString(event.getTag()).equals(mPageTag)) {
-            try {
-                int color = Color.parseColor(event.getColorRGB());
-                mTopBar.setBackgroundColor(color);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 

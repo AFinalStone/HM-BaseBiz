@@ -22,4 +22,8 @@ public class HMConstants {
     public static final String EXTERNAL_CACHE_DIR = "54jietiao";
     public static final String IMAGE_CACHE_DIR = EXTERNAL_CACHE_DIR + File.separator + "image";
 
+    /**
+     * 专门用于WebView存储的SharedPreferences文件名
+     */
+    public static final String SP_WEBVIEW = "sp_webview";
 }
