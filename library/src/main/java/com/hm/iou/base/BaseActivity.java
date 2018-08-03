@@ -11,11 +11,13 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.base.mvp.MvpActivityPresenter;
+import com.hm.iou.base.utils.StatusBarUtil;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.router.Router;
 import com.hm.iou.sharedata.UserManager;
@@ -28,6 +30,8 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.lang.reflect.Field;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -137,12 +141,20 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
     protected void initStatusBarDarkFont(boolean isDarkFont) {
         //全屏
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (isDarkFont) {
-                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (StatusBarUtil.setXiaoMiStatusBarDarkFont(isDarkFont, this)) {
+
+            } else if (StatusBarUtil.setMeiZuStatusBarDarkFont(isDarkFont, getWindow())) {
+
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (isDarkFont) {
+                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                }
             }
         }
+
     }
+
 
     @Override
     public void showLoadingView() {

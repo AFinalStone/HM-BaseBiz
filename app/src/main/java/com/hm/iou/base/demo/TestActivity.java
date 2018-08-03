@@ -1,9 +1,14 @@
 package com.hm.iou.base.demo;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.view.Window;
 import android.widget.Button;
 
 import com.hm.iou.base.BaseActivity;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import butterknife.BindView;
 
