@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.hm.iou.base.BaseBizAppLike;
+import com.hm.iou.base.ImageGalleryActivity;
 import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
 import com.hm.iou.base.photo.SelectPicDialog;
@@ -52,7 +53,19 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, TestActivity.class));
+//                startActivity(new Intent(MainActivity.this, TestActivity.class));
+
+
+                Intent intent = new Intent(MainActivity.this, ImageGalleryActivity.class);
+                intent.putExtra(ImageGalleryActivity.EXTRA_KEY_INDEX, 2);
+                String[] arr = {
+                    "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1533305790597&di=ef0ce496ebbabdd6e5dde70b5ef7633e&imgtype=0&src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F225a5f3f75d1d4c59532704782eebd25d323fd801e57a-VlY5c4_fw658",
+                "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1533305790596&di=e3d8ec8fd9ab96c4e3414556a3e14c7d&imgtype=0&src=http%3A%2F%2Fztd00.photos.bdimg.com%2Fztd%2Fw%3D700%3Bq%3D50%2Fsign%3De7ebd10418dfa9ecfd2e541752eb863e%2F0823dd54564e9258c43135f69582d158ccbf4ea4.jpg",
+                        "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1533305790596&di=0fce5fa6d12454d8f67054a5e202ea02&imgtype=0&src=http%3A%2F%2Fs14.sinaimg.cn%2Fmw690%2F006LDoUHzy7auXE4s1L5d%26690",
+                        "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1533305790596&di=5c73639c6be7356a1403c397b81ddb3e&imgtype=0&src=http%3A%2F%2Fimg.19196.com%2Fuploads%2F151209%2F9-151209112042D8.jpg"
+                };
+                intent.putExtra(ImageGalleryActivity.EXTRA_KEY_IMAGES, arr);
+                startActivity(intent);
             }
         });
 

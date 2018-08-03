@@ -12,6 +12,7 @@ import android.webkit.JavascriptInterface;
 
 import com.google.gson.Gson;
 import com.hm.iou.base.ActivityManager;
+import com.hm.iou.base.ImageGalleryActivity;
 import com.hm.iou.base.constants.HMConstants;
 import com.hm.iou.base.file.FileUtil;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
@@ -363,6 +364,18 @@ public class WebViewJsObject {
         if (TextUtils.isEmpty(title))
             return;
         EventBus.getDefault().post(new WebViewTitleTextEvent(mPageTag, title));
+    }
+
+    @JavascriptInterface
+    public void viewLargeImage(String images, int index) {
+        if (TextUtils.isEmpty(images)) {
+            return;
+        }
+        String[] urlArr = images.split(",");
+        Intent intent = new Intent(mActivity, ImageGalleryActivity.class);
+        intent.putExtra(ImageGalleryActivity.EXTRA_KEY_INDEX, index);
+        intent.putExtra(ImageGalleryActivity.EXTRA_KEY_IMAGES, urlArr);
+        mActivity.startActivity(intent);
     }
 
 }
