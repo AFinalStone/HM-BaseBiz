@@ -25,6 +25,7 @@ import com.hm.iou.sharedata.UserManager;
 import com.hm.iou.sharedata.event.LogoutEvent;
 import com.hm.iou.sharedata.model.UserInfo;
 import com.hm.iou.socialshare.bean.PlatFormBean;
+import com.hm.iou.socialshare.business.UMShareUtil;
 import com.hm.iou.socialshare.business.view.SharePlatformDialog;
 import com.hm.iou.socialshare.dict.PlatformEnum;
 import com.hm.iou.tools.SPUtil;
@@ -53,10 +54,18 @@ public class WebViewJsObject {
     private int mPicCropWidth;          //拍照要进行裁切的宽度
     private int mPicCropHeight;         //拍照要进行裁切的高度
 
+    private UMShareUtil mUMShareUtil;
 
     public WebViewJsObject(Activity activity) {
         mActivity = activity;
         mHandler = new Handler(Looper.getMainLooper());
+    }
+
+    public void onDestroy() {
+        if (mUMShareUtil != null) {
+            mUMShareUtil.onDestroy();
+            mUMShareUtil = null;
+        }
     }
 
     public void setPageTag(String tag) {
@@ -226,6 +235,15 @@ public class WebViewJsObject {
                 if (list.isEmpty()) {
                     return;
                 }
+
+                if (list.size() == 1) {
+                    if (mUMShareUtil == null) {
+                        mUMShareUtil = new UMShareUtil(mActivity);
+                    }
+                    mUMShareUtil.sharePicture(list.get(0).getUMSharePlatform(), imageUrl);
+                    return;
+                }
+
                 SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setPicUrl(imageUrl)
                         .setPlatforms(list)
@@ -278,6 +296,14 @@ public class WebViewJsObject {
                 if (list.isEmpty()) {
                     return;
                 }
+                if (list.size() == 1) {
+                    if (mUMShareUtil == null) {
+                        mUMShareUtil = new UMShareUtil(mActivity);
+                    }
+                    mUMShareUtil.shareWebH5Url(list.get(0).getUMSharePlatform(), title, desc, url);
+                    return;
+                }
+
                 SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setWebUrlTitle(title)
                         .setWebUrlDesc(desc)
@@ -315,6 +341,14 @@ public class WebViewJsObject {
                 if (list.isEmpty()) {
                     return;
                 }
+                if (list.size() == 1) {
+                    if (mUMShareUtil == null) {
+                        mUMShareUtil = new UMShareUtil(mActivity);
+                    }
+                    mUMShareUtil.shareText(list.get(0).getUMSharePlatform(), text);
+                    return;
+                }
+
                 SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setText(text)
                         .setPlatforms(list)
