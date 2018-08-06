@@ -1,16 +1,20 @@
 package com.hm.iou.base;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.chrisbanes.photoview.PhotoView;
+import com.hm.iou.base.file.FileUtil;
 import com.hm.iou.base.mvp.MvpActivityPresenter;
 import com.hm.iou.tools.ImageLoader;
+import com.hm.iou.uikit.dialog.IOSAlertDialog;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -66,7 +70,29 @@ public class ImageGalleryActivity extends BaseActivity {
         outState.putInt(EXTRA_KEY_INDEX, mIndex);
     }
 
-    class ImageAdapter extends PagerAdapter {
+    private void showSavePhotoDialog(final String url) {
+        new IOSAlertDialog.Builder(this)
+                .setTitle("保存图片")
+                .setMessage("是否保存当前图片到本地？")
+                .setPositiveButtonTextColor(0xFF4A90E2)
+                .setNegativeButtonTextColor(0xFF000000)
+                .setPositiveButton("保存", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        FileUtil.savePicture(ImageGalleryActivity.this, url);
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    class ImageAdapter extends PagerAdapter implements View.OnLongClickListener {
 
         private Context mContext;
         private LinkedList<View> mViewCache;
@@ -124,8 +150,21 @@ public class ImageGalleryActivity extends BaseActivity {
             String url = mDatas.get(position);
             ImageLoader.getInstance(mContext).displayImage(url, view);
             container.addView(convertView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+            view.setTag(url);
+            view.setOnLongClickListener(this);
             return convertView;
         }
+
+        @Override
+        public boolean onLongClick(View v) {
+            String url = (String) v.getTag();
+            if (!TextUtils.isEmpty(url)) {
+                showSavePhotoDialog(url);
+            }
+            return true;
+        }
+
     }
 
 }
