@@ -12,8 +12,7 @@
         android:id="@+id/check_version"
         android:layout_width="150dip"
         android:layout_height="wrap_content"
-        android:text="检查更新"
-        />
+        android:text="检查更新" />
 
     <Button
         android:id="@+id/btn_test"
@@ -51,4 +50,9 @@
         android:layout_width="150dip"
         android:layout_height="150dip" />
 
+    <Button
+        android:id="@+id/btn_contacts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="打开手机通讯录" />
 </LinearLayout>

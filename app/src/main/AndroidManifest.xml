@@ -14,9 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
-            android:resizeableActivity="true"
-            >
+        <activity
+            android:name=".MainActivity"
+            android:resizeableActivity="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,6 +25,7 @@
         </activity>
 
         <activity android:name=".TestActivity" />
+        <activity android:name=".ContactsActivity" />
 
     </application>
 
