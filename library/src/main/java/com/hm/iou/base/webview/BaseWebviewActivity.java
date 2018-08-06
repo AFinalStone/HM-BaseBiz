@@ -243,6 +243,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        mJsObj.onDestroy();
         if (mWebViewContainer != null && mWebView != null)
             mWebViewContainer.removeView(mWebView);
         if (mWebView != null) {

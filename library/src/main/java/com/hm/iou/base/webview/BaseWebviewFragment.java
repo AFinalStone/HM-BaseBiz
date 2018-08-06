@@ -263,6 +263,9 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (mJsObj != null) {
+            mJsObj.onDestroy();
+        }
         EventBus.getDefault().unregister(this);
         if (mWebViewContainer != null && mWebView != null)
             mWebViewContainer.removeView(mWebView);
