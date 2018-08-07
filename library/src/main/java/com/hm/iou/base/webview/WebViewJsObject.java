@@ -442,36 +442,45 @@ public class WebViewJsObject {
             return;
         }
         try {
-            DialogConfig config = mGson.fromJson(configJson, DialogConfig.class);
-            if (config != null) {
-                if (config.getButtons() == null || config.getButtons().isEmpty()) {
-                    return;
-                }
-                IOSAlertDialog.Builder builder = new IOSAlertDialog.Builder(mActivity);
-                builder.setTitle(config.getTitle());
-                builder.setMessage(config.getMsg());
-                final List<DialogConfigButton> btnList = config.getButtons();
-                builder.setNegativeButton(btnList.get(0).getName(), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String callback = btnList.get(0).getCallback();
-                        if (!TextUtils.isEmpty(callback)) {
-                            mWebView.evaluateJavascript(callback, null);
-                        }
-                    }
-                });
-                if (btnList.size() > 1) {
-                    builder.setPositiveButton(btnList.get(1).getName(), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String callback = btnList.get(1).getCallback();
-                            if (!TextUtils.isEmpty(callback)) {
-                                mWebView.evaluateJavascript(callback, null);
-                            }
-                        }
-                    });
-                }
+            if (mGson == null) {
+                mGson = new Gson();
             }
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    DialogConfig config = mGson.fromJson(configJson, DialogConfig.class);
+                    if (config != null) {
+                        if (config.getButtons() == null || config.getButtons().isEmpty()) {
+                            return;
+                        }
+                        IOSAlertDialog.Builder builder = new IOSAlertDialog.Builder(mActivity);
+                        builder.setTitle(config.getTitle());
+                        builder.setMessage(config.getMsg());
+                        final List<DialogConfigButton> btnList = config.getButtons();
+                        builder.setNegativeButton(btnList.get(0).getName(), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String callback = btnList.get(0).getCallback();
+                                if (!TextUtils.isEmpty(callback)) {
+                                    mWebView.evaluateJavascript(callback + "()", null);
+                                }
+                            }
+                        });
+                        if (btnList.size() > 1) {
+                            builder.setPositiveButton(btnList.get(1).getName(), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String callback = btnList.get(1).getCallback();
+                                    if (!TextUtils.isEmpty(callback)) {
+                                        mWebView.evaluateJavascript(callback + "()", null);
+                                    }
+                                }
+                            });
+                        }
+                        builder.create().show();
+                    }
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
