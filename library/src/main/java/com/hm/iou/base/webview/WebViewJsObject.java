@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 
 import com.google.gson.Gson;
 import com.hm.iou.base.ActivityManager;
@@ -30,6 +31,8 @@ import com.hm.iou.socialshare.business.view.SharePlatformDialog;
 import com.hm.iou.socialshare.dict.PlatformEnum;
 import com.hm.iou.tools.SPUtil;
 import com.hm.iou.tools.SystemUtil;
+import com.hm.iou.tools.ToastUtil;
+import com.hm.iou.uikit.dialog.IOSAlertDialog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -46,6 +49,7 @@ public class WebViewJsObject {
 
     private Activity mActivity;
     private String mPageTag;            //用于表示该js object绑定的是哪个WebView
+    private WebView mWebView;
 
     private Handler mHandler;
     private volatile Gson mGson;
@@ -66,10 +70,15 @@ public class WebViewJsObject {
             mUMShareUtil.onDestroy();
             mUMShareUtil = null;
         }
+        mWebView = null;
     }
 
     public void setPageTag(String tag) {
         mPageTag = tag;
+    }
+
+    public void setWebView(WebView webView) {
+        mWebView = webView;
     }
 
     public String getPicCallbackName() {
@@ -401,15 +410,124 @@ public class WebViewJsObject {
     }
 
     @JavascriptInterface
-    public void viewLargeImage(String images, int index) {
+    public void viewLargeImage(final String images, final int index) {
         if (TextUtils.isEmpty(images)) {
             return;
         }
-        String[] urlArr = images.split(",");
-        Intent intent = new Intent(mActivity, ImageGalleryActivity.class);
-        intent.putExtra(ImageGalleryActivity.EXTRA_KEY_INDEX, index);
-        intent.putExtra(ImageGalleryActivity.EXTRA_KEY_IMAGES, urlArr);
-        mActivity.startActivity(intent);
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                String[] urlArr = images.split(",");
+                Intent intent = new Intent(mActivity, ImageGalleryActivity.class);
+                intent.putExtra(ImageGalleryActivity.EXTRA_KEY_INDEX, index);
+                intent.putExtra(ImageGalleryActivity.EXTRA_KEY_IMAGES, urlArr);
+                mActivity.startActivity(intent);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void toast(final String msg) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                ToastUtil.showMessage(mActivity, msg);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void showAlertDialog(final String configJson) {
+        if (TextUtils.isEmpty(configJson)) {
+            return;
+        }
+        try {
+            DialogConfig config = mGson.fromJson(configJson, DialogConfig.class);
+            if (config != null) {
+                if (config.getButtons() == null || config.getButtons().isEmpty()) {
+                    return;
+                }
+                IOSAlertDialog.Builder builder = new IOSAlertDialog.Builder(mActivity);
+                builder.setTitle(config.getTitle());
+                builder.setMessage(config.getMsg());
+                final List<DialogConfigButton> btnList = config.getButtons();
+                builder.setNegativeButton(btnList.get(0).getName(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String callback = btnList.get(0).getCallback();
+                        if (!TextUtils.isEmpty(callback)) {
+                            mWebView.evaluateJavascript(callback, null);
+                        }
+                    }
+                });
+                if (btnList.size() > 1) {
+                    builder.setPositiveButton(btnList.get(1).getName(), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String callback = btnList.get(1).getCallback();
+                            if (!TextUtils.isEmpty(callback)) {
+                                mWebView.evaluateJavascript(callback, null);
+                            }
+                        }
+                    });
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static class DialogConfig {
+
+        private String title;
+        private String msg;
+        private List<DialogConfigButton> buttons;
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getMsg() {
+            return msg;
+        }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+
+        public List<DialogConfigButton> getButtons() {
+            return buttons;
+        }
+
+        public void setButtons(List<DialogConfigButton> buttons) {
+            this.buttons = buttons;
+        }
+    }
+
+    private static class DialogConfigButton {
+
+        private String name;
+        private String callback;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCallback() {
+            return callback;
+        }
+
+        public void setCallback(String callback) {
+            this.callback = callback;
+        }
     }
 
 }

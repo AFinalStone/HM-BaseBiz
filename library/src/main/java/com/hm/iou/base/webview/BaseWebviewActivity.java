@@ -308,6 +308,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         mPageTag = System.currentTimeMillis() + "";
         mJsObj = getJsObject();
         mJsObj.setPageTag(mPageTag);
+        mJsObj.setWebView(mWebView);
 
         mWebView.addJavascriptInterface(mJsObj, "HMApplication");
         mWebView.getSettings().setGeolocationEnabled(true);

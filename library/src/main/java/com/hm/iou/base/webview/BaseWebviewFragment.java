@@ -331,6 +331,7 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
         mJsObj = getJsObject();
         mPageTag = System.currentTimeMillis() + "";
         mJsObj.setPageTag(mPageTag);
+        mJsObj.setWebView(mWebView);
         mWebView.addJavascriptInterface(mJsObj, "HMApplication");
         mWebView.getSettings().setGeolocationEnabled(true);
 
