@@ -536,12 +536,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                super.onReceivedSslError(view, handler, error);
-                if (!mInited) {
-
-                } else {
-                    handler.proceed();
-                }
+                handler.proceed();
             }
 
             @Override
@@ -584,7 +579,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
                 if ("about:blank".equals(url)) {
                     return false; // 不需要处理空白页
                 }
-//                launchBrowser(BaseWebviewActivity.this, url);
+                launchBrowser(BaseWebviewActivity.this, url);
                 return false;
             }
 
