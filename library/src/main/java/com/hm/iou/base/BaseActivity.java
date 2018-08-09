@@ -3,7 +3,6 @@ package com.hm.iou.base;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,13 +10,12 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.base.mvp.MvpActivityPresenter;
 import com.hm.iou.base.utils.StatusBarUtil;
+import com.hm.iou.base.utils.TraceUtil;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.router.Router;
 import com.hm.iou.sharedata.UserManager;
@@ -30,8 +28,6 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
-
-import java.lang.reflect.Field;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -217,6 +213,7 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
                 .setPositiveButton("重新登录", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        TraceUtil.onEvent(mContext, "err_login_other_place");
                         exitAndToLoginPage();
                     }
                 })
@@ -247,6 +244,7 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
                 .setNegativeButton("退出账号", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        TraceUtil.onEvent(mContext, "err_black_name");
                         exitAndToLoginPage();
                     }
                 })

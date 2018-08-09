@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import com.hm.iou.base.R;
@@ -213,13 +212,41 @@ public class PermissionUtil {
                 "我们需要获得该权限，才能为您提供智能日期提醒服务。", listener);
     }
 
-    public static void showCameraRemindDialog(Context context, OnPermissionDialogClick listener) {
+    public static void showCameraRemindDialog(final Context context, final OnPermissionDialogClick listener) {
         showPermissionRemindDialog(context, R.mipmap.base_permission_camera, "开启摄像权限",
-                "我们需要获得该权限，才能为您提供拍摄照片服务及扫一扫功能。", listener);
+                "我们需要获得该权限，才能为您提供拍摄照片服务及扫一扫功能。", new OnPermissionDialogClick() {
+                    @Override
+                    public void onPositiveBtnClick() {
+                        TraceUtil.onEvent(context, "perm_camera_allow");
+                        if (listener != null)
+                            listener.onPositiveBtnClick();
+                    }
+
+                    @Override
+                    public void onNegativeBtnClick() {
+                        TraceUtil.onEvent(context, "perm_camera_disallow");
+                        if (listener != null)
+                            listener.onNegativeBtnClick();
+                    }
+                });
     }
 
-    public static void showStorageRemindDialog(Context context, OnPermissionDialogClick listener) {
+    public static void showStorageRemindDialog(final Context context, final OnPermissionDialogClick listener) {
         showPermissionRemindDialog(context, R.mipmap.base_permission_album, "开启读写手机存储权限",
-                "我们需要获得该权限，才能为您提供从相册选取照片、拍摄照片及下载分享等功能。", listener);
+                "我们需要获得该权限，才能为您提供从相册选取照片、拍摄照片及下载分享等功能。", new OnPermissionDialogClick() {
+                    @Override
+                    public void onPositiveBtnClick() {
+                        TraceUtil.onEvent(context, "perm_album_allow");
+                        if (listener != null)
+                            listener.onPositiveBtnClick();
+                    }
+
+                    @Override
+                    public void onNegativeBtnClick() {
+                        TraceUtil.onEvent(context, "perm_album_disallow");
+                        if (listener != null)
+                            listener.onNegativeBtnClick();
+                    }
+                });
     }
 }

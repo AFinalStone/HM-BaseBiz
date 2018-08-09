@@ -3,7 +3,6 @@ package com.hm.iou.base;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
@@ -13,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.base.mvp.MvpFragmentPresenter;
+import com.hm.iou.base.utils.TraceUtil;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.router.Router;
 import com.hm.iou.sharedata.UserManager;
@@ -196,6 +196,7 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
                 .setPositiveButton("重新登录", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        TraceUtil.onEvent(mActivity, "err_login_other_place");
                         exitAndToLoginPage();
                     }
                 })
@@ -216,6 +217,7 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
                 .setNegativeButton("退出账号", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        TraceUtil.onEvent(mActivity, "err_black_name");
                         exitAndToLoginPage();
                     }
                 })
