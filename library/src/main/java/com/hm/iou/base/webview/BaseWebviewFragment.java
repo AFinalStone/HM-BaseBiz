@@ -558,7 +558,6 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
 
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                super.onReceivedSslError(view, handler, error);
                 handler.proceed();
             }
 
