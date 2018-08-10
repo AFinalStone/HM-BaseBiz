@@ -21,6 +21,12 @@
         android:text="test" />
 
     <Button
+        android:id="@+id/btn_testStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="状态栏" />
+
+    <Button
         android:id="@+id/btn_tes2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

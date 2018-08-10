@@ -138,11 +138,13 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
         //全屏
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (StatusBarUtil.setMeiZuStatusBarDarkFont(isDarkFont, getWindow())) {
+                return;
+            }
             if (StatusBarUtil.setXiaoMiStatusBarDarkFont(isDarkFont, this)) {
 
-            } else if (StatusBarUtil.setMeiZuStatusBarDarkFont(isDarkFont, getWindow())) {
-
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (isDarkFont) {
                     getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                 }
