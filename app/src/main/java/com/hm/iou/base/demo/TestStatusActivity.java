@@ -16,7 +16,7 @@ import butterknife.BindView;
  * Created by hjy on 18/4/26.<br>
  */
 
-public class TestActivity extends BaseActivity<TestPresenter> implements TestContract.View {
+public class TestStatusActivity extends BaseActivity<TestPresenter> implements TestContract.View {
 
     @BindView(R.id.btn_test)
     Button mBtnTest;
