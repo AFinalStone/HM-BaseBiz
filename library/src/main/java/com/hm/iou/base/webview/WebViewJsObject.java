@@ -140,6 +140,18 @@ public class WebViewJsObject {
     }
 
     @JavascriptInterface
+    public void finishView() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mActivity != null) {
+                    mActivity.finish();
+                }
+            }
+        });
+    }
+
+    @JavascriptInterface
     public void callPhone(final String phone) {
         mHandler.post(new Runnable() {
             @Override
