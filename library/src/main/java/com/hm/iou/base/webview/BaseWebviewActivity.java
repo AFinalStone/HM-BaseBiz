@@ -151,7 +151,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         loadUrl();
     }
 
-    private void initViews() {
+    protected void initViews() {
         if ("true".equals(mShowTitle)) {
             if (!TextUtils.isEmpty(mTitle)) {
                 mTopBar.setTitle(mTitle);
