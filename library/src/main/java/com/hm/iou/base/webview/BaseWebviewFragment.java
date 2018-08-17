@@ -40,6 +40,7 @@ import com.hm.iou.base.mvp.MvpFragmentPresenter;
 import com.hm.iou.base.photo.CompressPictureUtil;
 import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
+import com.hm.iou.base.webview.event.SelectCityEvent;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
 import com.hm.iou.base.webview.event.WebViewTitleTextEvent;
@@ -97,6 +98,7 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
     private static final int REQ_CODE_FILE_CHOOSER = 100;
     private static final int REQ_CDOE_CAMERA = 101;
     private static final int REQ_CODE_ALBUM = 102;
+    private static final int REQ_SELECT_CITY = 103;
 
     private static final FrameLayout.LayoutParams COVER_SCREEN_PARAMS = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -308,6 +310,20 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
                     return;
                 }
                 onSelectPhoto(path);
+            }
+        } else if (requestCode == REQ_SELECT_CITY) {
+            if (resultCode == RESULT_OK && data != null) {
+                //获取城市编码
+                String cityCode = data.getStringExtra("select_city_code");
+                //获取城市名称
+                String cityName = data.getStringExtra("select_city_name");
+                Logger.d("城市编码" + cityCode + "城市名称" + cityName);
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("javascript:").append(mJsObj.getSelectCityCallbackName());
+                sb.append("('").append(cityName).append("')");
+                String script = sb.toString();
+                mWebView.evaluateJavascript(script, null);
             }
         }
     }
@@ -800,6 +816,24 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
 
                 }
             });
+        }
+    }
+
+    /**
+     * 选择城市
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventSelectCity(SelectCityEvent event) {
+        if (StringUtil.getUnnullString(event.getTag()).equals(mPageTag)) {
+            try {
+                //TODO 路由里没有支持通过Fragment来跳转，后续需要完善
+                Intent intent = new Intent(getActivity(), Class.forName("com.hm.iou.cityselect.CitySelectActivity"));
+                startActivityForResult(intent, REQ_SELECT_CITY);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

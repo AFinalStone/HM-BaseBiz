@@ -16,6 +16,7 @@ import com.hm.iou.base.ActivityManager;
 import com.hm.iou.base.ImageGalleryActivity;
 import com.hm.iou.base.constants.HMConstants;
 import com.hm.iou.base.file.FileUtil;
+import com.hm.iou.base.webview.event.SelectCityEvent;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
 import com.hm.iou.base.webview.event.WebViewTitleTextEvent;
@@ -57,6 +58,7 @@ public class WebViewJsObject {
     private String mPicCallbackName;    //拍照等返回回调H5的方法名
     private int mPicCropWidth;          //拍照要进行裁切的宽度
     private int mPicCropHeight;         //拍照要进行裁切的高度
+    private String mSelectCityCallbackName; //选择城市之后的回调函数名
 
     private UMShareUtil mUMShareUtil;
 
@@ -91,6 +93,10 @@ public class WebViewJsObject {
 
     public int getPicCropHeight() {
         return mPicCropHeight;
+    }
+
+    public String getSelectCityCallbackName() {
+        return mSelectCityCallbackName;
     }
 
     @JavascriptInterface
@@ -496,6 +502,14 @@ public class WebViewJsObject {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @JavascriptInterface
+    public void selectCity(String callback) {
+        if (TextUtils.isEmpty(callback))
+            return;
+        mSelectCityCallbackName = callback;
+        EventBus.getDefault().post(new SelectCityEvent(mPageTag));
     }
 
     private static class DialogConfig {

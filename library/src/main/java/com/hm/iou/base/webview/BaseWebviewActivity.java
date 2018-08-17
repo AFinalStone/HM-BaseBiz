@@ -40,10 +40,12 @@ import com.hm.iou.base.mvp.MvpActivityPresenter;
 import com.hm.iou.base.photo.CompressPictureUtil;
 import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
+import com.hm.iou.base.webview.event.SelectCityEvent;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
 import com.hm.iou.base.webview.event.WebViewTitleTextEvent;
 import com.hm.iou.logger.Logger;
+import com.hm.iou.router.Router;
 import com.hm.iou.tools.DensityUtil;
 import com.hm.iou.tools.FileUtil;
 import com.hm.iou.tools.NetStateUtil;
@@ -77,6 +79,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     private static final int REQ_CODE_FILE_CHOOSER = 100;
     private static final int REQ_CDOE_CAMERA = 101;
     private static final int REQ_CODE_ALBUM = 102;
+    private static final int REQ_SELECT_CITY = 103;
 
     private static final FrameLayout.LayoutParams COVER_SCREEN_PARAMS = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -287,6 +290,20 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
                     return;
                 }
                 onSelectPhoto(path);
+            }
+        } else if (requestCode == REQ_SELECT_CITY) {
+            if (resultCode == RESULT_OK && data != null) {
+                //获取城市编码
+                String cityCode = data.getStringExtra("select_city_code");
+                //获取城市名称
+                String cityName = data.getStringExtra("select_city_name");
+                Logger.d("城市编码" + cityCode + "城市名称" + cityName);
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("javascript:").append(mJsObj.getSelectCityCallbackName());
+                sb.append("('").append(cityName).append("')");
+                String script = sb.toString();
+                mWebView.evaluateJavascript(script, null);
             }
         }
     }
@@ -797,6 +814,19 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
                 }
             });
+        }
+    }
+
+    /**
+     * 选择城市
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventSelectCity(SelectCityEvent event) {
+        if (StringUtil.getUnnullString(event.getTag()).equals(mPageTag)) {
+            Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/city/index")
+                    .navigation(this, REQ_SELECT_CITY);
         }
     }
 
