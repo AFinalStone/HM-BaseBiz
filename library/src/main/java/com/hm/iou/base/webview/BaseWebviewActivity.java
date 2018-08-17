@@ -58,6 +58,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -519,6 +521,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
         mWebView.setWebViewClient(new WebViewClient() {
 
+            Pattern pattern = Pattern.compile("^https://open\\.weixin\\.qq\\.com/connect/oauth2/authorize.*");
+
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
@@ -569,11 +573,20 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
                 if (url == null) {
                     return true;
                 }
-                if (Uri.parse(url).getScheme().startsWith("file")) {
+                Uri uri = Uri.parse(url);
+                if (uri.getScheme().startsWith("file")) {
                     // 如果是本地加载的话，直接用当期浏览器加载
                     return false;
                 }
-                if (Uri.parse(url).getScheme().startsWith("http")) {
+                if (uri.getScheme().startsWith("http")) {
+                    Matcher matcher = pattern.matcher(url);
+                    if (matcher.matches()) {
+                        String redirectUri = uri.getQueryParameter("redirect_uri");
+                        if (!TextUtils.isEmpty(redirectUri) && redirectUri.startsWith("http")) {
+                            mWebView.loadUrl(redirectUri);
+                            return true;
+                        }
+                    }
                     return false;
                 }
                 if ("about:blank".equals(url)) {

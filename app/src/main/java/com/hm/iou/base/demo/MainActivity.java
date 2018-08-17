@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, BaseWebviewActivity.class);
-                intent.putExtra("url", "http://192.168.1.217/appWebView/index.html");
+                intent.putExtra("url", "https://www.54jietiao.com");
                 startActivity(intent);
             }
         });
