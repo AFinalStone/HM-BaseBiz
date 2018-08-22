@@ -15,6 +15,7 @@ import com.hm.iou.base.BaseBizAppLike;
 import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
 import com.hm.iou.base.photo.SelectPicDialog;
+import com.hm.iou.base.utils.InstallUtil;
 import com.hm.iou.base.version.CheckVersionResBean;
 import com.hm.iou.base.version.VersionApi;
 import com.hm.iou.base.webview.BaseWebviewActivity;
@@ -108,18 +109,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.check_version).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                VersionApi.checkVersion()
-                        .subscribe(new Consumer<BaseResponse<CheckVersionResBean>>() {
-                            @Override
-                            public void accept(BaseResponse<CheckVersionResBean> checkVersionResBeanBaseResponse) throws Exception {
-
-                            }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-
-                            }
-                        });
+                String path = SystemUtil.getDownloadFilePath("条管家.apk");
+                InstallUtil.installNormal(MainActivity.this, path);
             }
         });
 
