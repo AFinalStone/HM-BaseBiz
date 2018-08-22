@@ -34,7 +34,7 @@ public class StatusBarUtil {
             extraFlagField.invoke(activity.getWindow(), isDarkFont ? darkModeFlag : 0, darkModeFlag);
             result = true;
         } catch (Exception e) {
-            Logger.e("XiaoMi", "setStatusBarDarkIcon: failed");
+//            Logger.e("XiaoMi", "setStatusBarDarkIcon: failed");
         }
         return result;
     }
@@ -66,7 +66,7 @@ public class StatusBarUtil {
                 window.setAttributes(lp);
                 result = true;
             } catch (Exception e) {
-                Logger.e("MeiZu", "setStatusBarDarkIcon: failed");
+//                Logger.e("MeiZu", "setStatusBarDarkIcon: failed");
             }
         }
         return result;
