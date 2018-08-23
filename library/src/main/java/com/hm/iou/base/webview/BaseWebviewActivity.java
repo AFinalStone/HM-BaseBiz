@@ -40,6 +40,7 @@ import com.hm.iou.base.mvp.MvpActivityPresenter;
 import com.hm.iou.base.photo.CompressPictureUtil;
 import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
+import com.hm.iou.base.webview.event.JsNotifyEvent;
 import com.hm.iou.base.webview.event.SelectCityEvent;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
@@ -669,6 +670,16 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     }
 
     /**
+     * 监听到js的通知事件
+     *
+     * @param eventName
+     * @param params
+     */
+    protected void onReceiveJsNotifyEvent(String eventName, String params) {
+
+    }
+
+    /**
      * 获取js注入对象， 如果WebView需要处理特殊业务，子类Override该方法即可
      *
      * @return 默认返回基础的js注入对象
@@ -827,6 +838,13 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         if (StringUtil.getUnnullString(event.getTag()).equals(mPageTag)) {
             Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/city/index")
                     .navigation(this, REQ_SELECT_CITY);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventJsNotifyEvent(JsNotifyEvent event) {
+        if (StringUtil.getUnnullString(event.getPageTag()).equals(mPageTag)) {
+            onReceiveJsNotifyEvent(event.getEventName(), event.getParams());
         }
     }
 
