@@ -112,6 +112,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
     private ImageCropper mImageCropper;
 
+    protected boolean mShowCustomWebView;
+
     @Override
     protected int getLayoutId() {
         return R.layout.base_activity_comm_webview;
@@ -311,9 +313,16 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
     @SuppressLint("SetJavaScriptEnabled")
     private void initWebview() {
-        mWebView = new WebView(this);
-        mWebViewContainer.removeAllViews();
-        mWebViewContainer.addView(mWebView);
+        mWebView = getWebView();
+        if (mWebView == null) {
+            mWebView = new WebView(this);
+        } else {
+            mShowCustomWebView = true;
+        }
+        if (!mShowCustomWebView) {
+            mWebViewContainer.removeAllViews();
+            mWebViewContainer.addView(mWebView);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
@@ -347,6 +356,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
+                BaseWebviewActivity.this.onProgressChanged(view, newProgress);
                 if (mPbWebview != null && newProgress > 0) {
                     if (newProgress == 100) {
                         mPbWebview.setVisibility(View.GONE);
@@ -505,6 +515,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
             @Override
             public View getVideoLoadingProgressView() {
+                if (mShowCustomWebView)
+                    return null;
                 FrameLayout frameLayout = new FrameLayout(BaseWebviewActivity.this);
                 frameLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT));
@@ -514,6 +526,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
                 super.onShowCustomView(view, callback);
+                if (mShowCustomWebView)
+                    return;
 
                 // if a view already exists then immediately terminate the new one
                 if (mCustomView != null) {
@@ -532,6 +546,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
             @Override
             public void onHideCustomView() {
                 super.onHideCustomView();
+                if (mShowCustomWebView)
+                    return;
                 hideCustomView();
             }
 
@@ -646,6 +662,19 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     private void setStatusBarVisibility(boolean visible) {
         int flag = visible ? 0 : WindowManager.LayoutParams.FLAG_FULLSCREEN;
         getWindow().setFlags(flag, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    /**
+     * 子类可覆盖重写该方法，如果返回不为空，则需要将该WebView加入到mWebViewContainer中或其他。
+     *
+     * @return
+     */
+    protected WebView getWebView() {
+        return null;
+    }
+
+    protected void onProgressChanged(WebView view, int progress) {
+
     }
 
     /**
