@@ -16,6 +16,7 @@ import com.hm.iou.base.ActivityManager;
 import com.hm.iou.base.ImageGalleryActivity;
 import com.hm.iou.base.constants.HMConstants;
 import com.hm.iou.base.file.FileUtil;
+import com.hm.iou.base.webview.event.JsNotifyEvent;
 import com.hm.iou.base.webview.event.SelectCityEvent;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
@@ -510,6 +511,13 @@ public class WebViewJsObject {
             return;
         mSelectCityCallbackName = callback;
         EventBus.getDefault().post(new SelectCityEvent(mPageTag));
+    }
+
+    @JavascriptInterface
+    public void notifyEvent(String eventName, String params) {
+        if (TextUtils.isEmpty(eventName))
+            return;
+        EventBus.getDefault().post(new JsNotifyEvent(eventName, params, mPageTag));
     }
 
     private static class DialogConfig {

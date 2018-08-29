@@ -27,6 +27,7 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -40,6 +41,7 @@ import com.hm.iou.base.mvp.MvpFragmentPresenter;
 import com.hm.iou.base.photo.CompressPictureUtil;
 import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
+import com.hm.iou.base.webview.event.JsNotifyEvent;
 import com.hm.iou.base.webview.event.SelectCityEvent;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
@@ -59,6 +61,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -621,6 +624,26 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
                 return false;
             }
 
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                return super.shouldInterceptRequest(view, request);
+            }
+
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                if (url.startsWith("http://hmimg")) {
+                    try {
+                        String imgPath = url.replace("http://hmimg", "");
+                        FileInputStream is = new FileInputStream(new File(imgPath));
+                        WebResourceResponse response = new WebResourceResponse("image/*", "UTF-8", is);
+                        return response;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                return super.shouldInterceptRequest(view, url);
+            }
+
         });
     }
 
@@ -673,6 +696,16 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
      * @param url  地址
      */
     protected void onPageFinished(WebView view, String url) {
+
+    }
+
+    /**
+     * 监听到js的通知事件
+     *
+     * @param eventName
+     * @param params
+     */
+    protected void onReceiveJsNotifyEvent(String eventName, String params) {
 
     }
 
@@ -834,6 +867,13 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventJsNotifyEvent(JsNotifyEvent event) {
+        if (StringUtil.getUnnullString(event.getPageTag()).equals(mPageTag)) {
+            onReceiveJsNotifyEvent(event.getEventName(), event.getParams());
         }
     }
 

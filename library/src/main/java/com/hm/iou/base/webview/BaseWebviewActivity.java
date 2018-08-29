@@ -27,6 +27,7 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -40,6 +41,7 @@ import com.hm.iou.base.mvp.MvpActivityPresenter;
 import com.hm.iou.base.photo.CompressPictureUtil;
 import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
+import com.hm.iou.base.webview.event.JsNotifyEvent;
 import com.hm.iou.base.webview.event.SelectCityEvent;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
@@ -60,6 +62,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -110,6 +113,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     private WebViewJsObject mJsObj;
 
     private ImageCropper mImageCropper;
+
+    protected boolean mShowCustomWebView;
 
     @Override
     protected int getLayoutId() {
@@ -310,9 +315,16 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
     @SuppressLint("SetJavaScriptEnabled")
     private void initWebview() {
-        mWebView = new WebView(this);
-        mWebViewContainer.removeAllViews();
-        mWebViewContainer.addView(mWebView);
+        mWebView = getWebView();
+        if (mWebView == null) {
+            mWebView = new WebView(this);
+        } else {
+            mShowCustomWebView = true;
+        }
+        if (!mShowCustomWebView) {
+            mWebViewContainer.removeAllViews();
+            mWebViewContainer.addView(mWebView);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
@@ -346,6 +358,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
+                BaseWebviewActivity.this.onProgressChanged(view, newProgress);
                 if (mPbWebview != null && newProgress > 0) {
                     if (newProgress == 100) {
                         mPbWebview.setVisibility(View.GONE);
@@ -504,6 +517,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
             @Override
             public View getVideoLoadingProgressView() {
+                if (mShowCustomWebView)
+                    return null;
                 FrameLayout frameLayout = new FrameLayout(BaseWebviewActivity.this);
                 frameLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT));
@@ -513,6 +528,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
                 super.onShowCustomView(view, callback);
+                if (mShowCustomWebView)
+                    return;
 
                 // if a view already exists then immediately terminate the new one
                 if (mCustomView != null) {
@@ -531,6 +548,8 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
             @Override
             public void onHideCustomView() {
                 super.onHideCustomView();
+                if (mShowCustomWebView)
+                    return;
                 hideCustomView();
             }
 
@@ -613,6 +632,25 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
                 return false;
             }
 
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                return super.shouldInterceptRequest(view, request);
+            }
+
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                if (url.startsWith("http://hmimg")) {
+                    try {
+                        String imgPath = url.replace("http://hmimg", "");
+                        FileInputStream is = new FileInputStream(new File(imgPath));
+                        WebResourceResponse response = new WebResourceResponse("image/*", "UTF-8", is);
+                        return response;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                return super.shouldInterceptRequest(view, url);
+            }
         });
     }
 
@@ -648,6 +686,19 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     }
 
     /**
+     * 子类可覆盖重写该方法，如果返回不为空，则需要将该WebView加入到mWebViewContainer中或其他。
+     *
+     * @return
+     */
+    protected WebView getWebView() {
+        return null;
+    }
+
+    protected void onProgressChanged(WebView view, int progress) {
+
+    }
+
+    /**
      * 监听网页加载进度，子类可根据需要监听进度
      *
      * @param view    WebView
@@ -665,6 +716,16 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
      * @param url  地址
      */
     protected void onPageFinished(WebView view, String url) {
+
+    }
+
+    /**
+     * 监听到js的通知事件
+     *
+     * @param eventName
+     * @param params
+     */
+    protected void onReceiveJsNotifyEvent(String eventName, String params) {
 
     }
 
@@ -827,6 +888,13 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         if (StringUtil.getUnnullString(event.getTag()).equals(mPageTag)) {
             Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/city/index")
                     .navigation(this, REQ_SELECT_CITY);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventJsNotifyEvent(JsNotifyEvent event) {
+        if (StringUtil.getUnnullString(event.getPageTag()).equals(mPageTag)) {
+            onReceiveJsNotifyEvent(event.getEventName(), event.getParams());
         }
     }
 
