@@ -33,11 +33,25 @@ public interface BaseContract {
         void toastMessage(String msg);
 
         /**
+         * 错误信息提示
+         *
+         * @param msg
+         */
+        void toastErrorMessage(String msg);
+
+        /**
          * 显示Toast信息
          *
          * @param resId 资源id
          */
         void toastMessage(int resId);
+
+        /**
+         * 错误信息提示
+         *
+         * @param resId
+         */
+        void toastErrorMessage(int resId);
 
         /**
          * 关闭当前页面

@@ -183,7 +183,17 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
     }
 
     @Override
+    public void toastErrorMessage(String msg) {
+        ToastUtil.showMessage(this, msg);
+    }
+
+    @Override
     public void toastMessage(int resId) {
+        ToastUtil.showMessage(this, resId);
+    }
+
+    @Override
+    public void toastErrorMessage(int resId) {
         ToastUtil.showMessage(this, resId);
     }
 

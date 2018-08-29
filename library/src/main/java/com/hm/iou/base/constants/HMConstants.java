@@ -24,6 +24,8 @@ public class HMConstants {
 
     public static String FILE_PROVIDER_SUFFIX = ".fileprovider";
 
+    public static final String URL_BEGIN_BY_FILE = "file:///";
+
     /**
      * 专门用于WebView存储的SharedPreferences文件名
      */

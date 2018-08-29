@@ -152,7 +152,22 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
     }
 
     @Override
+    public void toastErrorMessage(String msg) {
+        if (getActivity() == null)
+            return;
+        ToastUtil.showMessage(getActivity(), msg);
+    }
+
+    @Override
     public void toastMessage(int resId) {
+        if (getActivity() == null)
+            return;
+        ToastUtil.showMessage(getActivity(), resId);
+    }
+
+
+    @Override
+    public void toastErrorMessage(int resId) {
         if (getActivity() == null)
             return;
         ToastUtil.showMessage(getActivity(), resId);
