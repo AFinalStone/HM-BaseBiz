@@ -8,6 +8,7 @@ public class FileUploadResult {
 
     private String fileId;
     private String filePath;
+    private String fileUrl;
 
     public String getFileId() {
         return fileId;
@@ -23,5 +24,15 @@ public class FileUploadResult {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+        this.fileUrl = filePath;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+        this.filePath = fileUrl;
     }
 }

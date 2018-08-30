@@ -7,12 +7,11 @@ import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.network.interceptor.file.ProgressListener;
 import com.hm.iou.sharedata.model.BaseResponse;
 
-import org.reactivestreams.Publisher;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 import io.reactivex.Flowable;
@@ -30,6 +29,13 @@ import okhttp3.ResponseBody;
 
 public class FileApi {
 
+    /**
+     * 旧的上传文件/图片的方式，以后不再使用，这里保留兼容老的代码
+     *
+     * @param file
+     * @param map
+     * @return
+     */
     public static Flowable<BaseResponse<FileUploadResult>> uploadFile(File file, Map<String, Object> map) {
         RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         MultipartBody.Part partFile = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
@@ -37,6 +43,50 @@ public class FileApi {
                 .uploadImage(partFile, map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /**
+     * 上传文件
+     *
+     * @param file
+     * @param bizType 文件所属业务类型
+     * @return
+     */
+    public static Flowable<BaseResponse<FileUploadResult>> uploadFile(File file, int bizType) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("bizType", bizType);
+        map.put("fileType", 0);
+        return upload(file, map);
+    }
+
+    /**
+     * 上传文件/图片
+     *
+     * @param file
+     * @param map
+     * @return
+     */
+    public static Flowable<BaseResponse<FileUploadResult>> upload(File file, Map<String, Object> map) {
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part partFile = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+        return HttpReqManager.getInstance().getService(FileService.class)
+                .upload(partFile, map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /**
+     * 上传图片
+     *
+     * @param file
+     * @param bizType 图片所属业务类型
+     * @return
+     */
+    public static Flowable<BaseResponse<FileUploadResult>> uploadImage(File file, int bizType) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("bizType", bizType);
+        map.put("fileType", 1);
+        return upload(file, map);
     }
 
 

@@ -1,36 +1,40 @@
 package com.hm.iou.base.demo;
 
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.hm.iou.base.BaseBizAppLike;
+import com.hm.iou.base.file.FileApi;
+import com.hm.iou.base.file.FileUploadResult;
+import com.hm.iou.base.photo.CompressPictureUtil;
 import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
 import com.hm.iou.base.photo.SelectPicDialog;
 import com.hm.iou.base.utils.InstallUtil;
-import com.hm.iou.base.version.CheckVersionResBean;
-import com.hm.iou.base.version.VersionApi;
+import com.hm.iou.base.utils.RxUtil;
 import com.hm.iou.base.webview.BaseWebviewActivity;
 import com.hm.iou.logger.Logger;
 import com.hm.iou.network.HttpReqManager;
-import com.hm.iou.network.HttpRequestConfig;
 import com.hm.iou.sharedata.UserManager;
 import com.hm.iou.sharedata.model.BaseResponse;
+import com.hm.iou.sharedata.model.UserInfo;
 import com.hm.iou.tools.DensityUtil;
-import com.hm.iou.tools.SPUtil;
 import com.hm.iou.tools.SystemUtil;
+import com.hm.iou.tools.ToastUtil;
+import com.sina.weibo.sdk.utils.MD5;
 
-import java.util.UUID;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,15 +46,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Logger.init(this, true);
-        BaseBizAppLike baseBizAppLike = new BaseBizAppLike();
-        baseBizAppLike.onCreate(this);
-        baseBizAppLike.initServer("https://testapi.54jietiao.com",
-                "https://testapi.54jietiao.com",
-                "https://testapi.54jietiao.com");
-        initNetwork();
-
-
         findViewById(R.id.btn_test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         findViewById(R.id.btn_testStatus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,6 +109,18 @@ public class MainActivity extends AppCompatActivity {
                 InstallUtil.installNormal(MainActivity.this, path);
             }
         });
+        findViewById(R.id.btn_login).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                login();
+            }
+        });
+        findViewById(R.id.btn_upload).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PhotoUtil.openAlbum(MainActivity.this, 102);
+            }
+        });
 
     }
 
@@ -143,10 +151,60 @@ public class MainActivity extends AppCompatActivity {
 
                 initImageCropper();
                 mImageCropper.crop(path, 150, 100, false, "crop");
+            }
+        } else if (requestCode == 102) {
+            if (resultCode == RESULT_OK) {
+                Log.d("Photo", "相册图片返回结果....");
+                String path = PhotoUtil.getPath(this, data.getData());
+                Log.d("Photo", "album path: " + path);
+                compressPic(path);
 
             }
         }
     }
+
+    /**
+     * 压缩图片
+     *
+     * @param fileUrl
+     */
+    private void compressPic(final String fileUrl) {
+        CompressPictureUtil.compressPic(this, fileUrl, new CompressPictureUtil.OnCompressListener() {
+            @Override
+            public void onCompressPicSuccess(File file) {
+                getBitmapInfo(file.getPath());
+                Logger.d("图片压缩成功....");
+                Map<String, Object> map = new HashMap<>();
+                map.put("bizType", 27);//记债本业务
+                map.put("fileType", 1);
+                FileApi.upload(file, map)
+                        .map(RxUtil.<FileUploadResult>handleResponse())
+                        .subscribe(new Consumer<FileUploadResult>() {
+                            @Override
+                            public void accept(FileUploadResult fileUploadResult) throws Exception {
+
+                            }
+                        })
+                ;
+            }
+        });
+    }
+
+    /**
+     * 获取图片宽和高
+     *
+     * @param path
+     */
+    private void getBitmapInfo(String path) {
+        BitmapFactory.Options op = new BitmapFactory.Options();
+        // inJustDecodeBounds如果设置为true,仅仅返回图片实际的宽和高,宽和高是赋值给opts.outWidth,opts.outHeight;
+        op.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, op); //获取尺寸信息
+        Logger.d("图片宽度===" + op.outWidth);
+        Logger.d("图片高度===" + op.outHeight);
+
+    }
+
 
     private void initImageCropper() {
         if (mImageCropper == null) {
@@ -163,36 +221,67 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * 初始化新的网络框架
-     */
-    private void initNetwork() {
-        String deviceId = SPUtil.getString(this, "sysconfig", "deviceId");
-        if (TextUtils.isEmpty(deviceId)) {
-            //采用自己生产的UUID来当做设备唯一ID，存储在SharedPreferenes里，应用卸载重装会重新生成
-            deviceId = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-            SPUtil.put(this, "sysconfig", "deviceId", deviceId);
-        }
-
-        String channel = "official";
-        try {
-            ApplicationInfo appInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-            channel = appInfo.metaData.getString("UMENG_CHANNEL");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        UserManager userManager = UserManager.getInstance(this);
-        HttpRequestConfig config = new HttpRequestConfig.Builder(this)
-                .setDebug(BuildConfig.DEBUG)
-                .setAppChannel(channel)
-                .setAppVersion(SystemUtil.getCurrentAppVersionName(this))
-                .setDeviceId(deviceId)
-                .setBaseUrl("https://testapi.54jietiao.com")
-                .setUserId(userManager.getUserInfo().getUserId())
-                .setToken(userManager.getUserInfo().getToken())
-                .build();
-        HttpReqManager.init(config);
+    private void login() {
+        String pwd = MD5.hexdigest("123456".getBytes());
+//        String pwd = MD5.hexdigest("qqqqqq".getBytes());
+        MobileLoginReqBean reqBean = new MobileLoginReqBean();
+//        reqBean.setMobile("15267163669");
+        reqBean.setMobile("17681832816");
+//        reqBean.setMobile("18867142516");
+//        reqBean.setMobile("15967132742");
+        reqBean.setQueryPswd(pwd);
+        HttpReqManager.getInstance().getService(LoginService.class)
+                .mobileLogin(reqBean)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<BaseResponse<UserInfo>>() {
+                    @Override
+                    public void accept(BaseResponse<UserInfo> userInfoBaseResponse) throws Exception {
+                        ToastUtil.showMessage(MainActivity.this, "登录成功");
+                        UserInfo userInfo = userInfoBaseResponse.getData();
+                        UserManager.getInstance(MainActivity.this).updateOrSaveUserInfo(userInfo);
+                        HttpReqManager.getInstance().setUserId(userInfo.getUserId());
+                        HttpReqManager.getInstance().setToken(userInfo.getToken());
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable t) throws Exception {
+                        t.printStackTrace();
+                    }
+                });
     }
+
+//    /**
+//     * 初始化新的网络框架
+//     */
+//    private void initNetwork() {
+//        String deviceId = SPUtil.getString(this, "sysconfig", "deviceId");
+//        if (TextUtils.isEmpty(deviceId)) {
+//            //采用自己生产的UUID来当做设备唯一ID，存储在SharedPreferenes里，应用卸载重装会重新生成
+//            deviceId = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+//            SPUtil.put(this, "sysconfig", "deviceId", deviceId);
+//        }
+//
+//        String channel = "official";
+//        try {
+//            ApplicationInfo appInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+//            channel = appInfo.metaData.getString("UMENG_CHANNEL");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        UserManager userManager = UserManager.getInstance(this);
+//        HttpRequestConfig config = new HttpRequestConfig.Builder(this)
+//                .setDebug(BuildConfig.DEBUG)
+//                .setAppChannel(channel)
+//                .setAppVersion(SystemUtil.getCurrentAppVersionName(this))
+//                .setDeviceId(deviceId)
+////                .setBaseUrl("https://testapi.54jietiao.com")
+//                .setBaseUrl("http://192.168.1.217")
+//                .setUserId(userManager.getUserInfo().getUserId())
+//                .setToken(userManager.getUserInfo().getToken())
+//                .build();
+//        HttpReqManager.init(config);
+//    }
 
 }

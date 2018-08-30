@@ -28,6 +28,10 @@ public interface FileService {
     @POST("/fs/uploadReturnPath")
     Flowable<BaseResponse<FileUploadResult>> uploadImage(@Part MultipartBody.Part file, @QueryMap Map<String, Object> params);
 
+    @Multipart
+    @POST("/api/fs/v1/upload")
+    Flowable<BaseResponse<FileUploadResult>> upload(@Part MultipartBody.Part file, @QueryMap Map<String, Object> params);
+
 
     @Streaming
     @GET

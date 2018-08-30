@@ -8,6 +8,7 @@ import com.hm.iou.tools.ToastUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -27,7 +28,7 @@ public class CompressPictureUtil {
     }
 
     /**
-     * 压缩图片
+     * 异步方法进行图片压缩
      *
      * @param context          上下文
      * @param picturePath      图片路径
@@ -60,6 +61,27 @@ public class CompressPictureUtil {
                         ToastUtil.showMessage(context, "图片压缩失败");
                     }
                 });
+    }
+
+    /**
+     * 同步方法进行图片压缩
+     *
+     * @param context
+     * @param picturePath
+     * @return
+     */
+    public static File compressPic(final Context context, String picturePath) {
+        if (context == null || TextUtils.isEmpty(picturePath)) {
+            ToastUtil.showMessage(context, "图片获取失败");
+            return null;
+        }
+        File file = null;
+        try {
+            file = Luban.with(context).load(picturePath).get(picturePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
     }
 
     /**
