@@ -2,6 +2,7 @@ package com.hm.iou.base.photo;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,7 +20,6 @@ import android.support.v4.content.FileProvider;
 import com.hm.iou.base.R;
 import com.hm.iou.base.utils.PermissionUtil;
 import com.hm.iou.tools.FileUtil;
-import com.hm.iou.tools.SystemUtil;
 import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.uikit.dialog.IOSActionSheetItem;
 import com.hm.iou.uikit.dialog.IOSActionSheetTitleDialog;
@@ -34,6 +34,11 @@ import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
 public class PhotoUtil {
 
+    public interface OnPhotoCancelListener {
+        //取消选择
+        void onCancel();
+    }
+
     private static String FILE_PROVIDER_SUFFIX = ".fileprovider";
 
     /**
@@ -44,6 +49,12 @@ public class PhotoUtil {
     private static boolean HAS_PERMISSION_CAMERA;
     private static boolean HAS_PERMISSION_STORAGE;
 
+    private static boolean TMP_SELECT_PHOTO_FLAG;
+
+    public static void showSelectDialog(final Activity activity, final int cameraReqCode, final int albumReqCode) {
+        showSelectDialog(activity, cameraReqCode, albumReqCode, null);
+    }
+
     /**
      * 显示选择相机、相册选择对话框
      *
@@ -51,24 +62,28 @@ public class PhotoUtil {
      * @param cameraReqCode 打开相机的请求码
      * @param albumReqCode  打开相册的请求码
      */
-    public static void showSelectDialog(final Activity activity, final int cameraReqCode, final int albumReqCode) {
-        new IOSActionSheetTitleDialog.Builder(activity)
+    public static void showSelectDialog(final Activity activity, final int cameraReqCode, final int albumReqCode, final OnPhotoCancelListener listener) {
+        TMP_SELECT_PHOTO_FLAG = false;
+        Dialog dialog = new IOSActionSheetTitleDialog.Builder(activity)
                 .addSheetItem(IOSActionSheetItem.create("拍照").setItemClickListener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        TMP_SELECT_PHOTO_FLAG = true;
                         dialog.dismiss();
                         if (PermissionUtil.isPermissionGranted(activity, Manifest.permission.CAMERA)) {
-                            openCamera(activity, cameraReqCode);
+                            openCamera(activity, cameraReqCode, listener);
                         } else {
                             PermissionUtil.showCameraRemindDialog(activity, new PermissionUtil.OnPermissionDialogClick() {
                                 @Override
                                 public void onPositiveBtnClick() {
-                                    openCamera(activity, cameraReqCode);
+                                    openCamera(activity, cameraReqCode, listener);
                                 }
 
                                 @Override
                                 public void onNegativeBtnClick() {
-
+                                    if (listener != null) {
+                                        listener.onCancel();
+                                    }
                                 }
                             });
                         }
@@ -77,25 +92,40 @@ public class PhotoUtil {
                 .addSheetItem(IOSActionSheetItem.create("从相册中选择").setItemClickListener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        TMP_SELECT_PHOTO_FLAG = true;
                         dialog.dismiss();
                         if (PermissionUtil.isPermissionGranted(activity, READ_EXTERNAL_STORAGE)) {
-                            openAlbum(activity, albumReqCode);
+                            openAlbum(activity, albumReqCode, listener);
                         } else {
                             PermissionUtil.showStorageRemindDialog(activity, new PermissionUtil.OnPermissionDialogClick() {
                                 @Override
                                 public void onPositiveBtnClick() {
-                                    openAlbum(activity, albumReqCode);
+                                    openAlbum(activity, albumReqCode, listener);
                                 }
 
                                 @Override
                                 public void onNegativeBtnClick() {
-
+                                    if (listener != null) {
+                                        listener.onCancel();
+                                    }
                                 }
                             });
                         }
                     }
                 }))
                 .show();
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (!TMP_SELECT_PHOTO_FLAG && listener != null) {
+                    listener.onCancel();
+                }
+            }
+        });
+    }
+
+    public static void showSelectDialog(final Fragment fragment, final int cameraReqCode, final int albumReqCode) {
+        showSelectDialog(fragment, cameraReqCode, albumReqCode, null);
     }
 
     /**
@@ -105,24 +135,28 @@ public class PhotoUtil {
      * @param cameraReqCode 打开相机的请求码
      * @param albumReqCode  打开相册的请求码
      */
-    public static void showSelectDialog(final Fragment fragment, final int cameraReqCode, final int albumReqCode) {
-        new IOSActionSheetTitleDialog.Builder(fragment.getActivity())
+    public static void showSelectDialog(final Fragment fragment, final int cameraReqCode, final int albumReqCode, final OnPhotoCancelListener listener) {
+        TMP_SELECT_PHOTO_FLAG = false;
+        Dialog dialog = new IOSActionSheetTitleDialog.Builder(fragment.getActivity())
                 .addSheetItem(IOSActionSheetItem.create("拍照").setItemClickListener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        TMP_SELECT_PHOTO_FLAG = true;
                         dialog.dismiss();
                         if (PermissionUtil.isPermissionGranted(fragment.getActivity(), Manifest.permission.CAMERA)) {
-                            openCamera(fragment.getActivity(), cameraReqCode);
+                            openCamera(fragment, cameraReqCode, listener);
                         } else {
                             PermissionUtil.showCameraRemindDialog(fragment.getActivity(), new PermissionUtil.OnPermissionDialogClick() {
                                 @Override
                                 public void onPositiveBtnClick() {
-                                    openCamera(fragment.getActivity(), cameraReqCode);
+                                    openCamera(fragment, cameraReqCode, listener);
                                 }
 
                                 @Override
                                 public void onNegativeBtnClick() {
-
+                                    if (listener != null) {
+                                        listener.onCancel();
+                                    }
                                 }
                             });
                         }
@@ -131,25 +165,40 @@ public class PhotoUtil {
                 .addSheetItem(IOSActionSheetItem.create("从相册中选择").setItemClickListener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        TMP_SELECT_PHOTO_FLAG = true;
                         dialog.dismiss();
                         if (PermissionUtil.isPermissionGranted(fragment.getActivity(), READ_EXTERNAL_STORAGE)) {
-                            openAlbum(fragment, albumReqCode);
+                            openAlbum(fragment, albumReqCode, listener);
                         } else {
                             PermissionUtil.showStorageRemindDialog(fragment.getActivity(), new PermissionUtil.OnPermissionDialogClick() {
                                 @Override
                                 public void onPositiveBtnClick() {
-                                    openAlbum(fragment.getActivity(), albumReqCode);
+                                    openAlbum(fragment, albumReqCode, listener);
                                 }
 
                                 @Override
                                 public void onNegativeBtnClick() {
-
+                                    if (listener != null) {
+                                        listener.onCancel();
+                                    }
                                 }
                             });
                         }
                     }
                 }))
                 .show();
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (!TMP_SELECT_PHOTO_FLAG && listener != null) {
+                    listener.onCancel();
+                }
+            }
+        });
+    }
+
+    public static void openCamera(final Activity activity, final int requestCode) {
+        openCamera(activity, requestCode, null);
     }
 
     /**
@@ -158,7 +207,7 @@ public class PhotoUtil {
      * @param activity    当前activity
      * @param requestCode 调用系统相机请求码
      */
-    public static void openCamera(final Activity activity, final int requestCode) {
+    public static void openCamera(final Activity activity, final int requestCode, final OnPhotoCancelListener listener) {
         HAS_PERMISSION_CAMERA = false;
         HAS_PERMISSION_STORAGE = false;
         RxPermissions rxPermissions = new RxPermissions(activity);
@@ -193,10 +242,16 @@ public class PhotoUtil {
                                     activity.startActivityForResult(intentCamera, requestCode);
                                 } catch (Exception e) {
                                     e.printStackTrace();
+                                    if (listener != null) {
+                                        listener.onCancel();
+                                    }
                                     ToastUtil.showMessage(activity, activity.getString(R.string.base_open_camera_fail));
                                 }
                             }
                         } else {
+                            if (listener != null) {
+                                listener.onCancel();
+                            }
                             if (Manifest.permission.CAMERA.equals(permission.name)) {
                                 PermissionUtil.showCameraPermissionDialog(activity);
                             } else {
@@ -207,13 +262,17 @@ public class PhotoUtil {
                 });
     }
 
+    public static void openCamera(final Fragment fragment, final int requestCode) {
+        openCamera(fragment, requestCode, null);
+    }
+
     /**
      * 打开系统相机进行拍照
      *
      * @param fragment    当前Fragment
      * @param requestCode 调用系统相机请求码
      */
-    public static void openCamera(final Fragment fragment, final int requestCode) {
+    public static void openCamera(final Fragment fragment, final int requestCode, final OnPhotoCancelListener listener) {
         final Activity activity = fragment.getActivity();
         RxPermissions rxPermissions = new RxPermissions(fragment.getActivity());
         rxPermissions.request(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Consumer<Boolean>() {
@@ -240,9 +299,15 @@ public class PhotoUtil {
                         fragment.startActivityForResult(intentCamera, requestCode);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        if (listener != null) {
+                            listener.onCancel();
+                        }
                         ToastUtil.showMessage(activity, activity.getString(R.string.base_open_camera_fail));
                     }
                 } else {
+                    if (listener != null) {
+                        listener.onCancel();
+                    }
                     PermissionUtil.showCameraPermissionDialog(activity);
                 }
             }
@@ -262,13 +327,18 @@ public class PhotoUtil {
         return null;
     }
 
+    public static void openAlbum(final Activity activity, final int requestCode) {
+        openAlbum(activity, requestCode, null);
+    }
+
+
     /**
      * 打开系统相册获取图片
      *
      * @param activity    当前activity
      * @param requestCode 打开相册的请求码
      */
-    public static void openAlbum(final Activity activity, final int requestCode) {
+    public static void openAlbum(final Activity activity, final int requestCode, final OnPhotoCancelListener listener) {
         RxPermissions rxPermissions = new RxPermissions(activity);
         rxPermissions.request(READ_EXTERNAL_STORAGE)
                 .subscribe(new Consumer<Boolean>() {
@@ -279,6 +349,9 @@ public class PhotoUtil {
                                        photoPickerIntent.setType("image/*");
                                        activity.startActivityForResult(photoPickerIntent, requestCode);
                                    } else {
+                                       if (listener != null) {
+                                           listener.onCancel();
+                                       }
                                        PermissionUtil.showStoragePermissionDialog(activity);
                                    }
                                }
@@ -286,6 +359,9 @@ public class PhotoUtil {
                 );
     }
 
+    public static void openAlbum(final Fragment fragment, final int requestCode) {
+        openAlbum(fragment, requestCode, null);
+    }
 
     /**
      * 打开系统相册获取图片
@@ -293,7 +369,7 @@ public class PhotoUtil {
      * @param fragment    当前fragment
      * @param requestCode 打开相册的请求码
      */
-    public static void openAlbum(final Fragment fragment, final int requestCode) {
+    public static void openAlbum(final Fragment fragment, final int requestCode, final OnPhotoCancelListener listener) {
         final Activity activity = fragment.getActivity();
         RxPermissions rxPermissions = new RxPermissions(activity);
         rxPermissions.request(
@@ -306,6 +382,9 @@ public class PhotoUtil {
                                        photoPickerIntent.setType("image/*");
                                        fragment.startActivityForResult(photoPickerIntent, requestCode);
                                    } else {
+                                       if (listener != null) {
+                                           listener.onCancel();
+                                       }
                                        PermissionUtil.showStoragePermissionDialog(activity);
                                    }
                                }

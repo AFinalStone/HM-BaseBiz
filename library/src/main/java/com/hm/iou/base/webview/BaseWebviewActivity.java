@@ -241,12 +241,26 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     @Override
     protected void onResume() {
         super.onResume();
+        if (mWebView != null) {
+            mWebView.onResume();
+        }
         mWebView.evaluateJavascript("javascript:onResume()", null);
+
+        System.out.println("onResume=========");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if (mWebView != null) {
+            mWebView.onPause();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        System.out.println("onStop=========");
     }
 
     @Override
@@ -519,18 +533,24 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
                 if (fileChooserParams != null && fileChooserParams.getAcceptTypes() != null
                         && fileChooserParams.getAcceptTypes().length > 0) {
                     if (fileChooserParams.getAcceptTypes()[0].startsWith("image") && fileChooserParams.isCaptureEnabled()) {
-                        PhotoUtil.showSelectDialog(BaseWebviewActivity.this, REQ_CDOE_CAMERA, REQ_CODE_ALBUM);
+                        PhotoUtil.showSelectDialog(BaseWebviewActivity.this, REQ_CDOE_CAMERA, REQ_CODE_ALBUM, new PhotoUtil.OnPhotoCancelListener() {
+                            @Override
+                            public void onCancel() {
+                                System.out.println("cancel select photo");
+                                valueCallbackNull();
+                            }
+                        });
                         return true;
                     }
                     Intent i = new Intent(Intent.ACTION_GET_CONTENT);
                     i.addCategory(Intent.CATEGORY_OPENABLE);
                     i.setType(fileChooserParams.getAcceptTypes()[0]);
-                    startActivityForResult(Intent.createChooser(i, "File Chooser"), REQ_CODE_FILE_CHOOSER);
+                    startActivityForResult(Intent.createChooser(i, "选择文件"), REQ_CODE_FILE_CHOOSER);
                 } else {
                     Intent i = new Intent(Intent.ACTION_GET_CONTENT);
                     i.addCategory(Intent.CATEGORY_OPENABLE);
                     i.setType("*/*");
-                    startActivityForResult(Intent.createChooser(i, "File Chooser"), REQ_CODE_FILE_CHOOSER);
+                    startActivityForResult(Intent.createChooser(i, "选择文件"), REQ_CODE_FILE_CHOOSER);
                     return true;
                 }
                 return true;

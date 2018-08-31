@@ -174,6 +174,9 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
     @Override
     public void onResume() {
         super.onResume();
+        if (mWebView != null) {
+            mWebView.onResume();
+        }
         if (isVisible()) {
             mWebView.evaluateJavascript("javascript:onResume()", null);
         }
@@ -184,6 +187,14 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
         super.onHiddenChanged(hidden);
         if (!hidden) {
             mWebView.evaluateJavascript("javascript:onResume()", null);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mWebView != null) {
+            mWebView.onPause();
         }
     }
 
@@ -527,7 +538,12 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
                 if (fileChooserParams != null && fileChooserParams.getAcceptTypes() != null
                         && fileChooserParams.getAcceptTypes().length > 0) {
                     if (fileChooserParams.getAcceptTypes()[0].startsWith("image") && fileChooserParams.isCaptureEnabled()) {
-                        PhotoUtil.showSelectDialog(BaseWebviewFragment.this, REQ_CDOE_CAMERA, REQ_CODE_ALBUM);
+                        PhotoUtil.showSelectDialog(BaseWebviewFragment.this, REQ_CDOE_CAMERA, REQ_CODE_ALBUM, new PhotoUtil.OnPhotoCancelListener() {
+                            @Override
+                            public void onCancel() {
+                                valueCallbackNull();
+                            }
+                        });
                         return true;
                     }
                     Intent i = new Intent(Intent.ACTION_GET_CONTENT);
