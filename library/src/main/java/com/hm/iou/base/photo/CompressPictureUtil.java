@@ -104,4 +104,25 @@ public class CompressPictureUtil {
         return false;
     }
 
+    /**
+     * 将图片保存到目标文件路径下
+     *
+     * @param target         保存的文件
+     * @param bitmap         图片
+     * @param compressFormat 图片格式
+     * @return 是否保存成功
+     */
+    public static boolean saveBitmapToTargetFile(File target, Bitmap bitmap, Bitmap.CompressFormat compressFormat) {
+        try {
+            FileOutputStream out = new FileOutputStream(target);
+            bitmap.compress(compressFormat, 100, out);
+            out.flush();
+            out.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }
