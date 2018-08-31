@@ -261,15 +261,22 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         }
     }
 
+    private void valueCallbackNull() {
+        if (mUploadMessage != null) {
+            mUploadMessage.onReceiveValue(null);
+        }
+        mUploadMessage = null;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_CODE_FILE_CHOOSER) {
-            if (null == mUploadMessage) return;
+            if (null == mUploadMessage)
+                return;
             Uri result = data == null || resultCode != RESULT_OK ? null : data.getData();
             if (result == null) {
-                mUploadMessage.onReceiveValue(null);
-                mUploadMessage = null;
+                valueCallbackNull();
                 return;
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -283,18 +290,24 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
                 String path = PhotoUtil.getCameraPhotoPath();
                 if (TextUtils.isEmpty(path)) {
                     ToastUtil.showMessage(this, "获取图片失败");
+                    valueCallbackNull();
                     return;
                 }
                 onSelectPhoto(path);
+            } else {
+                valueCallbackNull();
             }
         } else if (requestCode == REQ_CODE_ALBUM) {
             if (resultCode == RESULT_OK) {
                 String path = PhotoUtil.getPath(this, data.getData());
                 if (TextUtils.isEmpty(path)) {
                     ToastUtil.showMessage(this, "获取图片失败");
+                    valueCallbackNull();
                     return;
                 }
                 onSelectPhoto(path);
+            } else {
+                valueCallbackNull();
             }
         } else if (requestCode == REQ_SELECT_CITY) {
             if (resultCode == RESULT_OK && data != null) {
@@ -502,15 +515,24 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
                     mUploadMessage.onReceiveValue(null);
                 }
                 mUploadMessage = filePathCallback;
-                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-                i.addCategory(Intent.CATEGORY_OPENABLE);
+
                 if (fileChooserParams != null && fileChooserParams.getAcceptTypes() != null
                         && fileChooserParams.getAcceptTypes().length > 0) {
+                    if (fileChooserParams.getAcceptTypes()[0].startsWith("image") && fileChooserParams.isCaptureEnabled()) {
+                        PhotoUtil.showSelectDialog(BaseWebviewActivity.this, REQ_CDOE_CAMERA, REQ_CODE_ALBUM);
+                        return true;
+                    }
+                    Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                    i.addCategory(Intent.CATEGORY_OPENABLE);
                     i.setType(fileChooserParams.getAcceptTypes()[0]);
+                    startActivityForResult(Intent.createChooser(i, "File Chooser"), REQ_CODE_FILE_CHOOSER);
                 } else {
+                    Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                    i.addCategory(Intent.CATEGORY_OPENABLE);
                     i.setType("*/*");
+                    startActivityForResult(Intent.createChooser(i, "File Chooser"), REQ_CODE_FILE_CHOOSER);
+                    return true;
                 }
-                startActivityForResult(Intent.createChooser(i, "File Chooser"), REQ_CODE_FILE_CHOOSER);
                 return true;
             }
 
@@ -745,17 +767,24 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
      */
     protected void onPictureSelectSuccess(File file) {
         Logger.d("图片选择成功：" + file.getAbsolutePath());
-        StringBuilder sb = new StringBuilder();
-        sb.append("javascript:").append(mJsObj.getPicCallbackName());
-        sb.append("('").append(file.getAbsolutePath()).append("')");
-        String script = sb.toString();
-        Logger.d("图片获取成功：" + script);
-        mWebView.evaluateJavascript(script, new ValueCallback<String>() {
-            @Override
-            public void onReceiveValue(String value) {
+        if (!TextUtils.isEmpty((mJsObj.getPicCallbackName()))) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("javascript:").append(mJsObj.getPicCallbackName());
+            sb.append("('").append(file.getAbsolutePath()).append("')");
+            String script = sb.toString();
+            Logger.d("图片获取成功：" + script);
+            mWebView.evaluateJavascript(script, null);
+        }
 
-            }
-        });
+        if (null == mUploadMessage)
+            return;
+        Uri result = Uri.fromFile(file);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mUploadMessage.onReceiveValue(new Uri[]{result});
+        } else {
+            mUploadMessage.onReceiveValue(result);
+        }
+        mUploadMessage = null;
     }
 
     /**
