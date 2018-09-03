@@ -129,6 +129,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     @Override
     protected void initEventAndData(Bundle savedInstanceState) {
         mTopBar = findViewById(R.id.topbar);
+        mTopBar.getStatusBarPlaceHolder().setVisibility(View.GONE);
         mWebViewContainer = findViewById(R.id.fl_webview_container);
         mPbWebview = findViewById(R.id.pb_webview);
         mLoadingView = findViewById(R.id.lv_webview);

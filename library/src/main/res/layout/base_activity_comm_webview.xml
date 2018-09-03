@@ -3,12 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/uikit_main_bg_color">
+    android:background="@color/uikit_main_bg_color"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    >
 
     <com.hm.iou.uikit.HMTopBarView
         android:id="@+id/topbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/uikit_topbar_height"
+        android:layout_height="48dip"
         app:titleBackground="@color/transparent" />
 
 
