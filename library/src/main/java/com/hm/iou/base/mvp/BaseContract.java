@@ -1,5 +1,7 @@
 package com.hm.iou.base.mvp;
 
+import android.view.View;
+
 /**
  * Created by hjy on 18/4/26.<br>
  */
@@ -64,9 +66,16 @@ public interface BaseContract {
         void hideSoftKeyboard();
 
         /**
-         * 显示软键盘
+         * 切换软键盘的状态
          */
         void showSoftKeyboard();
+
+        /**
+         * 显示软键盘
+         *
+         * @param view
+         */
+        void showSoftKeyboard(View view);
 
         /**
          * 显示被踢下线对话框

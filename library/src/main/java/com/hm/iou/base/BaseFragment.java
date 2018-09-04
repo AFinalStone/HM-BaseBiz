@@ -192,7 +192,12 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
     public void showSoftKeyboard() {
         if (getActivity() == null)
             return;
-        KeyboardUtil.openKeyboard(getActivity());
+        KeyboardUtil.toggleKeyboard(getActivity());
+    }
+
+    @Override
+    public void showSoftKeyboard(View view) {
+        KeyboardUtil.showKeyboard(view);
     }
 
     @Override

@@ -209,7 +209,12 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
 
     @Override
     public void showSoftKeyboard() {
-        KeyboardUtil.openKeyboard(this);
+        KeyboardUtil.toggleKeyboard(this);
+    }
+
+    @Override
+    public void showSoftKeyboard(View view) {
+        KeyboardUtil.showKeyboard(view);
     }
 
     @Override
