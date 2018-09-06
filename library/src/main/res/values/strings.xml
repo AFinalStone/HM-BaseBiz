@@ -7,7 +7,7 @@
     <string name="base_open_camera_fail">打开相机失败</string>
     <string name="base_camera_permission_req_msg">在设置-应用—条管家权限中开启相机权限，以正常使用拍照、扫一扫等功能。</string>
     <string name="base_read_storage_permission_req_msg">在设置-应用—条管家权限中开启存储空间权限，以正常使用条管家功能。</string>
-    <string name="base_location_permission_req_msg">在设置-应用—条管家权限中开启位置信息权限，以正常获取常驻城市。</string>
+    <string name="base_location_permission_req_msg">在设置-应用—条管家权限中开启位置信息权限，以正常获取常驻城市，位置信息。</string>
 
     <string name="base_customer_service">客服</string>
     <string name="base_customer_service_code">jietiaoguanjia2018</string>
