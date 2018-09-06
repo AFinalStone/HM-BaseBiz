@@ -74,6 +74,7 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
         //如果是在ViewPager里，或者Fragment恢复现场，不需要重新创建View
         if (mContentView == null) {
             mContentView = inflater.inflate(getLayoutId(), container, false);
+            mContentView.setClickable(true);
         }
         ViewGroup parent = (ViewGroup) mContentView.getParent();
         if (parent != null) {
