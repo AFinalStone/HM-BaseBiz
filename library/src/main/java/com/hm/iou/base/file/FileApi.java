@@ -52,9 +52,9 @@ public class FileApi {
      * @param bizType 文件所属业务类型
      * @return
      */
-    public static Flowable<BaseResponse<FileUploadResult>> uploadFile(File file, int bizType) {
+    public static Flowable<BaseResponse<FileUploadResult>> uploadFile(File file, FileBizType bizType) {
         Map<String, Object> map = new HashMap<>();
-        map.put("bizType", bizType);
+        map.put("bizType", bizType.getType());
         map.put("fileType", 0);
         return upload(file, map);
     }
@@ -82,9 +82,9 @@ public class FileApi {
      * @param bizType 图片所属业务类型
      * @return
      */
-    public static Flowable<BaseResponse<FileUploadResult>> uploadImage(File file, int bizType) {
+    public static Flowable<BaseResponse<FileUploadResult>> uploadImage(File file, FileBizType bizType) {
         Map<String, Object> map = new HashMap<>();
-        map.put("bizType", bizType);
+        map.put("bizType", bizType.getType());
         map.put("fileType", 1);
         return upload(file, map);
     }
