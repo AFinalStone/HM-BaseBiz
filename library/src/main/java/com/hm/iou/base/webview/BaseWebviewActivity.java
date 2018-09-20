@@ -246,8 +246,6 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
             mWebView.onResume();
         }
         mWebView.evaluateJavascript("javascript:onResume()", null);
-
-        System.out.println("onResume=========");
     }
 
     @Override
@@ -261,7 +259,6 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
     @Override
     protected void onStop() {
         super.onStop();
-        System.out.println("onStop=========");
     }
 
     @Override
@@ -537,7 +534,6 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
                         PhotoUtil.showSelectDialog(BaseWebviewActivity.this, REQ_CDOE_CAMERA, REQ_CODE_ALBUM, new PhotoUtil.OnPhotoCancelListener() {
                             @Override
                             public void onCancel() {
-                                System.out.println("cancel select photo");
                                 valueCallbackNull();
                             }
                         });
@@ -668,6 +664,18 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
                     }
                     return false;
                 }
+
+                try {
+                    //跳转到微信去打开
+                    if (url.startsWith("weixin://")) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        view.getContext().startActivity(intent);
+                        return true;
+                    }
+                } catch (Exception e) {
+                    return false;
+                }
+
                 if ("about:blank".equals(url)) {
                     return false; // 不需要处理空白页
                 }
