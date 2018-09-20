@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.hm.iou.base.R;
+import com.hm.iou.tools.ViewConcurrencyUtil;
 
 ;
 
@@ -293,7 +294,9 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
     @Override
     public void onClick(View v) {
         if (animRestore != null) animRestore.cancel();
-
+        if (ViewConcurrencyUtil.isFastClick(v)) {
+            return;
+        }
         if (v.getId() == R.id.btn_cutFinish) {
             if (mCallback != null) {
                 final float x = ((bmpSource.getWidth() * iSource.getScaleX() - vOverlay.getOverlayWidth()) / 2 - iSource.getTranslationX()) / iSource.getScaleX();
