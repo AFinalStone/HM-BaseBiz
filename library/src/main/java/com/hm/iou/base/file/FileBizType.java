@@ -34,7 +34,7 @@ public enum FileBizType {
     FunOriginal(25, "娱乐借条"),
     FunIllustration(26, "娱乐借条插画"),
     DebtNote(27, "记债本"),
-    IOUElecRecv(28, "电子收条"),;//ps;电子收条
+    IOUElecRecvSavePhoto(29, "电子收条创建或修改时候的图片"),;//ps;电子收条
 
     int type;
     String name;
