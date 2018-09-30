@@ -19,7 +19,7 @@ public enum FileBizType {
     PaperRecvOriginal(10, "纸质收条"),
     PaperRecvComplete(11, "纸质收条评论"),
     FunTemplate(12, ""),
-    FunComplete(13, ""),
+    FunComplete(13, "娱乐借条评论"),
     Help(14, ""),
     Law(15, ""),
     Share(16, ""),
@@ -34,7 +34,10 @@ public enum FileBizType {
     FunOriginal(25, "娱乐借条"),
     FunIllustration(26, "娱乐借条插画"),
     DebtNote(27, "记债本"),
-    IOUElecRecv(28, "电子收条"),;//ps;电子收条
+    IOUElecRecv(28, "电子收条"),
+    IOUElecRecvAttachFile(29, "电子收条附件"),
+    IOUElecRecvComplete(30, "电子收条评论"),
+    CustomerPrivacyFile(100, "用户私密文件");
 
     int type;
     String name;
