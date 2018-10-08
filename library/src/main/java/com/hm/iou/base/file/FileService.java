@@ -7,7 +7,6 @@ import com.hm.iou.sharedata.model.BaseResponse;
 import java.util.Map;
 
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
 import retrofit2.http.GET;
@@ -25,13 +24,8 @@ import retrofit2.http.Url;
 public interface FileService {
 
     @Multipart
-    @POST("/fs/uploadReturnPath")
-    Flowable<BaseResponse<FileUploadResult>> uploadImage(@Part MultipartBody.Part file, @QueryMap Map<String, Object> params);
-
-    @Multipart
     @POST("/api/fs/v1/upload")
     Flowable<BaseResponse<FileUploadResult>> upload(@Part MultipartBody.Part file, @QueryMap Map<String, Object> params);
-
 
     @Streaming
     @GET

@@ -2,7 +2,6 @@ package com.hm.iou.base.file;
 
 import android.support.annotation.NonNull;
 
-import com.hm.iou.base.BaseBizAppLike;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.network.interceptor.file.ProgressListener;
 import com.hm.iou.sharedata.model.BaseResponse;
@@ -28,22 +27,6 @@ import okhttp3.ResponseBody;
  */
 
 public class FileApi {
-
-    /**
-     * 旧的上传文件/图片的方式，以后不再使用，这里保留兼容老的代码
-     *
-     * @param file
-     * @param map
-     * @return
-     */
-    public static Flowable<BaseResponse<FileUploadResult>> uploadFile(File file, Map<String, Object> map) {
-        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        MultipartBody.Part partFile = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
-        return HttpReqManager.getInstance().getService(FileService.class, BaseBizAppLike.getInstance().getFileServer())
-                .uploadImage(partFile, map)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
 
     /**
      * 上传文件
