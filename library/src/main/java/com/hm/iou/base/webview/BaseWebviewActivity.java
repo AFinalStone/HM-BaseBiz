@@ -173,7 +173,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         mTopBar.setOnBackClickListener(new HMTopBarView.OnTopBarBackClickListener() {
             @Override
             public void onClickBack() {
-                onBackPressed();
+                finish();
             }
         });
         //如果不显示中间标题，则下面分割线不显示
