@@ -3,6 +3,7 @@ package com.hm.iou.base.photo;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -128,6 +129,43 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
         iSource.setImageBitmap(bmpSource);
     }
 
+    private void cropInternal(Bitmap bitmap, int outputWidth, int outputHeight, boolean isCircleOverlay, String tag) {
+        final int mWidth = getWidth();
+        final int mHeight = getWidth();
+        if (mWidth * mHeight == 0) return;
+
+        setVisibility(View.VISIBLE);
+        mTag = tag;
+
+        mOutputWidth = outputWidth;
+        mOutputHeight = outputHeight;
+
+        vOverlay.reset(mOutputWidth, mOutputHeight, isCircleOverlay);
+
+        bmpSource = bitmap;
+        //图片旋转
+        if (1f * bmpSource.getWidth() / bmpSource.getHeight() > 1f * iSource.getWidth() / iSource.getHeight()) {
+            int bitmapHeightAfterFitCenter = (int) (1f * bmpSource.getHeight() * iSource.getWidth() / bmpSource.getWidth());
+            bmpSource = Bitmap.createScaledBitmap(bmpSource, iSource.getWidth(), bitmapHeightAfterFitCenter, true);
+            float initMinScaleX = 1f * vOverlay.getOverlayWidth() / iSource.getWidth();
+            float initMinScaleY = 1f * vOverlay.getOverlayHeight() / bitmapHeightAfterFitCenter;
+            initMinScale = Math.max(initMinScaleX, initMinScaleY);
+        } else {
+            int bitmapWidthAfterFitCenter = (int) (1f * bmpSource.getWidth() * iSource.getHeight() / bmpSource.getHeight());
+            bmpSource = Bitmap.createScaledBitmap(bmpSource, bitmapWidthAfterFitCenter, iSource.getHeight(), true);
+            float initMinScaleX = 1f * vOverlay.getOverlayWidth() / bitmapWidthAfterFitCenter;
+            float initMinScaleY = 1f * vOverlay.getOverlayHeight() / iSource.getHeight();
+            initMinScale = Math.max(initMinScaleX, initMinScaleY);
+        }
+
+        final float defaultScale = initMinScale > 1 ? initMinScale : 1;
+        iSource.setTranslationX(0);
+        iSource.setTranslationY(0);
+        iSource.setScaleX(defaultScale);
+        iSource.setScaleY(defaultScale);
+        iSource.setImageBitmap(bmpSource);
+    }
+
     private Bitmap rotateImage(String filePath, Bitmap bmp) {
         try {
             ExifInterface srcExif = new ExifInterface(filePath);
@@ -172,6 +210,27 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
             @Override
             public void run() {
                 cropInternal(sourceFilePath, outputWidth, outputHeight, isCircleOverlay, tag);
+            }
+        });
+    }
+
+    /**
+     * 裁剪图片(输出的图片默认只有比例是按照入参outputWidth和outputHeight获得的，尺寸大小并没有按照指定的尺寸大小。<br>
+     * 如果要求大小也为入参请调用{@link ImageCropper#setOutputFixedSize(boolean)} 设置值为true) <br>
+     * 逻辑见{@link ImageCropper#onClick(View)} output = mOutputWidth * mOutputHeight != 0 ? Bitmap.createScaledBitmap(clip, mOutputWidth, mOutputHeight, true) : clip <br>
+     * ps: createScaledBitmap (小图变大图会造成内容的失真) 55555555<br>
+     *
+     * @param bitmap          原图片
+     * @param outputWidth     输出宽度
+     * @param outputHeight    输出高度
+     * @param isCircleOverlay 遮罩蒙板是否为圆形，为圆形的条件时在isCircleOverlay为true的同时，outputWidth等于outputHeight才行
+     * @param tag             若同一界面有多处裁剪功能，对此传递一个tag标志避免混淆
+     */
+    public void crop(final Bitmap bitmap, final int outputWidth, final int outputHeight, final boolean isCircleOverlay, final String tag) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                cropInternal(bitmap, outputWidth, outputHeight, isCircleOverlay, tag);
             }
         });
     }
@@ -341,8 +400,18 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
             activityDecorView = (ViewGroup) activity.getWindow().getDecorView();
         }
 
+        private Helper(Dialog dialog) {
+            mImageCropper = new ImageCropper(dialog.getContext());
+            mImageCropper.setId(VIEW_IMAGE_CROPPER_ID);
+            activityDecorView = (ViewGroup) dialog.getWindow().getDecorView();
+        }
+
         public static Helper with(Activity activity) {
             return new Helper(activity);
+        }
+
+        public static Helper with(Dialog dialog) {
+            return new Helper(dialog);
         }
 
 
