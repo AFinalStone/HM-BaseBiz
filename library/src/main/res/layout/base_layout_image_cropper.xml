@@ -26,40 +26,38 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="#FF727272" />
+            android:background="@color/black" />
 
         <LinearLayout
             android:id="@+id/linearLayout_bottom"
             android:layout_width="match_parent"
             android:layout_height="52dp"
+            android:background="#B0000000"
             android:orientation="horizontal">
 
-            <TextView
+            <ImageView
                 android:id="@+id/btn_cutCancer"
-                android:layout_width="0dp"
+                android:layout_width="64dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="#ff000000"
-                android:gravity="center"
-                android:text="取消"
-                android:textColor="@color/base_image_cropper_text"
-                android:textSize="@dimen/textFontSize_16" />
+                android:paddingEnd="20dp"
+                android:paddingStart="20dp"
+                android:scaleType="center"
+                android:src="@mipmap/uikit_icon_close_white_01" />
 
             <View
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="#ff000000" />
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/btn_cutFinish"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="#ff000000"
                 android:gravity="center"
-                android:text="完成"
-                android:textColor="@color/base_image_cropper_text"
+                android:paddingEnd="20dp"
+                android:paddingStart="20dp"
+                android:text="确定"
+                android:textColor="@color/white"
                 android:textSize="@dimen/textFontSize_16" />
 
         </LinearLayout>
