@@ -31,6 +31,7 @@ import com.hm.iou.socialshare.bean.PlatFormBean;
 import com.hm.iou.socialshare.business.UMShareUtil;
 import com.hm.iou.socialshare.business.view.SharePlatformDialog;
 import com.hm.iou.socialshare.dict.PlatformEnum;
+import com.hm.iou.tools.DensityUtil;
 import com.hm.iou.tools.SPUtil;
 import com.hm.iou.tools.SystemUtil;
 import com.hm.iou.tools.ToastUtil;
@@ -518,6 +519,11 @@ public class WebViewJsObject {
         if (TextUtils.isEmpty(eventName))
             return;
         EventBus.getDefault().post(new JsNotifyEvent(eventName, params, mPageTag));
+    }
+
+    @JavascriptInterface
+    public int getStatusBarHeight() {
+        return DensityUtil.dip2px(mActivity, 24);
     }
 
     private static class DialogConfig {
