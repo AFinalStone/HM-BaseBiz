@@ -520,6 +520,11 @@ public class WebViewJsObject {
         EventBus.getDefault().post(new JsNotifyEvent(eventName, params, mPageTag));
     }
 
+    @JavascriptInterface
+    public int getStatusBarHeight() {
+        return 24;
+    }
+
     private static class DialogConfig {
 
         private String title;

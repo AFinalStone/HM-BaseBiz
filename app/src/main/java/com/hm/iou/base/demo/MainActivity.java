@@ -18,7 +18,7 @@ import com.hm.iou.base.photo.PhotoUtil;
 import com.hm.iou.base.photo.SelectPicDialog;
 import com.hm.iou.base.utils.InstallUtil;
 import com.hm.iou.base.utils.RxUtil;
-import com.hm.iou.base.webview.BaseWebviewActivity;
+import com.hm.iou.base.webview.FullScreenWebViewActivity;
 import com.hm.iou.logger.Logger;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.router.Router;
@@ -52,8 +52,10 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, BaseWebviewActivity.class);
-                intent.putExtra("url", "https://www.54jietiao.com");
+                Intent intent = new Intent(MainActivity.this, FullScreenWebViewActivity.class);
+//                intent.putExtra("url", "http://192.168.1.217/moneyMarket/html/consultNow.html");
+                intent.putExtra("url", "http://192.168.1.217/apph5/appPage/funimg-ps.html");
+                intent.putExtra("showtitlebar", "false");
                 startActivity(intent);
             }
         });
