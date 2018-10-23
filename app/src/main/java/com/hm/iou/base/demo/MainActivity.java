@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.hm.iou.base.file.FileApi;
@@ -20,6 +21,7 @@ import com.hm.iou.base.utils.RxUtil;
 import com.hm.iou.base.webview.BaseWebviewActivity;
 import com.hm.iou.logger.Logger;
 import com.hm.iou.network.HttpReqManager;
+import com.hm.iou.router.Router;
 import com.hm.iou.sharedata.UserManager;
 import com.hm.iou.sharedata.model.BaseResponse;
 import com.hm.iou.sharedata.model.UserInfo;
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView mIvPhoto;
     ImageCropper mImageCropper;
+    private EditText mEtUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +125,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mEtUrl = findViewById(R.id.et_h5Url);
+        findViewById(R.id.btn_loadH5Url).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mEtUrl.length() != 0) {
+                    Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/webview/index")
+                            .withString("url", mEtUrl.getText().toString())
+                            .withString("showtitlebar", "false")
+                            .navigation(MainActivity.this);
+                }
+            }
+        });
     }
 
     @Override

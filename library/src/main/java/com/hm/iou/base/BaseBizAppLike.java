@@ -21,6 +21,7 @@ public class BaseBizAppLike {
     private String mApiServer;
     private String mFileServer;
     private String mH5Server;
+    private boolean mDebug;
 
     public void onCreate(Context context) {
         mContext = context;
@@ -31,6 +32,10 @@ public class BaseBizAppLike {
         mApiServer = apiServer;
         mFileServer = fileServer;
         mH5Server = h5Server;
+    }
+
+    public void setDebug(boolean isDebug) {
+        mDebug = isDebug;
     }
 
     public String getApiServer() {
@@ -45,5 +50,7 @@ public class BaseBizAppLike {
         return mH5Server;
     }
 
-
+    public boolean isDebug() {
+        return mDebug;
+    }
 }
