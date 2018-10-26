@@ -37,6 +37,7 @@ import android.widget.ProgressBar;
 
 import com.hm.iou.base.BaseFragment;
 import com.hm.iou.base.R;
+import com.hm.iou.base.file.FileUtil;
 import com.hm.iou.base.mvp.MvpFragmentPresenter;
 import com.hm.iou.base.photo.CompressPictureUtil;
 import com.hm.iou.base.photo.ImageCropper;
@@ -48,7 +49,6 @@ import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
 import com.hm.iou.base.webview.event.WebViewTitleTextEvent;
 import com.hm.iou.logger.Logger;
 import com.hm.iou.tools.DensityUtil;
-import com.hm.iou.tools.FileUtil;
 import com.hm.iou.tools.NetStateUtil;
 import com.hm.iou.tools.StringUtil;
 import com.hm.iou.tools.ToastUtil;
@@ -806,8 +806,8 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
             mImageCropper.setCallback(new ImageCropper.Callback() {
                 @Override
                 public void onPictureCropOut(Bitmap bitmap, String tag) {
-                    File fileCrop = new File(FileUtil.getExternalCacheDirPath(mActivity) + "/photo_crop.png");
-                    boolean flag = CompressPictureUtil.saveBitmapToTargetFile(fileCrop, bitmap);
+                    File fileCrop = new File(FileUtil.getExternalCacheDirPath(mActivity) + System.currentTimeMillis() + ".jpg");
+                    boolean flag = CompressPictureUtil.saveBitmapToTargetFile(fileCrop, bitmap, Bitmap.CompressFormat.JPEG);
                     if (flag) {
                         compressPicture(fileCrop.getAbsolutePath());
                     } else {

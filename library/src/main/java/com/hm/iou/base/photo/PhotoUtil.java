@@ -18,8 +18,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 
 import com.hm.iou.base.R;
+import com.hm.iou.base.file.FileUtil;
 import com.hm.iou.base.utils.PermissionUtil;
-import com.hm.iou.tools.FileUtil;
 import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.uikit.dialog.IOSActionSheetItem;
 import com.hm.iou.uikit.dialog.IOSActionSheetTitleDialog;
