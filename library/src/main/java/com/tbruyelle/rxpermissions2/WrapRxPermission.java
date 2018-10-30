@@ -22,7 +22,7 @@ public class WrapRxPermission extends RxPermissions {
         mContext = activity.getApplicationContext();
     }
 
-
+    @Override
     public boolean isGranted(String permission) {
         boolean isGranted = !isMarshmallow() || mRxPermissionsFragment.isGranted(permission);
         if (isGranted) {
