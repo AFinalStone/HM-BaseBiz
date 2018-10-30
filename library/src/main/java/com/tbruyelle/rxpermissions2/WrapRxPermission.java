@@ -25,8 +25,12 @@ public class WrapRxPermission extends RxPermissions {
 
     public boolean isGranted(String permission) {
         boolean isGranted = !isMarshmallow() || mRxPermissionsFragment.isGranted(permission);
-        if (isGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return PermissionUtil.hasSelfPermissionForXiaomi(mContext, permission);
+        if (isGranted) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return PermissionUtil.hasSelfPermissionForXiaomi(mContext, permission);
+            } else {
+                //6.0以下，部分手机自己也会加上权限判断 TODO 6.0以下系统，小米手机之类的权限并没有合适的方法来判断
+            }
         }
         return isGranted;
     }
