@@ -1,14 +1,18 @@
 package com.hm.iou.base.utils;
 
 import android.app.Activity;
+import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Process;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 
 import com.hm.iou.base.R;
 import com.hm.iou.uikit.dialog.IOSAlertDialog;
@@ -169,7 +173,11 @@ public class PermissionUtil {
     }
 
     public static boolean isPermissionGranted(Context activity, String permission) {
-        return ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED;
+        boolean granted = ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED;
+        if (granted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return PermissionUtil.hasSelfPermissionForXiaomi(activity, permission);
+        }
+        return granted;
     }
 
     /**
@@ -249,4 +257,29 @@ public class PermissionUtil {
                     }
                 });
     }
+
+
+    /**
+     * 在部分小米手机上发现它修改过底层权限请求系统，必须采用该方法再做一次判断
+     *
+     * @param context
+     * @param permission
+     * @return
+     */
+    public static boolean hasSelfPermissionForXiaomi(Context context, String permission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                AppOpsManager appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+                String op = AppOpsManager.permissionToOp(permission);
+                if (!TextUtils.isEmpty(op)) {
+                    int checkOp = appOpsManager.checkOp(op, Process.myUid(), context.getPackageName());
+                    return checkOp == AppOpsManager.MODE_ALLOWED && ActivityCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
 }
