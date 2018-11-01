@@ -34,6 +34,7 @@ import com.hm.iou.socialshare.dict.PlatformEnum;
 import com.hm.iou.tools.SPUtil;
 import com.hm.iou.tools.SystemUtil;
 import com.hm.iou.tools.ToastUtil;
+import com.hm.iou.uikit.HMTopBarView;
 import com.hm.iou.uikit.dialog.IOSAlertDialog;
 
 import org.greenrobot.eventbus.EventBus;
@@ -522,6 +523,15 @@ public class WebViewJsObject {
 
     @JavascriptInterface
     public int getStatusBarHeight() {
+        try {
+            int height = HMTopBarView.getStatusBarHeight(mActivity);
+            int webHeight = (int) (height / mActivity.getResources().getDisplayMetrics().density);
+            if (webHeight > 0) {
+                return webHeight;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return 24;
     }
 

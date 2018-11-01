@@ -31,7 +31,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    compile 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.4'
     compile 'com.trello.rxlifecycle2:rxlifecycle-navi:2.1.0'
     compile 'com.trello.rxlifecycle2:rxlifecycle-components:2.1.0'
     compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
@@ -54,5 +53,7 @@ dependencies {
     compile 'com.heima.iou:hmuikitlocal:1.0.0'
     compile 'com.heima.iou:hmsocialsharelocal:1.0.0'
     compile 'com.heima.iou:hmrouterlocal:1.0.0'
+    compile 'com.heima.iou:hmrxpermissionlocal:1.0.0'
+
 }
 apply from: './maven_local.gradle'
