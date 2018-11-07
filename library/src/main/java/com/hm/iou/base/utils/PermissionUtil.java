@@ -99,6 +99,8 @@ public class PermissionUtil {
         new IOSAlertDialog.Builder(activity)
                 .setTitle(activity.getString(R.string.base_permission_req))
                 .setMessage(msg)
+                .setCancelable(false)
+                .setCanceledOnTouchOutside(false)
                 .setPositiveButton(activity.getString(R.string.base_go_setting), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -195,6 +197,7 @@ public class PermissionUtil {
                 .setMessage(msg)
                 .setPermissionIcon(icon)
                 .setCancelable(false)
+                .setCanceledOnTouchOutside(false)
                 .setOnClickListener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
