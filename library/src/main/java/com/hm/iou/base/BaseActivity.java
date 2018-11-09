@@ -235,6 +235,7 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
                     }
                 })
                 .setCancelable(false)
+                .setCanceledOnTouchOutside(false)
                 .show();
     }
 
@@ -266,6 +267,7 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
                     }
                 })
                 .setCancelable(false)
+                .setCanceledOnTouchOutside(false)
                 .show();
     }
 

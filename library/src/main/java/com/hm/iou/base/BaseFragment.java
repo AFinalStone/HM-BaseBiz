@@ -222,6 +222,7 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
                     }
                 })
                 .setCancelable(false)
+                .setCanceledOnTouchOutside(false)
                 .show();
     }
 
@@ -243,6 +244,7 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
                     }
                 })
                 .setCancelable(false)
+                .setCanceledOnTouchOutside(false)
                 .show();
     }
 
