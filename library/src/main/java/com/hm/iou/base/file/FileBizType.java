@@ -40,7 +40,8 @@ public enum FileBizType {
     CustomerPrivacyFile(100, "用户私密文件"),//ps: 该类型的会使用私密的bucket存储用户的文件
     IdCardFront(101, "身份证正面"),//ps: 该类型的会使用私密的bucket存储用户的文件
     IdCardBack(102, "身份证反面"),//ps: 该类型的会使用私密的bucket存储用户的文件
-    LivenessPic(103, "用户活体图片");//ps: 该类型的会使用私密的bucket存储用户的文件
+    LivenessPic(103, "用户活体图片"),//ps: 该类型的会使用私密的bucket存储用户的文件
+    LivenessEncrypted(105, "活体加密数据");
 
     int type;
     String name;
