@@ -3,11 +3,14 @@ package com.hm.iou.base.webview;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
@@ -395,6 +398,65 @@ public class WebViewJsObject {
     }
 
     @JavascriptInterface
+    public void shareImageByBase64(final String imgBase64Str, final String channels) {
+        if (TextUtils.isEmpty(imgBase64Str) || TextUtils.isEmpty(channels)) {
+            return;
+        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                String[] channelArr = channels.split(",");
+                List<PlatFormBean> list = new ArrayList<>();
+                for (String channel : channelArr) {
+                    PlatFormBean platform = getPlatform(channel);
+                    if (platform != null) {
+                        list.add(platform);
+                    }
+                }
+                if (list.isEmpty()) {
+                    return;
+                }
+
+                byte[] bytes;
+                try {
+                    bytes = Base64.decode(imgBase64Str, Base64.NO_WRAP);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+                Bitmap bmp;
+                try {
+                    bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+
+                if (list.size() == 1) {
+                    if (mUMShareUtil == null) {
+                        mUMShareUtil = new UMShareUtil(mActivity);
+                    }
+                    mUMShareUtil.sharePicture(list.get(0).getUMSharePlatform(), bmp);
+                    return;
+                }
+
+                SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
+                        .setBitmap(bmp)
+                        .setPlatforms(list)
+                        .show();
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        if (dialog != null && dialog instanceof SharePlatformDialog) {
+                            ((SharePlatformDialog) dialog).onDestroy();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    @JavascriptInterface
     public void toUserLoginPage() {
         mHandler.post(new Runnable() {
             @Override
@@ -533,6 +595,28 @@ public class WebViewJsObject {
             e.printStackTrace();
         }
         return 24;
+    }
+
+    @JavascriptInterface
+    public void toHomePage(final int index) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                String type = "";
+                if (index == 0) {
+                    type = "home";
+                } else if (index == 1) {
+                    type = "news";
+                } else if (index == 2) {
+                    type = "recommend";
+                } else if (index == 3) {
+                    type = "personal";
+                }
+                Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/main/index")
+                        .withString("tab_type", type)
+                        .navigation(mActivity);
+            }
+        });
     }
 
     private static class DialogConfig {
