@@ -371,7 +371,7 @@ public class WebViewJsObject {
                         mUMShareUtil = new UMShareUtil(mActivity);
                     }
                     mUMShareUtil.setShareListener(mShareListener);
-                    mUMShareUtil.shareWebH5Url(list.get(0).getUMSharePlatform(), title, desc, url);
+                    mUMShareUtil.shareWebH5Url(list.get(0).getUMSharePlatform(), title, desc, url,null);
                     return;
                 }
 
