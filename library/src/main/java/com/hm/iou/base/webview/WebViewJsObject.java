@@ -21,6 +21,7 @@ import com.hm.iou.base.constants.HMConstants;
 import com.hm.iou.base.file.FileUtil;
 import com.hm.iou.base.webview.event.JsNotifyEvent;
 import com.hm.iou.base.webview.event.SelectCityEvent;
+import com.hm.iou.base.webview.event.ShareResultEvent;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
 import com.hm.iou.base.webview.event.WebViewTitleTextEvent;
@@ -39,6 +40,8 @@ import com.hm.iou.tools.SystemUtil;
 import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.uikit.HMTopBarView;
 import com.hm.iou.uikit.dialog.IOSAlertDialog;
+import com.umeng.socialize.UMShareListener;
+import com.umeng.socialize.bean.SHARE_MEDIA;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -66,6 +69,7 @@ public class WebViewJsObject {
     private String mSelectCityCallbackName; //选择城市之后的回调函数名
 
     private UMShareUtil mUMShareUtil;
+    private List<SharePlatformDialog> mShareList = new ArrayList<>();
 
     public WebViewJsObject(Activity activity) {
         mActivity = activity;
@@ -77,6 +81,10 @@ public class WebViewJsObject {
             mUMShareUtil.onDestroy();
             mUMShareUtil = null;
         }
+        for (SharePlatformDialog dialog : mShareList) {
+            dialog.onDestroy();
+        }
+        mShareList.clear();
         mWebView = null;
     }
 
@@ -248,6 +256,58 @@ public class WebViewJsObject {
         });
     }
 
+    private PlatFormBean getPlatform(String channel) {
+        if ("save".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.SAVE);
+        } else if ("weixin".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.WEIXIN);
+        } else if ("wxcircle".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.WEIXIN_CIRCLE);
+        } else if ("weibo".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.WEIBO);
+        } else if ("qq".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.QQ);
+        } else if ("sms".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.SMS);
+        }
+        return null;
+    }
+
+    private String getChannelByUMMedia(SHARE_MEDIA media) {
+        if (media == SHARE_MEDIA.WEIXIN) {
+            return "weixin";
+        } else if (media == SHARE_MEDIA.WEIXIN_CIRCLE) {
+            return "wxcircle";
+        } else if (media == SHARE_MEDIA.SINA) {
+            return "weibo";
+        } else if (media == SHARE_MEDIA.QQ) {
+            return "qq";
+        }
+        return media.name();
+    }
+
+    UMShareListener mShareListener = new UMShareListener() {
+        @Override
+        public void onStart(SHARE_MEDIA share_media) {
+
+        }
+
+        @Override
+        public void onResult(SHARE_MEDIA share_media) {
+            EventBus.getDefault().post(new ShareResultEvent(mPageTag, getChannelByUMMedia(share_media), true));
+        }
+
+        @Override
+        public void onError(SHARE_MEDIA share_media, Throwable throwable) {
+            EventBus.getDefault().post(new ShareResultEvent(mPageTag, getChannelByUMMedia(share_media), false));
+        }
+
+        @Override
+        public void onCancel(SHARE_MEDIA share_media) {
+            EventBus.getDefault().post(new ShareResultEvent(mPageTag, getChannelByUMMedia(share_media), false));
+        }
+    };
+
     @JavascriptInterface
     public void shareImage(final String imageUrl, final String channels) {
         if (TextUtils.isEmpty(imageUrl) || TextUtils.isEmpty(channels)) {
@@ -272,6 +332,7 @@ public class WebViewJsObject {
                     if (mUMShareUtil == null) {
                         mUMShareUtil = new UMShareUtil(mActivity);
                     }
+                    mUMShareUtil.setShareListener(mShareListener);
                     mUMShareUtil.sharePicture(list.get(0).getUMSharePlatform(), imageUrl);
                     return;
                 }
@@ -279,34 +340,11 @@ public class WebViewJsObject {
                 SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setPicUrl(imageUrl)
                         .setPlatforms(list)
+                        .setShareListener(mShareListener)
                         .show();
-                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        if (dialog != null && dialog instanceof SharePlatformDialog) {
-                            ((SharePlatformDialog) dialog).onDestroy();
-                        }
-                    }
-                });
+                mShareList.add(dialog);
             }
         });
-    }
-
-    private PlatFormBean getPlatform(String channel) {
-        if ("save".equals(channel)) {
-            return new PlatFormBean(PlatformEnum.SAVE);
-        } else if ("weixin".equals(channel)) {
-            return new PlatFormBean(PlatformEnum.WEIXIN);
-        } else if ("wxcircle".equals(channel)) {
-            return new PlatFormBean(PlatformEnum.WEIXIN_CIRCLE);
-        } else if ("weibo".equals(channel)) {
-            return new PlatFormBean(PlatformEnum.WEIBO);
-        } else if ("qq".equals(channel)) {
-            return new PlatFormBean(PlatformEnum.QQ);
-        } else if ("sms".equals(channel)) {
-            return new PlatFormBean(PlatformEnum.SMS);
-        }
-        return null;
     }
 
     @JavascriptInterface
@@ -332,6 +370,7 @@ public class WebViewJsObject {
                     if (mUMShareUtil == null) {
                         mUMShareUtil = new UMShareUtil(mActivity);
                     }
+                    mUMShareUtil.setShareListener(mShareListener);
                     mUMShareUtil.shareWebH5Url(list.get(0).getUMSharePlatform(), title, desc, url);
                     return;
                 }
@@ -341,15 +380,9 @@ public class WebViewJsObject {
                         .setWebUrlDesc(desc)
                         .setWebUrl(url)
                         .setPlatforms(list)
+                        .setShareListener(mShareListener)
                         .show();
-                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        if (dialog != null && dialog instanceof SharePlatformDialog) {
-                            ((SharePlatformDialog) dialog).onDestroy();
-                        }
-                    }
-                });
+                mShareList.add(dialog);
             }
         });
     }
@@ -377,6 +410,7 @@ public class WebViewJsObject {
                     if (mUMShareUtil == null) {
                         mUMShareUtil = new UMShareUtil(mActivity);
                     }
+                    mUMShareUtil.setShareListener(mShareListener);
                     mUMShareUtil.shareText(list.get(0).getUMSharePlatform(), text);
                     return;
                 }
@@ -384,15 +418,9 @@ public class WebViewJsObject {
                 SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setText(text)
                         .setPlatforms(list)
+                        .setShareListener(mShareListener)
                         .show();
-                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        if (dialog != null && dialog instanceof SharePlatformDialog) {
-                            ((SharePlatformDialog) dialog).onDestroy();
-                        }
-                    }
-                });
+                mShareList.add(dialog);
             }
         });
     }
@@ -436,6 +464,7 @@ public class WebViewJsObject {
                     if (mUMShareUtil == null) {
                         mUMShareUtil = new UMShareUtil(mActivity);
                     }
+                    mUMShareUtil.setShareListener(mShareListener);
                     mUMShareUtil.sharePicture(list.get(0).getUMSharePlatform(), bmp);
                     return;
                 }
@@ -443,15 +472,9 @@ public class WebViewJsObject {
                 SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setBitmap(bmp)
                         .setPlatforms(list)
+                        .setShareListener(mShareListener)
                         .show();
-                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        if (dialog != null && dialog instanceof SharePlatformDialog) {
-                            ((SharePlatformDialog) dialog).onDestroy();
-                        }
-                    }
-                });
+                mShareList.add(dialog);
             }
         });
     }

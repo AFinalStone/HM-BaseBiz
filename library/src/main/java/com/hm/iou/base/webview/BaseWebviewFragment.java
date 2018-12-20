@@ -44,6 +44,7 @@ import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
 import com.hm.iou.base.webview.event.JsNotifyEvent;
 import com.hm.iou.base.webview.event.SelectCityEvent;
+import com.hm.iou.base.webview.event.ShareResultEvent;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
 import com.hm.iou.base.webview.event.WebViewTitleTextEvent;
@@ -55,6 +56,7 @@ import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.uikit.HMLoadingView;
 import com.hm.iou.uikit.HMTopBarView;
 import com.hm.iou.uikit.dialog.IOSAlertDialog;
+import com.umeng.socialize.UMShareAPI;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -300,6 +302,8 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        UMShareAPI.get(getActivity()).onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == REQ_CODE_FILE_CHOOSER) {
             if (null == mUploadMessage) return;
             Uri result = data == null || resultCode != RESULT_OK ? null : data.getData();
@@ -918,6 +922,17 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
     public void onEventJsNotifyEvent(JsNotifyEvent event) {
         if (StringUtil.getUnnullString(event.getPageTag()).equals(mPageTag)) {
             onReceiveJsNotifyEvent(event.getEventName(), event.getParams());
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventShareResult(ShareResultEvent event) {
+        if (StringUtil.getUnnullString(event.getPageTag()).equals(mPageTag)) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("javascript:shareResult(");
+            sb.append(event.isSucc()).append(",").append("'").append(event.getChannel()).append("')");
+            String script = sb.toString();
+            mWebView.evaluateJavascript(script, null);
         }
     }
 
