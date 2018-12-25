@@ -13,7 +13,7 @@ import retrofit2.http.POST;
  */
 public interface CommService {
 
-    @POST("http://192.168.1.108:3000/api/iou/share/v1/shareX")
+    @POST("/api/iou/share/v1/shareX")
     Flowable<BaseResponse<Object>> reportShareResult(@Body ReportShareReqBean shareReqBean);
 
 }
