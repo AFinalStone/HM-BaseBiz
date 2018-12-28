@@ -642,6 +642,34 @@ public class WebViewJsObject {
         });
     }
 
+    @JavascriptInterface
+    public void saveImageWithBase64(final String imgBase64Str) {
+        if (TextUtils.isEmpty(imgBase64Str)) {
+            return;
+        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                byte[] bytes;
+                try {
+                    bytes = Base64.decode(imgBase64Str, Base64.NO_WRAP);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+                Bitmap bmp;
+                try {
+                    bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ToastUtil.showMessage(mActivity, "图片保存失败");
+                    return;
+                }
+                FileUtil.savePicture(mActivity, bmp);
+            }
+        });
+    }
+
     private static class DialogConfig {
 
         private String title;
