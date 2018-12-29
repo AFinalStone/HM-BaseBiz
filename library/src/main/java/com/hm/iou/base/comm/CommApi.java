@@ -75,4 +75,11 @@ public class CommApi {
         });
     }
 
+    public static Flowable<BaseResponse<String>> getShortLink(String url) {
+        ShortLinkReqBean reqBean = new ShortLinkReqBean();
+        reqBean.setOriginUrl(url);
+        return getService().getShortLink(reqBean).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
 }

@@ -16,4 +16,6 @@ public interface CommService {
     @POST("/api/iou/share/v1/shareX")
     Flowable<BaseResponse<Object>> reportShareResult(@Body ReportShareReqBean shareReqBean);
 
+    @POST("/api/base/ref/v1/short/gen")
+    Flowable<BaseResponse<String>> getShortLink(@Body ShortLinkReqBean shortLinkReqBean);
 }
