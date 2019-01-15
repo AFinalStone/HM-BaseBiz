@@ -3,7 +3,6 @@ package com.hm.iou.base.utils;
 import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -15,8 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
 import com.hm.iou.base.R;
-import com.hm.iou.uikit.dialog.IOSAlertDialog;
-import com.hm.iou.uikit.dialog.PermissionDialog;
+import com.hm.iou.uikit.dialog.HMAlertDialog;
 
 /**
  * Created by hjy on 18/5/9.<br>
@@ -95,31 +93,31 @@ public class PermissionUtil {
      *
      * @param activity
      */
-    public static void showPermissionReqDialog(final Activity activity, String msg, final OnPermissionDialogClick onPermissionDialogClick) {
-        new IOSAlertDialog.Builder(activity)
-                .setTitle(activity.getString(R.string.base_permission_req))
+    public static void showPermissionReqDialog(final Activity activity, String msg, final OnPermissionDialogClick listener) {
+        new HMAlertDialog.Builder(activity)
+                .setTitle(R.string.base_permission_req)
                 .setMessage(msg)
+                .setPositiveButton(R.string.base_go_setting)
+                .setNegativeButton(R.string.base_cancel)
                 .setCancelable(false)
                 .setCanceledOnTouchOutside(false)
-                .setPositiveButton(activity.getString(R.string.base_go_setting), new DialogInterface.OnClickListener() {
+                .setOnClickListener(new HMAlertDialog.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (onPermissionDialogClick != null) {
-                            onPermissionDialogClick.onPositiveBtnClick();
+                    public void onPosClick() {
+                        if (listener != null) {
+                            listener.onPositiveBtnClick();
                         }
-                        dialog.dismiss();
                         toPermissionSetting(activity);
                     }
-                })
-                .setNegativeButton(activity.getString(R.string.base_cancel), new DialogInterface.OnClickListener() {
+
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (onPermissionDialogClick != null) {
-                            onPermissionDialogClick.onNegativeBtnClick();
+                    public void onNegClick() {
+                        if (listener != null) {
+                            listener.onNegativeBtnClick();
                         }
-                        dialog.dismiss();
                     }
                 })
+                .create()
                 .show();
     }
 
@@ -186,45 +184,49 @@ public class PermissionUtil {
      * 在申请权限之前，显示权限提醒对话框
      *
      * @param context
-     * @param icon
-     * @param title
-     * @param msg
+     * @param title    标题
+     * @param msg      描述内容
      * @param listener
      */
-    public static void showPermissionRemindDialog(Context context, int icon, String title, String msg, final OnPermissionDialogClick listener) {
-        new PermissionDialog.Builder(context)
+    public static void showPermissionRemindDialog(Context context, String title, String msg, final OnPermissionDialogClick listener) {
+        new HMAlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(msg)
-                .setPermissionIcon(icon)
+                .setPositiveButton(R.string.base_permission_allowed)
+                .setNegativeButton(R.string.base_permission_not_allowed)
                 .setCancelable(false)
                 .setCanceledOnTouchOutside(false)
-                .setOnClickListener(new DialogInterface.OnClickListener() {
+                .setOnClickListener(new HMAlertDialog.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onPosClick() {
                         if (listener != null) {
-                            if (which == DialogInterface.BUTTON_POSITIVE) {
-                                listener.onPositiveBtnClick();
-                            } else if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                listener.onNegativeBtnClick();
-                            }
+                            listener.onPositiveBtnClick();
+                        }
+                    }
+
+                    @Override
+                    public void onNegClick() {
+                        if (listener != null) {
+                            listener.onNegativeBtnClick();
                         }
                     }
                 })
-                .create().show();
+                .create()
+                .show();
     }
 
     public static void showLocationRemindDialog(Context context, OnPermissionDialogClick listener) {
-        showPermissionRemindDialog(context, R.mipmap.base_permission_location, "开启位置权限",
+        showPermissionRemindDialog(context, "开启位置权限",
                 "我们需要获得该权限，才能为您提供省市头条信息及附近律师。", listener);
     }
 
     public static void showCalendarRemindDialog(Context context, OnPermissionDialogClick listener) {
-        showPermissionRemindDialog(context, R.mipmap.base_permission_calendar, "开启日历权限",
+        showPermissionRemindDialog(context, "开启日历权限",
                 "我们需要获得该权限，才能为您提供智能日期提醒服务。", listener);
     }
 
     public static void showCameraRemindDialog(final Context context, final OnPermissionDialogClick listener) {
-        showPermissionRemindDialog(context, R.mipmap.base_permission_camera, "开启摄像权限",
+        showPermissionRemindDialog(context, "开启摄像权限",
                 "我们需要获得该权限，才能为您提供拍摄照片服务及扫一扫功能。", new OnPermissionDialogClick() {
                     @Override
                     public void onPositiveBtnClick() {
@@ -243,7 +245,7 @@ public class PermissionUtil {
     }
 
     public static void showStorageRemindDialog(final Context context, final OnPermissionDialogClick listener) {
-        showPermissionRemindDialog(context, R.mipmap.base_permission_album, "开启读写手机存储权限",
+        showPermissionRemindDialog(context, "开启读写手机存储权限",
                 "我们需要获得该权限，才能为您提供从相册选取照片、拍摄照片及下载分享等功能。", new OnPermissionDialogClick() {
                     @Override
                     public void onPositiveBtnClick() {

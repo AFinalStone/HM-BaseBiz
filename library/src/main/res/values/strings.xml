@@ -13,4 +13,7 @@
     <string name="base_customer_service_code">jietiaoguanjia2018</string>
     <string name="base_official_website_url">http://www.54jietiao.com</string>
 
+    <string name="base_permission_allowed">好</string>
+    <string name="base_permission_not_allowed">不允许</string>
+
 </resources>
