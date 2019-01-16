@@ -1,7 +1,6 @@
 package com.hm.iou.base;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
@@ -14,7 +13,7 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.hm.iou.base.file.FileUtil;
 import com.hm.iou.base.mvp.MvpActivityPresenter;
 import com.hm.iou.tools.ImageLoader;
-import com.hm.iou.uikit.dialog.IOSAlertDialog;
+import com.hm.iou.uikit.dialog.HMAlertDialog;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -71,24 +70,23 @@ public class ImageGalleryActivity extends BaseActivity {
     }
 
     private void showSavePhotoDialog(final String url) {
-        new IOSAlertDialog.Builder(this)
+        new HMAlertDialog.Builder(this)
                 .setTitle("保存图片")
                 .setMessage("是否保存当前图片到本地？")
-                .setPositiveButtonTextColor(0xFF4A90E2)
-                .setNegativeButtonTextColor(0xFF000000)
-                .setPositiveButton("保存", new DialogInterface.OnClickListener() {
+                .setPositiveButton("保存")
+                .setNegativeButton("取消")
+                .setOnClickListener(new HMAlertDialog.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+                    public void onPosClick() {
                         FileUtil.savePicture(ImageGalleryActivity.this, url);
                     }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+                    public void onNegClick() {
+
                     }
                 })
+                .create()
                 .show();
     }
 

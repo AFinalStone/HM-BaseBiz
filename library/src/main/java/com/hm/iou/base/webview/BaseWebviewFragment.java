@@ -55,7 +55,7 @@ import com.hm.iou.tools.StringUtil;
 import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.uikit.HMLoadingView;
 import com.hm.iou.uikit.HMTopBarView;
-import com.hm.iou.uikit.dialog.IOSAlertDialog;
+import com.hm.iou.uikit.dialog.HMAlertDialog;
 import com.umeng.socialize.UMShareAPI;
 
 import org.greenrobot.eventbus.EventBus;
@@ -428,39 +428,47 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
 
             @Override
             public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
-                new IOSAlertDialog.Builder(mActivity)
+                new HMAlertDialog.Builder(mActivity)
                         .setMessage(message)
-                        .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                        .setPositiveButton("确认")
+                        .setNegativeButton("取消")
+                        .setCancelable(false)
+                        .setCanceledOnTouchOutside(false)
+                        .setOnClickListener(new HMAlertDialog.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
+                            public void onPosClick() {
                                 result.confirm();
                             }
-                        })
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
+                            public void onNegClick() {
                                 result.cancel();
                             }
                         })
-                        .setCancelable(false)
+                        .create()
                         .show();
                 return true;
             }
 
             @Override
             public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
-                new IOSAlertDialog.Builder(mActivity)
+                new HMAlertDialog.Builder(mActivity)
                         .setMessage(message)
-                        .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                        .setPositiveButton("确认")
+                        .setOnClickListener(new HMAlertDialog.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
+                            public void onPosClick() {
                                 result.confirm();
+                            }
+
+                            @Override
+                            public void onNegClick() {
+
                             }
                         })
                         .setCancelable(false)
+                        .setCanceledOnTouchOutside(false)
+                        .create()
                         .show();
                 return true;
             }

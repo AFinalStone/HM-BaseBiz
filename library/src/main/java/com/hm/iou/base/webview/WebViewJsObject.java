@@ -1,7 +1,6 @@
 package com.hm.iou.base.webview;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -39,7 +38,7 @@ import com.hm.iou.tools.SPUtil;
 import com.hm.iou.tools.SystemUtil;
 import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.uikit.HMTopBarView;
-import com.hm.iou.uikit.dialog.IOSAlertDialog;
+import com.hm.iou.uikit.dialog.HMAlertDialog;
 import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 
@@ -558,30 +557,32 @@ public class WebViewJsObject {
                         if (config.getButtons() == null || config.getButtons().isEmpty()) {
                             return;
                         }
-                        IOSAlertDialog.Builder builder = new IOSAlertDialog.Builder(mActivity);
+                        HMAlertDialog.Builder builder = new HMAlertDialog.Builder(mActivity);
                         builder.setTitle(config.getTitle());
                         builder.setMessage(config.getMsg());
                         final List<DialogConfigButton> btnList = config.getButtons();
-                        builder.setNegativeButton(btnList.get(0).getName(), new DialogInterface.OnClickListener() {
+                        builder.setPositiveButton(btnList.get(0).getName());
+                        if (btnList.size() > 1) {
+                            builder.setNegativeButton(btnList.get(1).getName());
+                        }
+                        builder.setOnClickListener(new HMAlertDialog.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onPosClick() {
                                 String callback = btnList.get(0).getCallback();
                                 if (!TextUtils.isEmpty(callback)) {
                                     mWebView.evaluateJavascript(callback + "()", null);
                                 }
                             }
-                        });
-                        if (btnList.size() > 1) {
-                            builder.setPositiveButton(btnList.get(1).getName(), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String callback = btnList.get(1).getCallback();
-                                    if (!TextUtils.isEmpty(callback)) {
-                                        mWebView.evaluateJavascript(callback + "()", null);
-                                    }
+
+                            @Override
+                            public void onNegClick() {
+                                String callback = btnList.get(1).getCallback();
+                                if (!TextUtils.isEmpty(callback)) {
+                                    mWebView.evaluateJavascript(callback + "()", null);
                                 }
-                            });
-                        }
+                            }
+                        });
+
                         builder.create().show();
                     }
                 }

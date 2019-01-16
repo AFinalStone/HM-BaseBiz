@@ -21,12 +21,13 @@ import com.hm.iou.base.R;
 import com.hm.iou.base.file.FileUtil;
 import com.hm.iou.base.utils.PermissionUtil;
 import com.hm.iou.tools.ToastUtil;
-import com.hm.iou.uikit.dialog.IOSActionSheetItem;
-import com.hm.iou.uikit.dialog.IOSActionSheetTitleDialog;
+import com.hm.iou.uikit.dialog.HMActionSheetDialog;
 import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.functions.Consumer;
 
@@ -64,56 +65,58 @@ public class PhotoUtil {
      */
     public static void showSelectDialog(final Activity activity, final int cameraReqCode, final int albumReqCode, final OnPhotoCancelListener listener) {
         TMP_SELECT_PHOTO_FLAG = false;
-        Dialog dialog = new IOSActionSheetTitleDialog.Builder(activity)
-                .addSheetItem(IOSActionSheetItem.create("拍照").setItemClickListener(new DialogInterface.OnClickListener() {
+        List<String> actionList = new ArrayList<>();
+        actionList.add("拍照");
+        actionList.add("从相册中选择");
+        Dialog dialog = new HMActionSheetDialog.Builder(activity)
+                .setTitle("")
+                .setActionSheetList(actionList)
+                .setCanSelected(false)
+                .setOnItemClickListener(new HMActionSheetDialog.OnItemClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        TMP_SELECT_PHOTO_FLAG = true;
-                        dialog.dismiss();
-                        if (PermissionUtil.isPermissionGranted(activity, Manifest.permission.CAMERA)) {
-                            openCamera(activity, cameraReqCode, listener);
-                        } else {
-                            PermissionUtil.showCameraRemindDialog(activity, new PermissionUtil.OnPermissionDialogClick() {
-                                @Override
-                                public void onPositiveBtnClick() {
-                                    openCamera(activity, cameraReqCode, listener);
-                                }
-
-                                @Override
-                                public void onNegativeBtnClick() {
-                                    if (listener != null) {
-                                        listener.onCancel();
+                    public void onItemClick(int i, String s) {
+                        if (i == 0) {
+                            TMP_SELECT_PHOTO_FLAG = true;
+                            if (PermissionUtil.isPermissionGranted(activity, Manifest.permission.CAMERA)) {
+                                openCamera(activity, cameraReqCode, listener);
+                            } else {
+                                PermissionUtil.showCameraRemindDialog(activity, new PermissionUtil.OnPermissionDialogClick() {
+                                    @Override
+                                    public void onPositiveBtnClick() {
+                                        openCamera(activity, cameraReqCode, listener);
                                     }
-                                }
-                            });
+
+                                    @Override
+                                    public void onNegativeBtnClick() {
+                                        if (listener != null) {
+                                            listener.onCancel();
+                                        }
+                                    }
+                                });
+                            }
+                        } else if (i == 1) {
+                            TMP_SELECT_PHOTO_FLAG = true;
+                            if (PermissionUtil.isPermissionGranted(activity, READ_EXTERNAL_STORAGE)) {
+                                openAlbum(activity, albumReqCode, listener);
+                            } else {
+                                PermissionUtil.showStorageRemindDialog(activity, new PermissionUtil.OnPermissionDialogClick() {
+                                    @Override
+                                    public void onPositiveBtnClick() {
+                                        openAlbum(activity, albumReqCode, listener);
+                                    }
+
+                                    @Override
+                                    public void onNegativeBtnClick() {
+                                        if (listener != null) {
+                                            listener.onCancel();
+                                        }
+                                    }
+                                });
+                            }
                         }
                     }
-                }))
-                .addSheetItem(IOSActionSheetItem.create("从相册中选择").setItemClickListener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        TMP_SELECT_PHOTO_FLAG = true;
-                        dialog.dismiss();
-                        if (PermissionUtil.isPermissionGranted(activity, READ_EXTERNAL_STORAGE)) {
-                            openAlbum(activity, albumReqCode, listener);
-                        } else {
-                            PermissionUtil.showStorageRemindDialog(activity, new PermissionUtil.OnPermissionDialogClick() {
-                                @Override
-                                public void onPositiveBtnClick() {
-                                    openAlbum(activity, albumReqCode, listener);
-                                }
-
-                                @Override
-                                public void onNegativeBtnClick() {
-                                    if (listener != null) {
-                                        listener.onCancel();
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }))
-                .show();
+                })
+                .create();
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
@@ -122,6 +125,7 @@ public class PhotoUtil {
                 }
             }
         });
+        dialog.show();
     }
 
     public static void showSelectDialog(final Fragment fragment, final int cameraReqCode, final int albumReqCode) {
@@ -137,56 +141,58 @@ public class PhotoUtil {
      */
     public static void showSelectDialog(final Fragment fragment, final int cameraReqCode, final int albumReqCode, final OnPhotoCancelListener listener) {
         TMP_SELECT_PHOTO_FLAG = false;
-        Dialog dialog = new IOSActionSheetTitleDialog.Builder(fragment.getActivity())
-                .addSheetItem(IOSActionSheetItem.create("拍照").setItemClickListener(new DialogInterface.OnClickListener() {
+        List<String> actionList = new ArrayList<>();
+        actionList.add("拍照");
+        actionList.add("从相册中选择");
+        Dialog dialog = new HMActionSheetDialog.Builder(fragment.getActivity())
+                .setTitle("")
+                .setActionSheetList(actionList)
+                .setCanSelected(false)
+                .setOnItemClickListener(new HMActionSheetDialog.OnItemClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        TMP_SELECT_PHOTO_FLAG = true;
-                        dialog.dismiss();
-                        if (PermissionUtil.isPermissionGranted(fragment.getActivity(), Manifest.permission.CAMERA)) {
-                            openCamera(fragment, cameraReqCode, listener);
-                        } else {
-                            PermissionUtil.showCameraRemindDialog(fragment.getActivity(), new PermissionUtil.OnPermissionDialogClick() {
-                                @Override
-                                public void onPositiveBtnClick() {
-                                    openCamera(fragment, cameraReqCode, listener);
-                                }
-
-                                @Override
-                                public void onNegativeBtnClick() {
-                                    if (listener != null) {
-                                        listener.onCancel();
+                    public void onItemClick(int i, String s) {
+                        if (i == 0) {
+                            TMP_SELECT_PHOTO_FLAG = true;
+                            if (PermissionUtil.isPermissionGranted(fragment.getActivity(), Manifest.permission.CAMERA)) {
+                                openCamera(fragment, cameraReqCode, listener);
+                            } else {
+                                PermissionUtil.showCameraRemindDialog(fragment.getActivity(), new PermissionUtil.OnPermissionDialogClick() {
+                                    @Override
+                                    public void onPositiveBtnClick() {
+                                        openCamera(fragment, cameraReqCode, listener);
                                     }
-                                }
-                            });
+
+                                    @Override
+                                    public void onNegativeBtnClick() {
+                                        if (listener != null) {
+                                            listener.onCancel();
+                                        }
+                                    }
+                                });
+                            }
+                        } else if (i == 1) {
+                            TMP_SELECT_PHOTO_FLAG = true;
+                            if (PermissionUtil.isPermissionGranted(fragment.getActivity(), READ_EXTERNAL_STORAGE)) {
+                                openAlbum(fragment, albumReqCode, listener);
+                            } else {
+                                PermissionUtil.showStorageRemindDialog(fragment.getActivity(), new PermissionUtil.OnPermissionDialogClick() {
+                                    @Override
+                                    public void onPositiveBtnClick() {
+                                        openAlbum(fragment, albumReqCode, listener);
+                                    }
+
+                                    @Override
+                                    public void onNegativeBtnClick() {
+                                        if (listener != null) {
+                                            listener.onCancel();
+                                        }
+                                    }
+                                });
+                            }
                         }
                     }
-                }))
-                .addSheetItem(IOSActionSheetItem.create("从相册中选择").setItemClickListener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        TMP_SELECT_PHOTO_FLAG = true;
-                        dialog.dismiss();
-                        if (PermissionUtil.isPermissionGranted(fragment.getActivity(), READ_EXTERNAL_STORAGE)) {
-                            openAlbum(fragment, albumReqCode, listener);
-                        } else {
-                            PermissionUtil.showStorageRemindDialog(fragment.getActivity(), new PermissionUtil.OnPermissionDialogClick() {
-                                @Override
-                                public void onPositiveBtnClick() {
-                                    openAlbum(fragment, albumReqCode, listener);
-                                }
-
-                                @Override
-                                public void onNegativeBtnClick() {
-                                    if (listener != null) {
-                                        listener.onCancel();
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }))
-                .show();
+                })
+                .create();
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
@@ -195,6 +201,7 @@ public class PhotoUtil {
                 }
             }
         });
+        dialog.show();
     }
 
     public static void openCamera(final Activity activity, final int requestCode) {

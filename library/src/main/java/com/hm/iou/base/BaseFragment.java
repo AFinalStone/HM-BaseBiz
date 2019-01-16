@@ -2,7 +2,6 @@ package com.hm.iou.base;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
@@ -19,7 +18,7 @@ import com.hm.iou.sharedata.UserManager;
 import com.hm.iou.sharedata.event.LogoutEvent;
 import com.hm.iou.tools.KeyboardUtil;
 import com.hm.iou.tools.ToastUtil;
-import com.hm.iou.uikit.dialog.IOSAlertDialog;
+import com.hm.iou.uikit.dialog.HMAlertDialog;
 import com.hm.iou.uikit.loading.LoadingDialogUtil;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
@@ -211,18 +210,25 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
         }
         clearUserData();
         mRemindKickOff = true;
-        new IOSAlertDialog.Builder(getActivity())
+        new HMAlertDialog.Builder(getActivity())
                 .setTitle(title)
                 .setMessage(errMsg)
-                .setPositiveButton("重新登录", new DialogInterface.OnClickListener() {
+                .setPositiveButton("重新登录")
+                .setOnClickListener(new HMAlertDialog.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onPosClick() {
                         TraceUtil.onEvent(mActivity, "err_login_other_place");
                         exitAndToLoginPage();
+                    }
+
+                    @Override
+                    public void onNegClick() {
+
                     }
                 })
                 .setCancelable(false)
                 .setCanceledOnTouchOutside(false)
+                .create()
                 .show();
     }
 
@@ -233,18 +239,25 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
         }
         mRemindAccountFreeze = true;
         clearUserData();
-        new IOSAlertDialog.Builder(getActivity())
+        new HMAlertDialog.Builder(getActivity())
                 .setTitle(title)
                 .setMessage(errMsg)
-                .setNegativeButton("退出账号", new DialogInterface.OnClickListener() {
+                .setPositiveButton("退出账号")
+                .setOnClickListener(new HMAlertDialog.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onPosClick() {
                         TraceUtil.onEvent(mActivity, "err_black_name");
                         exitAndToLoginPage();
+                    }
+
+                    @Override
+                    public void onNegClick() {
+
                     }
                 })
                 .setCancelable(false)
                 .setCanceledOnTouchOutside(false)
+                .create()
                 .show();
     }
 
