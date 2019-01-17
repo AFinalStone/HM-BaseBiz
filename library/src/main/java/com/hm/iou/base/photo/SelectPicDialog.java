@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,15 +63,10 @@ public class SelectPicDialog extends Dialog {
         Window dialogWindow = dialog.getWindow();
         dialogWindow.setGravity(Gravity.BOTTOM);
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        lp.width = WindowManager.LayoutParams.FILL_PARENT;
-        lp.height = WindowManager.LayoutParams.FILL_PARENT;
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.MATCH_PARENT;
         dialogWindow.setAttributes(lp);
 
-        //获取设备的宽度
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        // 设置Dialog最小宽度为屏幕宽度，最小高度为屏幕高度
-        view.setMinimumWidth(dm.widthPixels);
-        view.setMinimumHeight(dm.heightPixels);
         dialog.setCanceledOnTouchOutside(false);
         return dialog;
     }

@@ -22,15 +22,16 @@
         android:orientation="horizontal"
         android:paddingBottom="10dip">
 
-        <TextView
-            android:id="@+id/tv_cut_cancel"
+        <Button
+            android:id="@+id/btn_cut_cancel"
+            style="@style/UikitHMButton"
             android:layout_width="wrap_content"
             android:layout_height="50dip"
             android:gravity="center"
             android:paddingEnd="20dp"
             android:paddingStart="20dp"
             android:text="取消"
-            android:textColor="@color/white"
+            android:textColor="@color/base_image_cropper_text"
             android:textSize="@dimen/textFontSize_18" />
 
 
@@ -39,15 +40,16 @@
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
-        <TextView
-            android:id="@+id/tv_cut_finish"
+        <Button
+            android:id="@+id/btn_cut_finish"
+            style="@style/UikitHMButton"
             android:layout_width="wrap_content"
             android:layout_height="50dip"
             android:gravity="center"
             android:paddingEnd="20dp"
             android:paddingStart="20dp"
             android:text="完成"
-            android:textColor="@color/white"
+            android:textColor="@color/base_image_cropper_text"
             android:textSize="@dimen/textFontSize_18" />
     </LinearLayout>
 

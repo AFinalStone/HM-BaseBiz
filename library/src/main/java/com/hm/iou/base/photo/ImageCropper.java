@@ -69,8 +69,8 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         mGestureDetector = new GestureDetector(context, this);
         LayoutInflater.from(context).inflate(R.layout.base_layout_image_cropper, this);
-        findViewById(R.id.tv_cut_cancel).setOnClickListener(this);
-        findViewById(R.id.tv_cut_finish).setOnClickListener(this);
+        findViewById(R.id.btn_cut_cancel).setOnClickListener(this);
+        findViewById(R.id.btn_cut_finish).setOnClickListener(this);
         iSource = findViewById(R.id.i_source);
         vOverlay = findViewById(R.id.v_overlay);
         layoutBottom = findViewById(R.id.ll_cut_bottom);
@@ -394,7 +394,7 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
         if (ViewConcurrencyUtil.isFastClick(v)) {
             return;
         }
-        if (v.getId() == R.id.tv_cut_finish) {
+        if (v.getId() == R.id.btn_cut_finish) {
             if (mCallback != null) {
                 final float x = ((bmpSource.getWidth() * iSource.getScaleX() - vOverlay.getOverlayWidth()) / 2 - iSource.getTranslationX()) / iSource.getScaleX();
                 final float width = vOverlay.getOverlayWidth() / iSource.getScaleX();
@@ -413,7 +413,7 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
                     }
                 }).start();
             }
-        } else if (v.getId() == R.id.tv_cut_cancel) {
+        } else if (v.getId() == R.id.btn_cut_cancel) {
             setVisibility(GONE);
         }
     }

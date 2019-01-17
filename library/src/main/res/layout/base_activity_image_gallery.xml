@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
-    android:orientation="vertical">
-
-    <com.hm.iou.uikit.HMTopBarView
-        android:id="@+id/topbar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/uikit_topbar_height"
-        app:titleText=""
-        />
-
+    android:orientation="vertical"
+    android:background="@android:color/black"
+    >
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_image_gallery"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/black"
         >
-
     </android.support.v4.view.ViewPager>
 
-</LinearLayout>
+    <com.hm.iou.uikit.HMTopBarView
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/uikit_topbar_height"
+        app:titleBackground="#00000000"
+        app:titleText=""
+        app:bottomDividerIsShow="false"
+        />
+
+
+</RelativeLayout>
