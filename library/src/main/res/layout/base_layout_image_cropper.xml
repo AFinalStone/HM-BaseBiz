@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -14,52 +14,41 @@
         android:layout_height="match_parent" />
 
     <LinearLayout
+        android:id="@+id/ll_cut_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_alignParentBottom="true"
+        android:background="#B0000000"
+        android:orientation="horizontal"
+        android:paddingBottom="10dip">
+
+        <TextView
+            android:id="@+id/tv_cut_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="50dip"
+            android:gravity="center"
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp"
+            android:text="取消"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textFontSize_18" />
+
 
         <View
-            android:id="@+id/v_fit"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/black" />
-
-        <LinearLayout
-            android:id="@+id/linearLayout_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="#B0000000"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/btn_cutCancer"
-                android:layout_width="64dp"
-                android:layout_height="match_parent"
-                android:paddingEnd="20dp"
-                android:paddingStart="20dp"
-                android:scaleType="center"
-                android:src="@mipmap/uikit_icon_close_white_01" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/btn_cutFinish"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingEnd="20dp"
-                android:paddingStart="20dp"
-                android:text="确定"
-                android:textColor="@color/white"
-                android:textSize="@dimen/textFontSize_16" />
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tv_cut_finish"
+            android:layout_width="wrap_content"
+            android:layout_height="50dip"
+            android:gravity="center"
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp"
+            android:text="完成"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textFontSize_18" />
     </LinearLayout>
-</FrameLayout>
+
+</RelativeLayout>
