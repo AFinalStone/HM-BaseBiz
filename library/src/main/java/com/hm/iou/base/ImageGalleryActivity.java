@@ -75,6 +75,7 @@ public class ImageGalleryActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 mIndex = position;
+                mTopBar.setTitle(String.format("%d/%d", mIndex + 1, mUrlArr != null ? mUrlArr.length : 0));
             }
 
             @Override
@@ -82,6 +83,8 @@ public class ImageGalleryActivity extends BaseActivity {
 
             }
         });
+
+        mTopBar.setTitle(String.format("%d/%d", mIndex + 1, mUrlArr != null ? mUrlArr.length : 0));
     }
 
     @Override
