@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -14,6 +15,7 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.hm.iou.base.file.FileUtil;
 import com.hm.iou.base.mvp.MvpActivityPresenter;
 import com.hm.iou.tools.ImageLoader;
+import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.uikit.HMTopBarView;
 import com.hm.iou.uikit.dialog.HMAlertDialog;
 
@@ -29,12 +31,20 @@ public class ImageGalleryActivity extends BaseActivity {
 
     public static final String EXTRA_KEY_IMAGES = "images";
     public static final String EXTRA_KEY_INDEX = "index";
+    //导航栏右上角是否显示"删除"按钮，值为"1"时显示，其他情况都不显示
+    public static final String EXTRA_KEY_SHOW_DELETE = "show_delete";
+
+    public static final String EXTRA_KEY_DELETE_URLS = "delete_urls";
 
     protected HMTopBarView mTopBar;
     protected ViewPager mViewPager;
 
     protected String[] mUrlArr;
     protected int mIndex;
+    protected ImageAdapter mAdapter;
+    protected int mShowDelete;
+
+    protected ArrayList<String> mDelList = new ArrayList<>();
 
     @Override
     protected int getLayoutId() {
@@ -54,9 +64,11 @@ public class ImageGalleryActivity extends BaseActivity {
         Intent data = getIntent();
         mUrlArr = data.getStringArrayExtra(EXTRA_KEY_IMAGES);
         mIndex = data.getIntExtra(EXTRA_KEY_INDEX, 0);
+        mShowDelete = data.getIntExtra(EXTRA_KEY_SHOW_DELETE, 0);
         if (mUrlArr == null && bundle != null) {
             mUrlArr = bundle.getStringArray(EXTRA_KEY_IMAGES);
             mIndex = bundle.getInt(EXTRA_KEY_INDEX);
+            mShowDelete = bundle.getInt(EXTRA_KEY_SHOW_DELETE);
         }
         List<String> list = new ArrayList<>();
         if (mUrlArr != null) {
@@ -64,7 +76,8 @@ public class ImageGalleryActivity extends BaseActivity {
                 list.add(url);
             }
         }
-        mViewPager.setAdapter(new ImageAdapter(this, list));
+        mAdapter = new ImageAdapter(this, list);
+        mViewPager.setAdapter(mAdapter);
         mViewPager.setCurrentItem(mIndex);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -75,7 +88,7 @@ public class ImageGalleryActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 mIndex = position;
-                mTopBar.setTitle(String.format("%d/%d", mIndex + 1, mUrlArr != null ? mUrlArr.length : 0));
+                mTopBar.setTitle(String.format("%d/%d", mIndex + 1, mAdapter.getCount()));
             }
 
             @Override
@@ -83,8 +96,40 @@ public class ImageGalleryActivity extends BaseActivity {
 
             }
         });
+        mTopBar.setTitle(String.format("%d/%d", mIndex + 1, mAdapter.getCount()));
 
-        mTopBar.setTitle(String.format("%d/%d", mIndex + 1, mUrlArr != null ? mUrlArr.length : 0));
+        if (mShowDelete == 1) {
+            mTopBar.setRightText("删除");
+            mTopBar.setOnMenuClickListener(new HMTopBarView.OnTopBarMenuClickListener() {
+                @Override
+                public void onClickTextMenu() {
+                    showDeleteConfirmDialog();
+                }
+
+                @Override
+                public void onClickImageMenu() {
+
+                }
+            });
+        }
+        mTopBar.setOnBackClickListener(new HMTopBarView.OnTopBarBackClickListener() {
+            @Override
+            public void onClickBack() {
+                onBackPressed();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDelList.isEmpty()) {
+            finish();
+        } else {
+            Intent data = new Intent();
+            data.putStringArrayListExtra(EXTRA_KEY_DELETE_URLS, mDelList);
+            setResult(RESULT_OK, data);
+            finish();
+        }
     }
 
     @Override
@@ -92,6 +137,7 @@ public class ImageGalleryActivity extends BaseActivity {
         super.onSaveInstanceState(outState);
         outState.putStringArray(EXTRA_KEY_IMAGES, mUrlArr);
         outState.putInt(EXTRA_KEY_INDEX, mIndex);
+        outState.putInt(EXTRA_KEY_SHOW_DELETE, mShowDelete);
     }
 
     private void showSavePhotoDialog(final String url) {
@@ -100,10 +146,41 @@ public class ImageGalleryActivity extends BaseActivity {
                 .setMessage("是否保存当前图片到本地？")
                 .setPositiveButton("保存")
                 .setNegativeButton("取消")
+                .setMessageGravity(Gravity.CENTER)
                 .setOnClickListener(new HMAlertDialog.OnClickListener() {
                     @Override
                     public void onPosClick() {
                         FileUtil.savePicture(ImageGalleryActivity.this, url);
+                    }
+
+                    @Override
+                    public void onNegClick() {
+                    }
+                })
+                .create()
+                .show();
+    }
+
+    private void showDeleteConfirmDialog() {
+        new HMAlertDialog.Builder(this)
+                .setMessage("要删除这张照片吗？")
+                .setPositiveButton("删除")
+                .setNegativeButton("取消")
+                .setMessageGravity(Gravity.CENTER)
+                .setOnClickListener(new HMAlertDialog.OnClickListener() {
+                    @Override
+                    public void onPosClick() {
+                        String deleteUrl = mAdapter.delete(mIndex);
+                        if (!TextUtils.isEmpty(deleteUrl)) {
+                            mDelList.add(deleteUrl);
+                        }
+                        ToastUtil.showStatusView(ImageGalleryActivity.this, "删除成功");
+                        mIndex = mIndex > 0 ? mIndex - 1 : 0;
+                        mViewPager.setCurrentItem(mIndex);
+                        mTopBar.setTitle(String.format("%d/%d", mIndex + 1, mAdapter.getCount()));
+                        if (mAdapter.getCount() == 0) {
+                            onBackPressed();
+                        }
                     }
 
                     @Override
@@ -115,7 +192,7 @@ public class ImageGalleryActivity extends BaseActivity {
                 .show();
     }
 
-    class ImageAdapter extends PagerAdapter implements View.OnLongClickListener, View.OnClickListener {
+    public class ImageAdapter extends PagerAdapter implements View.OnLongClickListener, View.OnClickListener {
 
         private Context mContext;
         private LinkedList<View> mViewCache;
@@ -126,6 +203,15 @@ public class ImageGalleryActivity extends BaseActivity {
             this.mContext = context;
             this.mDatas = list;
             mViewCache = new LinkedList<>();
+        }
+
+        public String delete(int pos) {
+            String url = null;
+            if (mDatas != null && pos < mDatas.size() && pos >= 0) {
+                url = mDatas.remove(pos);
+            }
+            notifyDataSetChanged();
+            return url;
         }
 
         @Override
