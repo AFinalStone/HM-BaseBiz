@@ -1,10 +1,10 @@
 package com.hm.iou.base.utils;
 
 import android.app.Activity;
+import android.os.Build;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-
-import com.hm.iou.logger.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -14,6 +14,29 @@ import java.lang.reflect.Method;
  */
 
 public class StatusBarUtil {
+
+    /**
+     * 设置状态栏上面的字体颜色
+     *
+     * @param activity
+     * @param isDarkFont true-表示黑色，false-表示白色
+     */
+    public static void setStatusBarDarkFont(Activity activity, boolean isDarkFont) {
+        activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (StatusBarUtil.setMeiZuStatusBarDarkFont(isDarkFont, activity.getWindow())) {
+                return;
+            }
+            if (StatusBarUtil.setXiaoMiStatusBarDarkFont(isDarkFont, activity)) {
+
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (isDarkFont) {
+                    activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                }
+            }
+        }
+    }
 
 
     /**
