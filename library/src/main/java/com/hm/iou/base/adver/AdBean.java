@@ -10,6 +10,8 @@ public class AdBean {
     String linkUrl;
     String beginTime;
     String endTime;
+    String backColor;
+    String wordColor;
 
     public String getUrl() {
         return url;
@@ -43,4 +45,19 @@ public class AdBean {
         this.endTime = endTime;
     }
 
+    public String getBackColor() {
+        return backColor;
+    }
+
+    public void setBackColor(String backColor) {
+        this.backColor = backColor;
+    }
+
+    public String getWordColor() {
+        return wordColor;
+    }
+
+    public void setWordColor(String wordColor) {
+        this.wordColor = wordColor;
+    }
 }
