@@ -309,6 +309,11 @@ public class WebViewJsObject {
 
     @JavascriptInterface
     public void shareImage(final String imageUrl, final String channels) {
+        shareImageV2(imageUrl, channels, 0, null);
+    }
+
+    @JavascriptInterface
+    public void shareImageV2(final String imageUrl, final String channels, final int type, final String shareTitle) {
         if (TextUtils.isEmpty(imageUrl) || TextUtils.isEmpty(channels)) {
             return;
         }
@@ -340,6 +345,8 @@ public class WebViewJsObject {
                         .setPicUrl(imageUrl)
                         .setPlatforms(list)
                         .setShareListener(mShareListener)
+                        .setTitle(shareTitle)
+                        .setShowImage(type == 1 ? true : false)
                         .show();
                 mShareList.add(dialog);
             }
@@ -348,6 +355,11 @@ public class WebViewJsObject {
 
     @JavascriptInterface
     public void shareLink(final String title, final String desc, final String url, final String channels) {
+        shareLinkV2(title, desc, url, channels, null);
+    }
+
+    @JavascriptInterface
+    public void shareLinkV2(final String title, final String desc, final String url, final String channels, final String shareTitle) {
         if (TextUtils.isEmpty(title) || TextUtils.isEmpty(desc) || TextUtils.isEmpty(url) || TextUtils.isEmpty(channels)) {
             return;
         }
@@ -380,6 +392,7 @@ public class WebViewJsObject {
                         .setWebUrl(url)
                         .setPlatforms(list)
                         .setShareListener(mShareListener)
+                        .setTitle(shareTitle)
                         .show();
                 mShareList.add(dialog);
             }
@@ -388,6 +401,11 @@ public class WebViewJsObject {
 
     @JavascriptInterface
     public void shareText(final String text, final String channels) {
+        shareTextV2(text, channels, null);
+    }
+
+    @JavascriptInterface
+    public void shareTextV2(final String text, final String channels, final String shareTitle) {
         if (TextUtils.isEmpty(text) || TextUtils.isEmpty(channels)) {
             return;
         }
@@ -418,6 +436,7 @@ public class WebViewJsObject {
                         .setText(text)
                         .setPlatforms(list)
                         .setShareListener(mShareListener)
+                        .setTitle(shareTitle)
                         .show();
                 mShareList.add(dialog);
             }
@@ -426,6 +445,11 @@ public class WebViewJsObject {
 
     @JavascriptInterface
     public void shareImageByBase64(final String imgBase64Str, final String channels) {
+        shareImageByBase64V2(imgBase64Str, channels, null);
+    }
+
+    @JavascriptInterface
+    public void shareImageByBase64V2(final String imgBase64Str, final String channels, final String shareTitle) {
         if (TextUtils.isEmpty(imgBase64Str) || TextUtils.isEmpty(channels)) {
             return;
         }
@@ -472,6 +496,7 @@ public class WebViewJsObject {
                         .setBitmap(bmp)
                         .setPlatforms(list)
                         .setShareListener(mShareListener)
+                        .setTitle(shareTitle)
                         .show();
                 mShareList.add(dialog);
             }
