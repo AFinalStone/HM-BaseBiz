@@ -43,6 +43,7 @@ import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -382,7 +383,7 @@ public class WebViewJsObject {
                         mUMShareUtil = new UMShareUtil(mActivity);
                     }
                     mUMShareUtil.setShareListener(mShareListener);
-                    mUMShareUtil.shareWebH5Url(list.get(0).getUMSharePlatform(), title, desc, url,null);
+                    mUMShareUtil.shareWebH5Url(list.get(0).getUMSharePlatform(), title, desc, url, null);
                     return;
                 }
 
@@ -630,6 +631,21 @@ public class WebViewJsObject {
         if (TextUtils.isEmpty(eventName))
             return;
         EventBus.getDefault().post(new JsNotifyEvent(eventName, params, mPageTag));
+    }
+
+    @JavascriptInterface
+    public void notifyEvent(String params) {
+        if (TextUtils.isEmpty(params)) {
+            return;
+        }
+        try {
+            JSONObject obj = new JSONObject(params);
+            String eventName = obj.getString("eventName");
+            String result = obj.getString("result");
+            EventBus.getDefault().post(new JsNotifyEvent(eventName, result, mPageTag));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @JavascriptInterface
