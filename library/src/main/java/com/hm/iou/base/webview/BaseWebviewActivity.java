@@ -656,6 +656,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Logger.d("shouldOverrideUrlLoading: " + url);
                 if (url == null) {
                     return true;
                 }
