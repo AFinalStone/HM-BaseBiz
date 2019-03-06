@@ -7,6 +7,7 @@ import com.hm.iou.logger.Logger;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.network.HttpRequestConfig;
 import com.hm.iou.router.Router;
+import com.hm.iou.sharedata.UserManager;
 
 
 /**
@@ -22,7 +23,7 @@ public class BaseBizDemoApplication extends Application {
         Logger.init(this, true);
         BaseBizAppLike baseBizAppLike = new BaseBizAppLike();
         baseBizAppLike.onCreate(this);
-        baseBizAppLike.initServer("http://192.168.1.217", "http://192.168.1.217",
+        baseBizAppLike.initServer("https://upload.54jietiao.com", "http://192.168.1.217",
                 "http://192.168.1.217");
 //        baseBizAppLike.initServer("http://192.168.1.82:8071", "http://192.168.1.82",
 //        "http://192.168.1.82");
@@ -35,9 +36,11 @@ public class BaseBizDemoApplication extends Application {
         HttpRequestConfig config = new HttpRequestConfig.Builder(this)
                 .setDebug(true)
                 .setAppChannel("yyb")
-                .setAppVersion("1.0.2")
+                .setAppVersion("1.2.0.1")
                 .setDeviceId("123abc123")
                 .setBaseUrl(BaseBizAppLike.getInstance().getApiServer())
+                .setUserId(UserManager.getInstance(this).getUserId())
+                .setToken(UserManager.getInstance(this).getToken())
                 .build();
         HttpReqManager.init(config);
     }

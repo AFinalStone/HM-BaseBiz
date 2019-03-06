@@ -10,15 +10,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.hm.iou.base.ImageGalleryActivity;
 import com.hm.iou.base.file.FileApi;
 import com.hm.iou.base.file.FileUploadResult;
 import com.hm.iou.base.photo.CompressPictureUtil;
 import com.hm.iou.base.photo.ImageCropper;
 import com.hm.iou.base.photo.PhotoUtil;
-import com.hm.iou.base.photo.SelectPicDialog;
 import com.hm.iou.base.utils.InstallUtil;
 import com.hm.iou.base.utils.RxUtil;
-import com.hm.iou.base.webview.FullScreenWebViewActivity;
+import com.hm.iou.base.webview.BaseWebviewActivity;
 import com.hm.iou.logger.Logger;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.router.Router;
@@ -52,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, FullScreenWebViewActivity.class);
+                Intent intent = new Intent(MainActivity.this, BaseWebviewActivity.class);
 //                intent.putExtra("url", "http://192.168.1.217/moneyMarket/html/consultNow.html");
-                intent.putExtra("url", "http://192.168.1.217/apph5/appPage/funimg-ps.html");
-                intent.putExtra("showtitlebar", "false");
+                intent.putExtra("url", "https://wxpay.wxutil.com/mch/pay/h5.v2.php");
+//                intent.putExtra("showtitlebar", "false");
                 startActivity(intent);
             }
         });
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_tes5).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SelectPicDialog.createDialog(MainActivity.this, "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1530164549688&di=1c59fb642db7d4279efd9eeaaea62765&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimgad%2Fpic%2Fitem%2F8b82b9014a90f60314b73db13312b31bb151edc5.jpg", new SelectPicDialog.OnSelectListener() {
+/*                SelectPicDialog.createDialog(MainActivity.this, "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1530164549688&di=1c59fb642db7d4279efd9eeaaea62765&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimgad%2Fpic%2Fitem%2F8b82b9014a90f60314b73db13312b31bb151edc5.jpg", new SelectPicDialog.OnSelectListener() {
                     @Override
                     public void onDelete() {
 
@@ -103,7 +103,15 @@ public class MainActivity extends AppCompatActivity {
                     public void onReSelect() {
 
                     }
-                }).show();
+                }).show();*/
+
+                String url = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1530164549688&di=1c59fb642db7d4279efd9eeaaea62765&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimgad%2Fpic%2Fitem%2F8b82b9014a90f60314b73db13312b31bb151edc5.jpg";
+                String[] imgs = new String[] {url, url, url};
+                Intent intent = new Intent(MainActivity.this, ImageGalleryActivity.class);
+                intent.putExtra(ImageGalleryActivity.EXTRA_KEY_IMAGES, imgs);
+                intent.putExtra(ImageGalleryActivity.EXTRA_KEY_INDEX, 1);
+                startActivity(intent);
+
             }
         });
 
@@ -166,8 +174,17 @@ public class MainActivity extends AppCompatActivity {
 /*                Bitmap bitmap = BitmapFactory.decodeFile(path);
                 mIvPhoto.setImageBitmap(bitmap);*/
 
-                initImageCropper();
-                mImageCropper.crop(path, 150, 100, false, "crop");
+/*                initImageCropper();
+                mImageCropper.crop(path, 150, 100, false, "crop");*/
+
+                int displayDeviceHeight = getResources().getDisplayMetrics().heightPixels - DensityUtil.dip2px(this, 53);
+                ImageCropper.Helper.with(this).setTranslucentStatusHeight(displayDeviceHeight).setCallback(new ImageCropper.Callback() {
+                    @Override
+                    public void onPictureCropOut(Bitmap bitmap, String tag) {
+                        mIvPhoto.setImageBitmap(bitmap);
+                    }
+                }).create().crop(path, 200, 200, false, "");
+
             }
         } else if (requestCode == 102) {
             if (resultCode == RESULT_OK) {
