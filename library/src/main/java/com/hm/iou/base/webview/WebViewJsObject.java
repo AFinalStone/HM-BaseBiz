@@ -24,6 +24,7 @@ import com.hm.iou.base.webview.event.ShareResultEvent;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
 import com.hm.iou.base.webview.event.WebViewTitleTextEvent;
+import com.hm.iou.logger.Logger;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.network.HttpRequestConfig;
 import com.hm.iou.router.Router;
@@ -209,6 +210,7 @@ public class WebViewJsObject {
 
     @JavascriptInterface
     public void openUrlThroughWebView(final String url) {
+        Logger.d("openUrlThroughWebView: " + url);
         mHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -221,6 +223,7 @@ public class WebViewJsObject {
 
     @JavascriptInterface
     public void navigateByRouter(final String routerUrl) {
+        Logger.d("navigateByRouter:" + routerUrl);
         mHandler.post(new Runnable() {
             @Override
             public void run() {
