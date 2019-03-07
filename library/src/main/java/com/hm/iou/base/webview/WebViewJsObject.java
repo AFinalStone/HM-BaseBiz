@@ -272,6 +272,8 @@ public class WebViewJsObject {
             return new PlatFormBean(PlatformEnum.QQ);
         } else if ("sms".equals(channel)) {
             return new PlatFormBean(PlatformEnum.SMS);
+        } else if ("email".equals(channel)) {
+            return new PlatFormBean(PlatformEnum.EMAIL);
         }
         return null;
     }
