@@ -166,6 +166,12 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
         options.inSampleSize = calculateInSampleSize(options, mWidth, mHeight);
         options.inJustDecodeBounds = false;
         bmpSource = BitmapFactory.decodeFile(sourceFilePath, options);
+
+        if (bmpSource == null) {
+            //图片解析失败
+            return;
+        }
+
         //图片旋转
         bmpSource = rotateImage(sourceFilePath, bmpSource);
 
