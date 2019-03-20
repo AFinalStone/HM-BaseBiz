@@ -2,6 +2,7 @@ package com.hm.iou.base.comm;
 
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.sharedata.model.BaseResponse;
+import com.hm.iou.sharedata.model.PersonalCenterInfo;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 
 import io.reactivex.Flowable;
@@ -26,6 +27,16 @@ public class CommApi {
      */
     public static Flowable<BaseResponse<Object>> reportShareResult(ReportShareReqBean shareReqBean) {
         return getService().reportShareResult(shareReqBean).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /**
+     * 获取个人中心用户的摘要信息
+     *
+     * @return
+     */
+    public static Flowable<BaseResponse<PersonalCenterInfo>> getPersonalCenter() {
+        return getService().getPersonalCenter().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
