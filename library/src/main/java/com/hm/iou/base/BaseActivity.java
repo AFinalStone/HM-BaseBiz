@@ -169,6 +169,7 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
         if (mLoadingDialog == null) {
             mLoadingDialog = LoadingDialogUtil.showLoading(this, msg, false);
         }
+        //动态变更msg
         TextView tvMsg = mLoadingDialog.findViewById(R.id.tv_loadingMsg);
         if (tvMsg != null && !TextUtils.isEmpty(msg)) {
             tvMsg.setText(msg);
