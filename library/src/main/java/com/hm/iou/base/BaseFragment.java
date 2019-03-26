@@ -5,9 +5,11 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.base.mvp.MvpFragmentPresenter;
@@ -122,7 +124,9 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
             return;
         if (activity instanceof BaseActivity) {
             ((BaseActivity) activity).showLoadingView();
+            return;
         }
+        //保留旧代码
         if (mLoadingDialog == null) {
             mLoadingDialog = LoadingDialogUtil.showLoading(activity);
         }
@@ -139,8 +143,13 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
             ((BaseActivity) activity).showLoadingView(msg);
             return;
         }
+        //保留旧代码
         if (mLoadingDialog == null) {
             mLoadingDialog = LoadingDialogUtil.showLoading(activity, msg, false);
+        }
+        TextView tvMsg = mLoadingDialog.findViewById(R.id.tv_loadingMsg);
+        if (tvMsg != null && !TextUtils.isEmpty(msg)) {
+            tvMsg.setText(msg);
         }
         mLoadingDialog.show();
     }
