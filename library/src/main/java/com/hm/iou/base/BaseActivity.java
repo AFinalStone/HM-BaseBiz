@@ -7,9 +7,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.base.mvp.MvpActivityPresenter;
@@ -27,6 +29,7 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
+import org.w3c.dom.Text;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -165,9 +168,12 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
     public void showLoadingView(String msg) {
         if (mLoadingDialog == null) {
             mLoadingDialog = LoadingDialogUtil.showLoading(this, msg, false);
-        } else {
-            mLoadingDialog.show();
         }
+        TextView tvMsg = mLoadingDialog.findViewById(R.id.tv_loadingMsg);
+        if (tvMsg != null && !TextUtils.isEmpty(msg)) {
+            tvMsg.setText(msg);
+        }
+        mLoadingDialog.show();
     }
 
     @Override

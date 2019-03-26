@@ -117,29 +117,43 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
 
     @Override
     public void showLoadingView() {
-        if (getActivity() == null)
+        Activity activity = getActivity();
+        if (activity == null)
             return;
+        if (activity instanceof BaseActivity) {
+            ((BaseActivity) activity).showLoadingView();
+        }
         if (mLoadingDialog == null) {
-            mLoadingDialog = LoadingDialogUtil.showLoading(getActivity());
+            mLoadingDialog = LoadingDialogUtil.showLoading(activity);
+        }
+        mLoadingDialog.show();
+
+    }
+
+    @Override
+    public void showLoadingView(String msg) {
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+        if (activity instanceof BaseActivity) {
+            ((BaseActivity) activity).showLoadingView(msg);
+            return;
+        }
+        if (mLoadingDialog == null) {
+            mLoadingDialog = LoadingDialogUtil.showLoading(activity, msg, false);
         }
         mLoadingDialog.show();
     }
 
     @Override
-    public void showLoadingView(String msg) {
-        if (getActivity() == null)
-            return;
-        if (mLoadingDialog == null) {
-            mLoadingDialog = LoadingDialogUtil.showLoading(getActivity(), msg, false);
-        } else {
-            mLoadingDialog.show();
-        }
-    }
-
-    @Override
     public void dismissLoadingView() {
-        if (getActivity() == null)
+        Activity activity = getActivity();
+        if (activity == null)
             return;
+        if (activity instanceof BaseActivity) {
+            ((BaseActivity) activity).dismissLoadingView();
+            return;
+        }
         LoadingDialogUtil.dismissLoading(mLoadingDialog);
         mLoadingDialog = null;
     }
