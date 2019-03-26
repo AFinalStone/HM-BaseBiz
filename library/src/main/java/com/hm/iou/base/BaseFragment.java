@@ -219,6 +219,10 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
         if (getActivity() == null) {
             return;
         }
+        if (getActivity() instanceof BaseActivity) {
+            ((BaseActivity) getActivity()).showKickOfflineDialog(title, errMsg);
+            return;
+        }
         if (mRemindKickOff || mShowTokenOverdue || mRemindAccountFreeze) {
             return;
         }
@@ -248,6 +252,13 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
 
     @Override
     public void showAccountFreezeDialog(String title, String errMsg) {
+        if (getActivity() == null) {
+            return;
+        }
+        if (getActivity() instanceof BaseActivity) {
+            ((BaseActivity) getActivity()).showAccountFreezeDialog(title, errMsg);
+            return;
+        }
         if (mRemindKickOff || mShowTokenOverdue || mRemindAccountFreeze) {
             return;
         }
@@ -278,6 +289,10 @@ public abstract class BaseFragment<T extends MvpFragmentPresenter> extends RxFra
     @Override
     public void showTokenOverdue() {
         if (getActivity() == null) {
+            return;
+        }
+        if (getActivity() instanceof BaseActivity) {
+            ((BaseActivity) getActivity()).showTokenOverdue();
             return;
         }
         if (mRemindKickOff || mShowTokenOverdue || mRemindAccountFreeze) {
