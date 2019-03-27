@@ -9,6 +9,8 @@ import com.hm.iou.tools.ToastUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -25,6 +27,10 @@ public class CompressPictureUtil {
 
     public interface OnCompressListener {
         void onCompressPicSuccess(File file);
+    }
+
+    public interface OnMultiCompressListener {
+        void onCompressPicSuccess(List<File> list);
     }
 
     /**
@@ -53,6 +59,51 @@ public class CompressPictureUtil {
                     public void accept(File file) throws Exception {
                         if (compressListener != null) {
                             compressListener.onCompressPicSuccess(file);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        ToastUtil.showMessage(context, "图片压缩失败");
+                    }
+                });
+    }
+
+    /**
+     * 批量压缩图片
+     *
+     * @param context
+     * @param pathList
+     * @param compressListener
+     */
+    public static void compressPic(final Context context, List<String> pathList, final OnMultiCompressListener compressListener) {
+        if (context == null || pathList == null || pathList.isEmpty()) {
+            ToastUtil.showMessage(context, "图片获取失败");
+            return;
+        }
+        Flowable.just(pathList)
+                .observeOn(Schedulers.io())
+                .map(new Function<List<String>, List<File>>() {
+                    @Override
+                    public List<File> apply(List<String> pathList) throws Exception {
+                        List<File> list = new ArrayList<>();
+                        for (String path : pathList)  {
+                            try {
+                                File file = Luban.with(context).load(path).get(path);
+                                list.add(file);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        return list;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<File>>() {
+                    @Override
+                    public void accept(List<File> list) throws Exception {
+                        if (compressListener != null) {
+                            compressListener.onCompressPicSuccess(list);
                         }
                     }
                 }, new Consumer<Throwable>() {
