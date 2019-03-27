@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.hm.iou.base.constants.HMConstants;
 import com.hm.iou.base.mvp.BaseContract;
+import com.hm.iou.logger.Logger;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.network.exception.ApiException;
 import com.hm.iou.sharedata.UserManager;
@@ -102,7 +103,7 @@ public abstract class CommSubscriber<T> extends ResourceSubscriber<T> {
                 mView.toastMessage(errMsg);
             }
         }
-
+        Logger.d("RxJava_OnError发生了异常t=" + t.toString() + " code=" + code + " errMsg=" + errMsg);
         handleException(t, code, errMsg);
     }
 
@@ -111,6 +112,7 @@ public abstract class CommSubscriber<T> extends ResourceSubscriber<T> {
         try {
             handleResult(t);
         } catch (Exception e) {
+            Logger.d("RxJava_OnNext发生了异常e=" + e.toString() + " e.getMessage()=" + e.getMessage());
             handleException(e, null, e.getMessage());
         }
     }
