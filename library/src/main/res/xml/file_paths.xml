@@ -4,11 +4,14 @@
         <external-path
             name="camera_photos"
             path="" />
-
-
         <external-path
             name="download"
             path="" />
-
+        <external-path
+            name="rc_external_path"
+            path="." />
+        <root-path
+            name="rc_root_path"
+            path="" />
     </paths>
 </resources>
