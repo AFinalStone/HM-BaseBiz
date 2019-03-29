@@ -1,6 +1,5 @@
 package com.hm.iou.base;
 
-import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,13 +9,16 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.github.chrisbanes.photoview.PhotoView;
 import com.hm.iou.base.file.FileUtil;
 import com.hm.iou.base.mvp.MvpActivityPresenter;
 import com.hm.iou.tools.ImageLoader;
 import com.hm.iou.tools.ToastUtil;
-import com.hm.iou.uikit.HMTopBarView;
+import com.hm.iou.uikit.CircleIndicator;
 import com.hm.iou.uikit.dialog.HMAlertDialog;
 
 import java.util.ArrayList;
@@ -31,13 +33,16 @@ public class ImageGalleryActivity extends BaseActivity {
 
     public static final String EXTRA_KEY_IMAGES = "images";
     public static final String EXTRA_KEY_INDEX = "index";
-    //导航栏右上角是否显示"删除"按钮，值为"1"时显示，其他情况都不显示
+    //导航栏右上角是否显示"删除"按钮，值为0时显示下载， 值为"1"时显示，其他情况都不显示
     public static final String EXTRA_KEY_SHOW_DELETE = "show_delete";
 
     public static final String EXTRA_KEY_DELETE_URLS = "delete_urls";
 
-    protected HMTopBarView mTopBar;
     protected ViewPager mViewPager;
+    protected LinearLayout mLLBototmAction;
+    protected ImageView mIvBottomAction;
+    protected TextView mTvBottomAction;
+    protected CircleIndicator mCircleIndicator;
 
     protected String[] mUrlArr;
     protected int mIndex;
@@ -59,7 +64,10 @@ public class ImageGalleryActivity extends BaseActivity {
     @Override
     protected void initEventAndData(Bundle bundle) {
         mViewPager = findViewById(R.id.vp_image_gallery);
-        mTopBar = findViewById(R.id.topbar);
+        mLLBototmAction = findViewById(R.id.ll_gallery_action);
+        mIvBottomAction = findViewById(R.id.iv_gallery_action);
+        mTvBottomAction = findViewById(R.id.tv_gallery_action);
+        mCircleIndicator = findViewById(R.id.indicator_gallery);
 
         Intent data = getIntent();
         mUrlArr = data.getStringArrayExtra(EXTRA_KEY_IMAGES);
@@ -79,6 +87,7 @@ public class ImageGalleryActivity extends BaseActivity {
         mAdapter = new ImageAdapter(this, list);
         mViewPager.setAdapter(mAdapter);
         mViewPager.setCurrentItem(mIndex);
+        mCircleIndicator.setViewPager(mViewPager);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -88,7 +97,6 @@ public class ImageGalleryActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 mIndex = position;
-                mTopBar.setTitle(String.format("%d/%d", mIndex + 1, mAdapter.getCount()));
             }
 
             @Override
@@ -96,28 +104,16 @@ public class ImageGalleryActivity extends BaseActivity {
 
             }
         });
-        mTopBar.setTitle(String.format("%d/%d", mIndex + 1, mAdapter.getCount()));
 
-        if (mShowDelete == 1) {
-            mTopBar.setRightText("删除");
-            mTopBar.setOnMenuClickListener(new HMTopBarView.OnTopBarMenuClickListener() {
-                @Override
-                public void onClickTextMenu() {
-                    showDeleteConfirmDialog();
-                }
-
-                @Override
-                public void onClickImageMenu() {
-
-                }
-            });
+        if (mShowDelete == 0) {
+            showDownloadAction();
+        } else if (mShowDelete == 1) {
+            showDeleteAction();
         }
-        mTopBar.setOnBackClickListener(new HMTopBarView.OnTopBarBackClickListener() {
-            @Override
-            public void onClickBack() {
-                onBackPressed();
-            }
-        });
+
+        if (mUrlArr == null || mUrlArr.length <= 1) {
+            mCircleIndicator.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -138,6 +134,35 @@ public class ImageGalleryActivity extends BaseActivity {
         outState.putStringArray(EXTRA_KEY_IMAGES, mUrlArr);
         outState.putInt(EXTRA_KEY_INDEX, mIndex);
         outState.putInt(EXTRA_KEY_SHOW_DELETE, mShowDelete);
+    }
+
+    /**
+     * 右下角显示"删除"操作
+     */
+    protected void showDeleteAction() {
+        mLLBototmAction.setVisibility(View.VISIBLE);
+        mIvBottomAction.setImageResource(R.mipmap.uikit_ic_img_delete);
+        mTvBottomAction.setText("删除");
+        mLLBototmAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDeleteConfirmDialog();
+            }
+        });
+    }
+
+    protected void showDownloadAction() {
+        mLLBototmAction.setVisibility(View.VISIBLE);
+        mIvBottomAction.setImageResource(R.mipmap.uikit_ic_img_download);
+        mTvBottomAction.setText("下载");
+        mLLBototmAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mUrlArr != null && mIndex < mUrlArr.length) {
+                    FileUtil.savePicture(ImageGalleryActivity.this, mUrlArr[mIndex]);
+                }
+            }
+        });
     }
 
     private void showSavePhotoDialog(final String url) {
@@ -177,7 +202,7 @@ public class ImageGalleryActivity extends BaseActivity {
                         ToastUtil.showStatusView(ImageGalleryActivity.this, "删除成功");
                         mIndex = mIndex > 0 ? mIndex - 1 : 0;
                         mViewPager.setCurrentItem(mIndex);
-                        mTopBar.setTitle(String.format("%d/%d", mIndex + 1, mAdapter.getCount()));
+                        mCircleIndicator.setViewPager(mViewPager);
                         if (mAdapter.getCount() == 0) {
                             onBackPressed();
                         }
@@ -277,52 +302,7 @@ public class ImageGalleryActivity extends BaseActivity {
 
         @Override
         public void onClick(View v) {
-            if (mTopBar.getVisibility() == View.VISIBLE) {
-                mTopBar.animate().translationYBy(-mTopBar.getHeight()).setDuration(200).setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mTopBar.setVisibility(View.INVISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-
-                    }
-                });
-            } else {
-                mTopBar.setVisibility(View.VISIBLE);
-                mTopBar.animate().translationYBy(mTopBar.getHeight()).setDuration(300).setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-
-                    }
-                });
-            }
+            finish();
         }
     }
 
