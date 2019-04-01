@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 
 import com.github.chrisbanes.photoview.PhotoView;
 
@@ -39,13 +40,13 @@ public class DragPhotoView extends PhotoView {
     private boolean canFinish = false;
     private boolean isAnimate = false;
 
-    //is event on PhotoView
-    private boolean isTouchEvent = false;
-
     private OnTapListener mTapListener;
     private OnExitListener mExitListener;
 
     private long mTouchDownTime;
+    private int mTouchSlop;             //
+    private boolean mTouchScrollFlag;   //是否识别了手势滑动事件，根据滑动一段初始距离来判断
+    private boolean mParentViewConsume; //表示父组件来消费触摸滑动事件，当前View不进行任何其他处理
 
     public DragPhotoView(Context context) {
         this(context, null);
@@ -60,6 +61,9 @@ public class DragPhotoView extends PhotoView {
         mPaint = new Paint();
         mPaint.setColor(Color.BLACK);
         MAX_TRANSLATE_Y = (int) (getResources().getDisplayMetrics().density * 150);
+        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+
+        System.out.println("touch slop = " + mTouchSlop);
     }
 
     @Override
@@ -89,24 +93,32 @@ public class DragPhotoView extends PhotoView {
                     onActionDown(event);
                     //change the canFinish flag
                     canFinish = !canFinish;
+                    mTouchScrollFlag = false;
+                    mParentViewConsume = false;
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    //in viewpager
-                    if (mTranslateY == 0 && mTranslateX != 0) {
-                        //如果不消费事件，则不作操作
-                        if (!isTouchEvent) {
-                            mScale = 1;
-                            return super.dispatchTouchEvent(event);
+                    if (!mTouchScrollFlag) {
+                        int dx = (int) Math.abs(event.getX() - mDownX);
+                        int dy = (int) Math.abs(event.getY() - mDownY);
+
+                        if (dx >= mTouchSlop || dy >= mTouchSlop) {
+                            mTouchScrollFlag = true;
+                            if (dx > dy) {
+                                mParentViewConsume = true;
+                            }
                         }
+                        return true;
+                    }
+
+                    if (mParentViewConsume) {
+                        performAnimation();
+                        return super.dispatchTouchEvent(event);
                     }
 
                     //single finger drag  down
                     if (mTranslateY >= 0 && event.getPointerCount() == 1) {
                         onActionMove(event);
                         //如果有上下位移 则不交给viewpager
-                        if (mTranslateY != 0) {
-                            isTouchEvent = true;
-                        }
                         return true;
                     }
 
@@ -120,7 +132,6 @@ public class DragPhotoView extends PhotoView {
                     //防止下拉的时候双手缩放
                     if (event.getPointerCount() == 1) {
                         onActionUp(event);
-                        isTouchEvent = false;
                         //judge finish or not
                         postDelayed(new Runnable() {
                             @Override
@@ -133,6 +144,8 @@ public class DragPhotoView extends PhotoView {
                                 canFinish = false;
                             }
                         }, 100);
+                    } else {
+                        performAnimation();
                     }
             }
         }
@@ -156,13 +169,8 @@ public class DragPhotoView extends PhotoView {
         float moveY = event.getY();
         float moveX = event.getX();
 
-        System.out.println("moveX = " + moveX + ", moveY = " + moveY);
-
-
         mTranslateX = moveX - mDownX;
         mTranslateY = moveY - mDownY;
-
-        System.out.println("transX = " + mTranslateX + ", transY = " + mTranslateY);
 
         //保证上划到到顶还可以继续滑动
         if (mTranslateY < 0) {
