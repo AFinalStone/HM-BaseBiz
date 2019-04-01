@@ -3,6 +3,7 @@ package com.hm.iou.base;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -13,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.github.chrisbanes.photoview.PhotoView;
 import com.hm.iou.base.file.FileUtil;
 import com.hm.iou.base.mvp.MvpActivityPresenter;
 import com.hm.iou.tools.ImageLoader;
@@ -59,6 +59,12 @@ public class ImageGalleryActivity extends BaseActivity {
     @Override
     protected MvpActivityPresenter initPresenter() {
         return null;
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -126,6 +132,7 @@ public class ImageGalleryActivity extends BaseActivity {
             setResult(RESULT_OK, data);
             finish();
         }
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     @Override
@@ -217,7 +224,7 @@ public class ImageGalleryActivity extends BaseActivity {
                 .show();
     }
 
-    public class ImageAdapter extends PagerAdapter implements View.OnLongClickListener, View.OnClickListener {
+    public class ImageAdapter extends PagerAdapter {
 
         private Context mContext;
         private LinkedList<View> mViewCache;
@@ -275,35 +282,35 @@ public class ImageGalleryActivity extends BaseActivity {
         public Object instantiateItem(ViewGroup container, int position) {
             View convertView;
             if (mViewCache.size() == 0) {
-                PhotoView photoView = new PhotoView(mContext);
+                DragPhotoView photoView = new DragPhotoView(mContext);
                 convertView = photoView;
             } else {
                 convertView = mViewCache.removeFirst();
             }
-            final PhotoView view = (PhotoView) convertView;
+            final DragPhotoView view = (DragPhotoView) convertView;
             String url = mDatas.get(position);
             ImageLoader.getInstance(mContext).displayImage(url, view);
             container.addView(convertView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
             view.setTag(url);
-            view.setOnLongClickListener(this);
-            view.setOnClickListener(this);
+
+            view.setOnExitListener(new DragPhotoView.OnExitListener() {
+                @Override
+                public void onExit(DragPhotoView var1, float var2, float var3, float var4, float var5) {
+                    onBackPressed();
+                }
+            });
+
+            view.setOnTapListener(new DragPhotoView.OnTapListener() {
+                @Override
+                public void onTap(DragPhotoView var1) {
+                    onBackPressed();
+                }
+            });
+
             return convertView;
         }
 
-        @Override
-        public boolean onLongClick(View v) {
-            String url = (String) v.getTag();
-            if (!TextUtils.isEmpty(url)) {
-                showSavePhotoDialog(url);
-            }
-            return true;
-        }
-
-        @Override
-        public void onClick(View v) {
-            finish();
-        }
     }
 
 }

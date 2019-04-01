@@ -31,7 +31,8 @@
         <activity
             android:name="com.hm.iou.base.ImageGalleryActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/UikitTranslucentThemeActivity" />
 
         <!--全屏WebView -->
         <activity
