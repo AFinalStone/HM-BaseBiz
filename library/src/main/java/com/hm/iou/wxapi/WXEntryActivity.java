@@ -2,15 +2,17 @@ package com.hm.iou.wxapi;
 
 
 import android.content.Context;
+import android.os.Bundle;
 
 import com.hm.iou.base.event.OpenWxResultEvent;
 import com.hm.iou.logger.Logger;
-import com.hm.iou.tools.ToastUtil;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.socialize.PlatformConfig;
+import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.weixin.view.WXCallbackActivity;
 
 import org.greenrobot.eventbus.EventBus;
@@ -26,10 +28,18 @@ import java.util.Map;
  * 1.用户未登录，直接使用微信登录的方式，会触发这个页面
  * 2.用户已经登录，在个人中心进行微信绑定的操作
  */
-//public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHandler {
 public class WXEntryActivity extends WXCallbackActivity {
 
-    private static final String APP_ID = "wx54a8a6252c69ea7c";
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    private static String getAppId() {
+        PlatformConfig.APPIDPlatform weixin = (PlatformConfig.APPIDPlatform) PlatformConfig.configs.get(SHARE_MEDIA.WEIXIN);
+        String appId = weixin.appId;
+        return appId;
+    }
 
     @Override
     public void onReq(BaseReq baseReq) {
@@ -86,8 +96,9 @@ public class WXEntryActivity extends WXCallbackActivity {
      */
     @Deprecated
     public static void openWx(Context context, String key) {
-        IWXAPI iwxapi = WXAPIFactory.createWXAPI(context, APP_ID, true);
-        iwxapi.registerApp(APP_ID);
+        String appId = getAppId();
+        IWXAPI iwxapi = WXAPIFactory.createWXAPI(context, appId, true);
+        iwxapi.registerApp(appId);
 
         //发起登录请求
         final SendAuth.Req req = new SendAuth.Req();
@@ -104,8 +115,9 @@ public class WXEntryActivity extends WXCallbackActivity {
      * @return
      */
     public static IWXAPI openWxAuth(Context context, String key) {
-        IWXAPI iwxapi = WXAPIFactory.createWXAPI(context, APP_ID, true);
-        iwxapi.registerApp(APP_ID);
+        String appId = getAppId();
+        IWXAPI iwxapi = WXAPIFactory.createWXAPI(context, appId, true);
+        iwxapi.registerApp(appId);
 
         //发起登录请求
         final SendAuth.Req req = new SendAuth.Req();
