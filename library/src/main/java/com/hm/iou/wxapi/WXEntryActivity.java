@@ -1,7 +1,9 @@
 package com.hm.iou.wxapi;
 
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.hm.iou.base.event.OpenWxResultEvent;
@@ -10,30 +12,19 @@ import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.bean.SHARE_MEDIA;
-import com.umeng.socialize.weixin.view.WXCallbackActivity;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.lang.reflect.Field;
 import java.util.Map;
 
+public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
-/**
- * @author AFinalStone
- * @time 2018/3/28 下午10:14
- * 微信登录，绑定，友盟分享的回调页面，
- * 1.用户未登录，直接使用微信登录的方式，会触发这个页面
- * 2.用户已经登录，在个人中心进行微信绑定的操作
- */
-public class WXEntryActivity extends WXCallbackActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    private IWXAPI api;
 
     private static String getAppId() {
         PlatformConfig.APPIDPlatform weixin = (PlatformConfig.APPIDPlatform) PlatformConfig.configs.get(SHARE_MEDIA.WEIXIN);
@@ -42,17 +33,30 @@ public class WXEntryActivity extends WXCallbackActivity {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        api = WXAPIFactory.createWXAPI(getApplicationContext(), getAppId(), false);
+        try {
+            Intent intent = getIntent();
+            api.handleIntent(intent, this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        api.handleIntent(intent, this);
+    }
+
+    @Override
     public void onReq(BaseReq baseReq) {
-        super.onReq(baseReq);
         Logger.d("微信请求openId" + baseReq.openId);
         Logger.d("微信请求transaction" + baseReq.transaction);
     }
 
-    /**
-     * 微信回调方法
-     *
-     * @param baseResp
-     */
     @Override
     public void onResp(BaseResp baseResp) {
         Logger.d("微信回调: ErrorCode=" + baseResp.errCode);
@@ -69,11 +73,11 @@ public class WXEntryActivity extends WXCallbackActivity {
                     String lang = newResp.lang;
                     String contry = newResp.country;
                     String url = newResp.url;
-                    Logger.d("onResp code = " + code);
-                    Logger.d("onResp state = " + key);
-                    Logger.d("onResp lang = " + lang);
-                    Logger.d("onResp contry = " + contry);
-                    Logger.d("onResp url = " + url);
+                    Logger.d("onRespPro code = " + code);
+                    Logger.d("onRespPro state = " + key);
+                    Logger.d("onRespPro lang = " + lang);
+                    Logger.d("onRespPro contry = " + contry);
+                    Logger.d("onRespPro url = " + url);
                     OpenWxResultEvent event = new OpenWxResultEvent();
                     event.setCode(code);
                     event.setKey(key);
@@ -85,7 +89,6 @@ public class WXEntryActivity extends WXCallbackActivity {
                     break;
             }
         }
-        super.onResp(baseResp);
     }
 
     /**
@@ -151,3 +154,6 @@ public class WXEntryActivity extends WXCallbackActivity {
     }
 
 }
+
+
+
