@@ -69,11 +69,11 @@ public class WXEntryActivity extends WXCallbackActivity {
                     String lang = newResp.lang;
                     String contry = newResp.country;
                     String url = newResp.url;
-                    Logger.d("WXTest", "onResp code = " + code);
-                    Logger.d("WXTest", "onResp state = " + key);
-                    Logger.d("WXTest", "onResp lang = " + lang);
-                    Logger.d("WXTest", "onResp contry = " + contry);
-                    Logger.d("WXTest", "onResp url = " + url);
+                    Logger.d("onResp code = " + code);
+                    Logger.d("onResp state = " + key);
+                    Logger.d("onResp lang = " + lang);
+                    Logger.d("onResp contry = " + contry);
+                    Logger.d("onResp url = " + url);
                     OpenWxResultEvent event = new OpenWxResultEvent();
                     event.setCode(code);
                     event.setKey(key);
@@ -97,7 +97,7 @@ public class WXEntryActivity extends WXCallbackActivity {
     @Deprecated
     public static void openWx(Context context, String key) {
         String appId = getAppId();
-        IWXAPI iwxapi = WXAPIFactory.createWXAPI(context, appId, true);
+        IWXAPI iwxapi = WXAPIFactory.createWXAPI(context.getApplicationContext(), appId, true);
         iwxapi.registerApp(appId);
 
         //发起登录请求
@@ -116,7 +116,7 @@ public class WXEntryActivity extends WXCallbackActivity {
      */
     public static IWXAPI openWxAuth(Context context, String key) {
         String appId = getAppId();
-        IWXAPI iwxapi = WXAPIFactory.createWXAPI(context, appId, true);
+        IWXAPI iwxapi = WXAPIFactory.createWXAPI(context.getApplicationContext(), appId, true);
         iwxapi.registerApp(appId);
 
         //发起登录请求
