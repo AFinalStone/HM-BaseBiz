@@ -55,6 +55,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
     public void onReq(BaseReq baseReq) {
         Logger.d("微信请求openId" + baseReq.openId);
         Logger.d("微信请求transaction" + baseReq.transaction);
+        finish();
     }
 
     @Override
@@ -82,13 +83,13 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                     event.setCode(code);
                     event.setKey(key);
                     EventBus.getDefault().post(event);
-                    finish();
                     break;
                 default:
 //                    ToastUtil.showMessage(this, baseResp.errStr);
                     break;
             }
         }
+        finish();
     }
 
     /**
