@@ -93,4 +93,20 @@ public class CommApi {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    /**
+     * 搜索
+     *
+     * @param content 搜索内容
+     * @param purpose 搜索用途，未知=0，借条合同=1，附属合同=2，好友=3
+     * @return
+     */
+    public static Flowable<BaseResponse<PowerSearchResult>> powerSearch(String content, int purpose) {
+        PowerSearchReqBean data = new PowerSearchReqBean();
+        data.setContent(content);
+        data.setPurpose(purpose);
+        return getService().powerSearch(data)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
 }

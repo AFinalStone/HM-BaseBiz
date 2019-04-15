@@ -23,4 +23,7 @@ public interface CommService {
 
     @GET("/api/iou/user/v1/getPersonalCenter")
     Flowable<BaseResponse<PersonalCenterInfo>> getPersonalCenter();
+
+    @POST("/api/base/shearPlate/v1/powerSearch")
+    Flowable<BaseResponse<PowerSearchResult>> powerSearch(@Body PowerSearchReqBean data);
 }
