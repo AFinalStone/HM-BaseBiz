@@ -37,6 +37,7 @@ public enum FileBizType {
     IOUElecRecv(28, "电子收条"),
     IOUElecRecvAttachFile(29, "电子收条附件"),
     IOUElecRecvComplete(30, "电子收条评论"),
+    UserReport(34, "好友举报"),
     CustomerPrivacyFile(100, "用户私密文件"),//ps: 该类型的会使用私密的bucket存储用户的文件
     IdCardFront(101, "身份证正面"),//ps: 该类型的会使用私密的bucket存储用户的文件
     IdCardBack(102, "身份证反面"),//ps: 该类型的会使用私密的bucket存储用户的文件
