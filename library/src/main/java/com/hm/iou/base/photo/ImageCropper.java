@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.hm.iou.base.R;
+import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.tools.ViewConcurrencyUtil;
 
 /**
@@ -401,6 +402,10 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
             return;
         }
         if (v.getId() == R.id.btn_cut_finish) {
+            if (bmpSource == null) {
+                ToastUtil.showMessage(getContext(), "获取图片出现错误");
+                return;
+            }
             if (mCallback != null) {
                 final float x = ((bmpSource.getWidth() * iSource.getScaleX() - vOverlay.getOverlayWidth()) / 2 - iSource.getTranslationX()) / iSource.getScaleX();
                 final float width = vOverlay.getOverlayWidth() / iSource.getScaleX();
