@@ -109,4 +109,18 @@ public class CommApi {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    /**
+     * 搜索剪切板
+     *
+     * @param content
+     * @return
+     */
+    public static Flowable<BaseResponse<ClipBoardBean>> searchClipBoard(String content) {
+        return getService().searchClipBoard(content).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Flowable<BaseResponse<ClipBoardBean>> searchClipBoardOnLabel(String content) {
+        return getService().searchClipBoardOnLabel(content).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
 }

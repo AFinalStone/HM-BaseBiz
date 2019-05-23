@@ -7,6 +7,7 @@ import io.reactivex.Flowable;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 /**
  * Created by hjy on 18/12/24.<br>
@@ -26,4 +27,17 @@ public interface CommService {
 
     @POST("/api/base/shearPlate/v1/powerSearch")
     Flowable<BaseResponse<PowerSearchResult>> powerSearch(@Body PowerSearchReqBean data);
+
+    /**
+     * 搜索剪切板
+     *
+     * @param content
+     * @return
+     */
+    @GET("/api/base/shearPlate/v1/checkShearPlate")
+    Flowable<BaseResponse<ClipBoardBean>> searchClipBoard(@Query("link") String content);
+
+    @GET("/api/base/shearPlate/v1/checkShearPlateOnLable")
+    Flowable<BaseResponse<ClipBoardBean>> searchClipBoardOnLabel(@Query("link") String content);
+
 }
