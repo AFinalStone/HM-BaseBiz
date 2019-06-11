@@ -3,6 +3,8 @@ package com.hm.iou.base.comm;
 import com.hm.iou.sharedata.model.BaseResponse;
 import com.hm.iou.sharedata.model.PersonalCenterInfo;
 
+import java.util.List;
+
 import io.reactivex.Flowable;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -39,5 +41,9 @@ public interface CommService {
 
     @GET("/api/base/shearPlate/v1/checkShearPlateOnLable")
     Flowable<BaseResponse<ClipBoardBean>> searchClipBoardOnLabel(@Query("link") String content);
+
+
+    @GET("/api/coupon/v1/user/coupons")
+    Flowable<BaseResponse<List<CouponInfo>>> getCouponList(@Query("scene") int scene);
 
 }

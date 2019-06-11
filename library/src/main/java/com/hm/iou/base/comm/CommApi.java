@@ -5,6 +5,8 @@ import com.hm.iou.sharedata.model.BaseResponse;
 import com.hm.iou.sharedata.model.PersonalCenterInfo;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 
+import java.util.List;
+
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -123,4 +125,13 @@ public class CommApi {
         return getService().searchClipBoardOnLabel(content).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+
+    /**
+     * 获取优惠券列表
+     *
+     * @return
+     */
+    public static Flowable<BaseResponse<List<CouponInfo>>> getCouponList(int scene) {
+        return getService().getCouponList(scene).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
 }
