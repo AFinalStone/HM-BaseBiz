@@ -134,4 +134,22 @@ public class CommApi {
     public static Flowable<BaseResponse<List<CouponInfo>>> getCouponList(int scene) {
         return getService().getCouponList(scene).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+    /**
+     * 发送短信或者验证码
+     *
+     * @param purpose 1:短信注册码，2:短信重置密码 + 微信注册时短信发送，3:修改手机号，4:绑定邮箱，5:重置邮箱,
+     *                6:邮件重置密码，10：合同短信确认，11：短信注销，12：短信登录,13:申请仲裁 ,
+     * @param to      手机号或者邮箱
+     * @param mobile  邮箱重置需要的手机号，可选字段
+     * @return
+     */
+    public static Flowable<BaseResponse<String>> sendMessage(int purpose, String to, String mobile) {
+        SendMessageReqBean reqBean = new SendMessageReqBean();
+        reqBean.setPurpose(purpose);
+        reqBean.setTo(to);
+        reqBean.setMobile(mobile);
+        return getService().sendMessage(reqBean).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
 }

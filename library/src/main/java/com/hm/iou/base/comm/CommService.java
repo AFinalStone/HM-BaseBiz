@@ -46,4 +46,6 @@ public interface CommService {
     @GET("/api/coupon/v1/user/coupons")
     Flowable<BaseResponse<List<CouponInfo>>> getCouponList(@Query("scene") int scene);
 
+    @POST("/api/base/msg/v1/sendMessage")
+    Flowable<BaseResponse<String>> sendMessage(@Body SendMessageReqBean sendMessageReqBean);
 }
