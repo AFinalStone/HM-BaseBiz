@@ -410,7 +410,7 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
-                if (mShowTitle && TextUtils.isEmpty(mTitle)) {
+                if (mShowTitle && TextUtils.isEmpty(mTitle) && title != null && !title.startsWith("http")) {
                     mTopBar.setTitle(title);
                 }
             }

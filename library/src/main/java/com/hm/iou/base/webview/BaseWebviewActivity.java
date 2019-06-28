@@ -402,7 +402,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
-                if ("true".equals(mShowTitle) && TextUtils.isEmpty(mTitle)) {
+                if ("true".equals(mShowTitle) && TextUtils.isEmpty(mTitle) && title != null && !title.startsWith("http")) {
                     mTopBar.setTitle(title);
                 }
             }
