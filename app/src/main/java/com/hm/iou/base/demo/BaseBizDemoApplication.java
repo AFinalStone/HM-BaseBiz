@@ -23,8 +23,8 @@ public class BaseBizDemoApplication extends Application {
         Logger.init(this, true);
         BaseBizAppLike baseBizAppLike = new BaseBizAppLike();
         baseBizAppLike.onCreate(this);
-        baseBizAppLike.initServer("https://upload.54jietiao.com", "http://192.168.1.217",
-                "http://192.168.1.217");
+        baseBizAppLike.initServer("http://dev.54jietiao.com", "http://dev.54jietiao.com",
+                "http://dev.54jietiao.com");
 //        baseBizAppLike.initServer("http://192.168.1.82:8071", "http://192.168.1.82",
 //        "http://192.168.1.82");
         initNetwork();

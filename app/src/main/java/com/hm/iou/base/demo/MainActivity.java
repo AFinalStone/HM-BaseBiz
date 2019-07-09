@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.hm.iou.base.ImageGalleryActivity;
+import com.hm.iou.base.comm.ClipBoardBean;
+import com.hm.iou.base.comm.CommApi;
 import com.hm.iou.base.file.FileApi;
 import com.hm.iou.base.file.FileUploadResult;
 import com.hm.iou.base.photo.CompressPictureUtil;
@@ -54,7 +56,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, BaseWebviewActivity.class);
 //                intent.putExtra("url", "http://192.168.1.217/moneyMarket/html/consultNow.html");
-                intent.putExtra("url", "https://wxpay.wxutil.com/mch/pay/h5.v2.php");
+//                intent.putExtra("url", "https://wxpay.wxutil.com/mch/pay/h5.v2.php");
+
+                String url = "https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx1220170179781561a1a2ebb23591208730&package=799391938";
+                intent.putExtra("url", "https://devtrade.54jietiao.com/trade/trade.html?url=" + url);
 //                intent.putExtra("showtitlebar", "false");
                 startActivity(intent);
             }
@@ -105,11 +110,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }).show();*/
 
-                String url = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1530164549688&di=1c59fb642db7d4279efd9eeaaea62765&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimgad%2Fpic%2Fitem%2F8b82b9014a90f60314b73db13312b31bb151edc5.jpg";
-                String[] imgs = new String[] {url, url, url};
+                String url = "http://pic24.nipic.com/20120906/2786001_082828452000_2.jpg";
+                String[] imgs = new String[]{url, url, url};
                 Intent intent = new Intent(MainActivity.this, ImageGalleryActivity.class);
                 intent.putExtra(ImageGalleryActivity.EXTRA_KEY_IMAGES, imgs);
                 intent.putExtra(ImageGalleryActivity.EXTRA_KEY_INDEX, 1);
+                intent.putExtra(ImageGalleryActivity.EXTRA_KEY_SHOW_DELETE, 0);
                 startActivity(intent);
 
             }
@@ -285,37 +291,25 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-//    /**
-//     * 初始化新的网络框架
-//     */
-//    private void initNetwork() {
-//        String deviceId = SPUtil.getString(this, "sysconfig", "deviceId");
-//        if (TextUtils.isEmpty(deviceId)) {
-//            //采用自己生产的UUID来当做设备唯一ID，存储在SharedPreferenes里，应用卸载重装会重新生成
-//            deviceId = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-//            SPUtil.put(this, "sysconfig", "deviceId", deviceId);
-//        }
-//
-//        String channel = "official";
-//        try {
-//            ApplicationInfo appInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-//            channel = appInfo.metaData.getString("UMENG_CHANNEL");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        UserManager userManager = UserManager.getInstance(this);
-//        HttpRequestConfig config = new HttpRequestConfig.Builder(this)
-//                .setDebug(BuildConfig.DEBUG)
-//                .setAppChannel(channel)
-//                .setAppVersion(SystemUtil.getCurrentAppVersionName(this))
-//                .setDeviceId(deviceId)
-////                .setBaseUrl("https://testapi.54jietiao.com")
-//                .setBaseUrl("http://192.168.1.217")
-//                .setUserId(userManager.getUserInfo().getUserId())
-//                .setToken(userManager.getUserInfo().getToken())
-//                .build();
-//        HttpReqManager.init(config);
-//    }
+
+    public void testClipBoard(View v) {
+        CommApi.searchClipBoard("【条管家】¥041000117¥")
+                .map(RxUtil.<ClipBoardBean>handleResponse())
+                .subscribe(new Consumer<ClipBoardBean>() {
+                    @Override
+                    public void accept(ClipBoardBean clipBoardBean) throws Exception {
+                        if ("04".equals(clipBoardBean.getShearCode())) {
+                            //搜索好友
+                            ClipBoardBean.ExtInfo extInfo = ClipBoardBean.parseExtInfo(clipBoardBean.getExtInfo());
+                            System.out.println(extInfo);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable t) throws Exception {
+                        t.printStackTrace();
+                    }
+                });
+    }
 
 }

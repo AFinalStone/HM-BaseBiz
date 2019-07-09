@@ -83,6 +83,12 @@
         android:layout_height="wrap_content"
         android:text="上传图片" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测试剪切板接口"
+        android:onClick="testClipBoard"
+        />
 
 </LinearLayout>
 </ScrollView>
