@@ -21,7 +21,7 @@ public class ClipBoardBean implements Parcelable {
     private String shearUrl;         //跳转的连接
     private int shouldShowPic;       //是否需要展示图片（弹窗）【YesNoEnum】:0-否，1-是
 
-    private JsonObject extInfo;
+    private ExtInfo extInfo;
 
     public String getShearCode() {
         return shearCode;
@@ -55,11 +55,11 @@ public class ClipBoardBean implements Parcelable {
         this.shouldShowPic = shouldShowPic;
     }
 
-    public JsonObject getExtInfo() {
+    public ExtInfo getExtInfo() {
         return extInfo;
     }
 
-    public void setExtInfo(JsonObject extInfo) {
+    public void setExtInfo(ExtInfo extInfo) {
         this.extInfo = extInfo;
     }
 
