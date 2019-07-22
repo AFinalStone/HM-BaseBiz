@@ -283,6 +283,10 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (bmpSource == null) {
+            return mGestureDetector.onTouchEvent(event);
+        }
+
         final int action = event.getAction() & MotionEvent.ACTION_MASK;
         switch (action) {
             case MotionEvent.ACTION_UP:
