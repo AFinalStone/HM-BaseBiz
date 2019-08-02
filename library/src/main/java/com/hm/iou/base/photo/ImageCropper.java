@@ -415,10 +415,21 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
                 final float width = vOverlay.getOverlayWidth() / iSource.getScaleX();
                 final float y = ((bmpSource.getHeight() * iSource.getScaleY() - vOverlay.getOverlayHeight()) / 2 - iSource.getTranslationY()) / iSource.getScaleY();
                 final float height = vOverlay.getOverlayHeight() / iSource.getScaleY();
-                Bitmap clip = Bitmap.createBitmap(bmpSource, (int) x, (int) y, (int) width, (int) (height));
-                Bitmap output = (isOutputFixedSize && mOutputWidth * mOutputHeight != 0) ? Bitmap.createScaledBitmap(clip, mOutputWidth, mOutputHeight, true) : clip;
+                Bitmap output = null;
+                try {
+                    Bitmap clip = Bitmap.createBitmap(bmpSource, (int) x, (int) y, (int) width, (int) (height));
+                    output = (isOutputFixedSize && mOutputWidth * mOutputHeight != 0) ? Bitmap.createScaledBitmap(clip, mOutputWidth, mOutputHeight, true) : clip;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                mCallback.onPictureCropOut(output, mTag);
+                //图片裁剪成功
+                if (output != null) {
+                    mCallback.onPictureCropOut(output, mTag);
+                } else {
+                    ToastUtil.showMessage(getContext(), "图片裁剪出错");
+                }
+
                 animate().alpha(0).setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
