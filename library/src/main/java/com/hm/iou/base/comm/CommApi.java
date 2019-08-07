@@ -152,4 +152,28 @@ public class CommApi {
         return getService().sendMessage(reqBean).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    /**
+     * 用户行为统计
+     *
+     * @param behaviorCode
+     * @param userInput
+     */
+    public static void userBehaviorStatistic(String behaviorCode, String userInput) {
+        UserBehaviorReqBean reqBean = new UserBehaviorReqBean();
+        reqBean.behaviorCode = behaviorCode;
+        reqBean.userInput = userInput;
+        getService().userBehaviorStatistic(reqBean).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<BaseResponse<Object>>() {
+                    @Override
+                    public void accept(BaseResponse<Object> objectBaseResponse) throws Exception {
+
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
+                    }
+                });
+    }
+
 }

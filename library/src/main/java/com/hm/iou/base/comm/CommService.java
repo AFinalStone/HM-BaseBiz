@@ -48,4 +48,8 @@ public interface CommService {
 
     @POST("/api/base/msg/v1/sendMessage")
     Flowable<BaseResponse<String>> sendMessage(@Body SendMessageReqBean sendMessageReqBean);
+
+    @POST("/api/behavior/v1/iou/borrow")
+    Flowable<BaseResponse<Object>> userBehaviorStatistic(@Body UserBehaviorReqBean reqBean);
+
 }
