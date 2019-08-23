@@ -45,7 +45,9 @@ public enum FileBizType {
     LivenessEncrypted(105, "活体加密数据"),
     Arbitration_Collect_Certificate(201, "催收证明"),//ps: 该类型的会使用私密的bucket存储用户的文件
     Arbitration_Payment_Certificate(202, "打款证明"),//ps: 该类型的会使用私密的bucket存储用户的文件
-    Arbitration_Repayment_Certificate(203, "还款证明");//ps: 该类型的会使用私密的bucket存储用户的文件;
+    Arbitration_Repayment_Certificate(203, "还款证明"),//ps: 该类型的会使用私密的bucket存储用户的文件;
+    ElecQianTiaoEvidenceOriginImage(401, "吕约欠条欠款凭证原图"),
+    ElecQianTiaoEvidenceCutImage(402, "吕约欠条欠款凭证截图");
 
     int type;
     String name;
