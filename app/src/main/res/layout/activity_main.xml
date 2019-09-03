@@ -90,5 +90,12 @@
         android:onClick="testClipBoard"
         />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="统计用户行为"
+        android:onClick="userBehaviorStatistic"
+        />
+
 </LinearLayout>
 </ScrollView>

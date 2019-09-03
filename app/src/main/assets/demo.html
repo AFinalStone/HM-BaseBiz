@@ -1,0 +1,169 @@
+<html>
+<head>
+	<title>demo网页</title>	
+</head>
+<body>
+
+<script type="text/javascript">
+
+var app = window.HMApplication;
+
+function checkLogin () {
+	//alert(app.checkLogin());
+	confirm('1231')
+}
+
+function getHeaderInfo() {
+	alert(app.getHeaders());
+}
+
+function getUserInfo() {
+	alert(app.getUserInfo())
+}
+
+function closePage() {
+	app.closeWebView();
+}
+
+function callPhone(phone) {
+	app.callPhone(phone);
+}
+
+function setStorage (key, value) {
+	app.setStorage(key, value);
+	alert(key + " = " + value + ", 保存成功");
+}
+
+function getStorage(key) {
+	alert(app.getStorage(key));
+}
+
+function openUrlThroughBrowser (url) {
+	app.openUrlThroughBrowser(url)
+}
+
+function openUrlThroughWebView(url) {
+	app.openUrlThroughWebView(url)
+}
+
+function router (routerUrl) {
+	app.navigateByRouter(routerUrl);
+}
+
+function selectPic (type, w, h, callback) {
+	app.selectPicture(type, w, h, callback);
+}
+
+function picCallback(path) {
+	alert('图片获取成功：' + path);
+}
+
+function setHeaderBtn(btnText, callback, params) {
+	app.setNavigationBarRightMenu(btnText, callback, params);
+}
+
+function setHeaderLeftBtn(btnText, callback, params) {
+	app.setNavigationBarLeftMenu(btnText, callback, params);
+}
+
+function headerBtnCallback (params) {
+	alert('点击右上角菜单' + params);
+}
+
+function headerLeftBtnCallback (params) {
+	alert('点击左上角菜单' + params);
+}
+
+function savePicture () {
+	app.savePicture('https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1533201540227&di=d86083d25c6203810df93611bf642af6&imgtype=0&src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F225a5f3f75d1d4c59532704782eebd25d323fd801e57a-VlY5c4_fw658');
+}
+
+function shareImage() {
+	var url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1533201540227&di=d86083d25c6203810df93611bf642af6&imgtype=0&src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F225a5f3f75d1d4c59532704782eebd25d323fd801e57a-VlY5c4_fw658';
+	app.shareImage(url, 'save,weixin,wxcircle,weibo,qq');
+}
+
+function shareText() {
+	app.shareText("从WebView里分享文本", 'weixin,wxcircle,weibo,qq,sms');
+}
+
+function shareLink() {
+	app.shareLink("分享标题", "分享文本描述", "http://www.baidu.com", "weixin,wxcircle,weibo,qq,sms");
+}
+
+function logout () {
+	app.userLogout();
+}
+
+function showUserLogin () {
+	app.toUserLoginPage();
+}
+
+function setTitle () {
+	app.setWebViewTitle('这是新的标题')
+}
+
+function showCloseIcon(showIcon) {
+	app.showNavigationBarLeftIcon("1" == showIcon ? true : false);
+}
+
+</script>
+
+<input type="button" value="验证是否登录" onClick="checkLogin()"/>
+<p/>
+<input type="button" value="获取头信息" onClick="getHeaderInfo()"/>
+<p/>
+<input type="button" value="获取用户信息" onClick="getUserInfo()"/>
+<p/>
+<input type="button" value="关闭当前WebView" onClick="closePage()"/>
+<p/>
+<input type="button" value="拨打电话" onClick="callPhone('15967132742')"/>
+<p/>
+<input type="button" value="原生存储" onClick="setStorage('name', 'hjy')"/>
+<p/>
+<input type="button" value="获取原始存储的值" onClick="getStorage('name')"/>
+<p/>
+<input type="button" value="通过外部浏览器打开url" onClick="openUrlThroughBrowser('http://www.baidu.com')"/>
+<p/>
+<input type="button" value="在新的WebView打开url" onClick="openUrlThroughWebView('http://www.baidu.com')"/>
+<p/>
+<input type="button" value="通过路由跳转新页面" onClick="router('hmiou://m.54jietiao.com/login/selecttype')"/>
+<p/>
+<input type="button" value="选图片-打开相册" onClick="selectPic('album', 0, 0, 'picCallback')"/>
+<p/>
+<input type="button" value="选图片-打开相机" onClick="selectPic('camera', 0, 0, 'picCallback')"/>
+<p/>
+<input type="button" value="选图片-选择对话框" onClick="selectPic('cameraAndAlbum', 200, 200, 'picCallback')"/>
+<p/>
+<input type="button" value="设置导航栏右边按钮" onClick="setHeaderBtn('更多', 'headerBtnCallback', 'http://www.baidu.com')"/>
+
+<p/>
+<input type="button" value="保存图片到本地" onClick="savePicture()"/>
+
+<p/>
+<input type="button" value="图片分享" onClick="shareImage()"/>
+<p/>
+<input type="button" value="纯文本分享" onClick="shareText()"/>
+<p/>
+<input type="button" value="链接分享" onClick="shareLink()"/>
+
+<p/>
+<input type="button" value="用户退出登录" onClick="logout()"/>
+
+<p/>
+<input type="button" value="弹出用户登录页面" onClick="showUserLogin()"/>
+
+<p/>
+<input type="button" value="设置导航栏标题" onClick="setTitle()"/>
+
+<p/>
+<input type="button" value="设置导航栏左边按钮" onClick="setHeaderLeftBtn('更多', 'headerLeftBtnCallback', 'http://www.baidu.com')"/>
+
+<p/>
+<input type="button" value="显示叉叉" onClick="showCloseIcon('1')"/>
+
+<p/>
+<input type="button" value="隐藏叉叉" onClick="showCloseIcon('0')"/>
+
+</body>
+</html>

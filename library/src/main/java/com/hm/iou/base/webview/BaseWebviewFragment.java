@@ -45,6 +45,8 @@ import com.hm.iou.base.photo.PhotoUtil;
 import com.hm.iou.base.webview.event.JsNotifyEvent;
 import com.hm.iou.base.webview.event.SelectCityEvent;
 import com.hm.iou.base.webview.event.ShareResultEvent;
+import com.hm.iou.base.webview.event.ShowBackIconEvent;
+import com.hm.iou.base.webview.event.WebViewLeftButtonEvent;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
 import com.hm.iou.base.webview.event.WebViewTitleTextEvent;
@@ -63,7 +65,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
-import java.io.FileInputStream;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -673,24 +674,17 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
                 return false;
             }
 
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                return super.shouldInterceptRequest(view, request);
+                if (request.getUrl() == null)
+                    return null;
+                return WebViewInterceptor.getInstance(mActivity).interceptRequest(request.getUrl().toString(), request.getRequestHeaders());
             }
 
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-                if (url.startsWith("http://hmimg")) {
-                    try {
-                        String imgPath = url.replace("http://hmimg", "");
-                        FileInputStream is = new FileInputStream(new File(imgPath));
-                        WebResourceResponse response = new WebResourceResponse("image/*", "UTF-8", is);
-                        return response;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                return super.shouldInterceptRequest(view, url);
+                return WebViewInterceptor.getInstance(mActivity).interceptRequest(url);
             }
 
         });
@@ -941,6 +935,44 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
             sb.append(event.isSucc()).append(",").append("'").append(event.getChannel()).append("')");
             String script = sb.toString();
             mWebView.evaluateJavascript(script, null);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventShowBackIcon(ShowBackIconEvent event) {
+        if (StringUtil.getUnnullString(event.pageTag).equals(mPageTag)) {
+            if (event.showBackIcon) {
+                mTopBar.showBackIcon();
+                mTopBar.hideLeftText();
+            } else {
+                mTopBar.hideBackIcon();
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventSetLeftBtn(final WebViewLeftButtonEvent event) {
+        if (StringUtil.getUnnullString(event.getTag()).equals(mPageTag)) {
+            if (TextUtils.isEmpty(event.getMessage())) {
+                mTopBar.hideLeftText();
+                return;
+            }
+            mTopBar.showLeftText(event.getMessage(), new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("javascript:").append(event.getCallback());
+                    sb.append("('").append(StringUtil.getUnnullString(event.getParams())).append("')");
+                    String script = sb.toString();
+                    Logger.d("设置导航栏左侧菜单：" + script);
+                    mWebView.evaluateJavascript(script, new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+
+                        }
+                    });
+                }
+            });
         }
     }
 

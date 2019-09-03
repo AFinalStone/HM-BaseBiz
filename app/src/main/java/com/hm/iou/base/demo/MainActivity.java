@@ -55,12 +55,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, BaseWebviewActivity.class);
-//                intent.putExtra("url", "http://192.168.1.217/moneyMarket/html/consultNow.html");
-//                intent.putExtra("url", "https://wxpay.wxutil.com/mch/pay/h5.v2.php");
+                intent.putExtra("url", "https://h5.54jietiao.com/appTopic/articleDetail.html?articleId=33");
+                //intent.putExtra("url", "https://m.dongqiudi.com/article/1212046.html?where=weixin");
+                // intent.putExtra("url", "file:////android_asset/demo.html");
 
-                String url = "https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx1220170179781561a1a2ebb23591208730&package=799391938";
-                intent.putExtra("url", "https://devtrade.54jietiao.com/trade/trade.html?url=" + url);
-//                intent.putExtra("showtitlebar", "false");
+                intent.putExtra("url", "http://dev.54jietiao.com/IOU-LVY/moreTreaty-debt.html");
                 startActivity(intent);
             }
         });
@@ -300,8 +299,8 @@ public class MainActivity extends AppCompatActivity {
                     public void accept(ClipBoardBean clipBoardBean) throws Exception {
                         if ("04".equals(clipBoardBean.getShearCode())) {
                             //搜索好友
-                            ClipBoardBean.ExtInfo extInfo = ClipBoardBean.parseExtInfo(clipBoardBean.getExtInfo());
-                            System.out.println(extInfo);
+/*                            ClipBoardBean.ExtInfo extInfo = ClipBoardBean.parseExtInfo(clipBoardBean.getExtInfo());
+                            System.out.println(extInfo);*/
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -310,6 +309,11 @@ public class MainActivity extends AppCompatActivity {
                         t.printStackTrace();
                     }
                 });
+    }
+
+
+    public void userBehaviorStatistic(View v) {
+        CommApi.userBehaviorStatistic("borrow_start", "");
     }
 
 }

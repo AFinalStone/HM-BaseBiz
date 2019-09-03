@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.hm.plugin.commconfig'
 
 android {
     compileSdkVersion 26

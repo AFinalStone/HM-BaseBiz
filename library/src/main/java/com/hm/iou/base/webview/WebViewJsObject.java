@@ -21,6 +21,8 @@ import com.hm.iou.base.file.FileUtil;
 import com.hm.iou.base.webview.event.JsNotifyEvent;
 import com.hm.iou.base.webview.event.SelectCityEvent;
 import com.hm.iou.base.webview.event.ShareResultEvent;
+import com.hm.iou.base.webview.event.ShowBackIconEvent;
+import com.hm.iou.base.webview.event.WebViewLeftButtonEvent;
 import com.hm.iou.base.webview.event.WebViewNativeSelectPicEvent;
 import com.hm.iou.base.webview.event.WebViewRightButtonEvent;
 import com.hm.iou.base.webview.event.WebViewTitleTextEvent;
@@ -715,6 +717,16 @@ public class WebViewJsObject {
                 FileUtil.savePicture(mActivity, bmp);
             }
         });
+    }
+
+    @JavascriptInterface
+    public void showNavigationBarLeftIcon(boolean showBackIcon) {
+        EventBus.getDefault().post(new ShowBackIconEvent(mPageTag, showBackIcon));
+    }
+
+    @JavascriptInterface
+    public void setNavigationBarLeftMenu(String btnText, String functionName, String params) {
+        EventBus.getDefault().post(new WebViewLeftButtonEvent(mPageTag, btnText, functionName, params));
     }
 
     private static class DialogConfig {
