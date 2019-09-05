@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 /**
  * Created by hjy on 2018/8/30.
- *
+ * <p>
  * 扩展名工具类
  */
 public class ExtensionUtil {
@@ -31,6 +31,8 @@ public class ExtensionUtil {
         CACHE_EXTENSIONS.add("otf");
         CACHE_EXTENSIONS.add("eot");
         CACHE_EXTENSIONS.add("svg");
+        CACHE_EXTENSIONS.add("html");
+        CACHE_EXTENSIONS.add("htm");
     }
 
     /**
@@ -73,7 +75,24 @@ public class ExtensionUtil {
      * @return
      */
     public static boolean canCache(String extension) {
-        return CACHE_EXTENSIONS.contains(extension);
+        if (TextUtils.isEmpty(extension))
+            return false;
+        return CACHE_EXTENSIONS.contains(extension.toLowerCase().trim());
+    }
+
+    /**
+     * 判断是否为html文件
+     *
+     * @param extension
+     * @return
+     */
+    public static boolean isHtml(String extension) {
+        if (TextUtils.isEmpty(extension))
+            return false;
+        extension = extension.toLowerCase().trim();
+        if (extension.equals("html") || extension.equals("htm"))
+            return true;
+        return false;
     }
 
 }

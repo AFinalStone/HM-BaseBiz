@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
-import okhttp3.Interceptor;
+import okhttp3.CacheControl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -55,7 +55,7 @@ public class WebViewInterceptor {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .cache(new Cache(cacheDir, 100 * 1024 * 1024))
-                .addNetworkInterceptor(new Interceptor() {
+        /*        .addNetworkInterceptor(new Interceptor() {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         Request request = chain.request();
@@ -66,7 +66,7 @@ public class WebViewInterceptor {
                                 .header("Cache-Control", "max-age=604800")  //缓存有效时间 1 周
                                 .build();
                     }
-                })
+                })*/
                 .build();
     }
 
@@ -76,6 +76,7 @@ public class WebViewInterceptor {
 
     public WebResourceResponse interceptRequest(String url, Map<String, String> headers) {
         String extension = ExtensionUtil.getFileExtensionFromUrl(url);
+//        Log.d("WebView", "url : " + url);
         if (!checkUrl(url, extension)) {
             return null;
         }
@@ -83,7 +84,7 @@ public class WebViewInterceptor {
 
         if (extension.equals("js")) {
             if (url.contains("jquery") && url.contains("54jietiao.com")) {
-            //    Log.d("WebView", "替换本地 jquery 库");
+//                Log.d("WebView", "替换本地 jquery 库");
 
                 try {
                     return new WebResourceResponse("text/*", "UTF-8", mContext.getAssets().open("static/js/jquery.js"));
@@ -100,6 +101,13 @@ public class WebViewInterceptor {
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             reqBuilder.addHeader(entry.getKey(), entry.getValue());
         }
+        if (ExtensionUtil.isHtml(extension)) {
+            //Cache-Control: html缓存时间设置为 半小时
+            reqBuilder.cacheControl(new CacheControl.Builder().maxAge(1800, TimeUnit.SECONDS).build());
+        } else {
+            //Cache-Control: 设置一周
+            reqBuilder.cacheControl(new CacheControl.Builder().maxAge(604800, TimeUnit.SECONDS).build());
+        }
 
         Request request = reqBuilder.build();
         ensureInitHttpClient();
@@ -107,9 +115,9 @@ public class WebViewInterceptor {
             Response response = mOkHttpClient.newCall(request).execute();
             Response cacheResponse = response.cacheResponse();
             if (cacheResponse != null) {
-            //    Log.d("WebView", "使用cache...");
+//                Log.d("WebView", "使用cache...");
             } else {
-            //    Log.d("WebView", "get from server...");
+//                Log.d("WebView", "get from server...");
             }
             String mime = MimeTypeUtil.getMimeTypeFromExtension(extension);
 

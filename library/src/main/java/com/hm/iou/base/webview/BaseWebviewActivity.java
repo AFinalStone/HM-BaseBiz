@@ -363,7 +363,7 @@ public class BaseWebviewActivity<T extends MvpActivityPresenter> extends BaseAct
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setDomStorageEnabled(true);
         mWebView.getSettings().setAllowFileAccess(true);
-//        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         mPageTag = System.currentTimeMillis() + "";
         mJsObj = getJsObject();

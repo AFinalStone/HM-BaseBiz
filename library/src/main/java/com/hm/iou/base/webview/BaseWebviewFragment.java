@@ -373,7 +373,7 @@ public class BaseWebviewFragment<T extends MvpFragmentPresenter> extends BaseFra
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setDomStorageEnabled(true);
         mWebView.getSettings().setAllowFileAccess(true);
-//        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         mJsObj = getJsObject();
         mPageTag = System.currentTimeMillis() + "";
