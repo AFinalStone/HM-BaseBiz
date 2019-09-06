@@ -40,7 +40,7 @@ public class RouterUtil {
      */
     public static void toSubmitFeedback(Context context, String sceneCode, String labelCode) {
         Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/webview/index")
-                .withString("url", BaseBizAppLike.getInstance().getH5Server() + "/apph5/iou-feedback/#/feedBackInput?sceneCode=" + sceneCode + "?labelCode=" + labelCode)
+                .withString("url", BaseBizAppLike.getInstance().getH5Server() + "/apph5/iou-feedback/#/feedBackInput?sceneCode=" + sceneCode + "&labelCode=" + labelCode)
                 .navigation(context);
     }
 }
