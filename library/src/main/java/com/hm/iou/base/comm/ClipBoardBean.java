@@ -21,7 +21,8 @@ public class ClipBoardBean implements Parcelable {
     private String shearUrl;         //跳转的连接
     private int shouldShowPic;       //是否需要展示图片（弹窗）【YesNoEnum】:0-否，1-是
 
-    private ExtInfo extInfo;
+    private ExtInfo extInfo;                    // 如果剪切板是加好友，则返回好友信息
+    private BorrowCodeInfo borrowCodeInfo;      // 如果剪切板是借款码，则返回借款码相关信息
 
     public String getShearCode() {
         return shearCode;
@@ -61,6 +62,14 @@ public class ClipBoardBean implements Parcelable {
 
     public void setExtInfo(ExtInfo extInfo) {
         this.extInfo = extInfo;
+    }
+
+    public BorrowCodeInfo getBorrowCodeInfo() {
+        return borrowCodeInfo;
+    }
+
+    public void setBorrowCodeInfo(BorrowCodeInfo borrowCodeInfo) {
+        this.borrowCodeInfo = borrowCodeInfo;
     }
 
     @Override
@@ -187,6 +196,53 @@ public class ClipBoardBean implements Parcelable {
             @Override
             public ExtInfo[] newArray(int size) {
                 return new ExtInfo[size];
+            }
+        };
+    }
+
+    public static class BorrowCodeInfo implements Serializable, Parcelable {
+
+        public String title;
+        public String amount;
+        public String deadline;
+        public String interest;
+        public String overdueInterestDesc;
+
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(this.title);
+            dest.writeString(this.amount);
+            dest.writeString(this.deadline);
+            dest.writeString(this.interest);
+            dest.writeString(this.overdueInterestDesc);
+        }
+
+        public BorrowCodeInfo() {
+        }
+
+        protected BorrowCodeInfo(Parcel in) {
+            this.title = in.readString();
+            this.amount = in.readString();
+            this.deadline = in.readString();
+            this.interest = in.readString();
+            this.overdueInterestDesc = in.readString();
+        }
+
+        public static final Creator<BorrowCodeInfo> CREATOR = new Creator<BorrowCodeInfo>() {
+            @Override
+            public BorrowCodeInfo createFromParcel(Parcel source) {
+                return new BorrowCodeInfo(source);
+            }
+
+            @Override
+            public BorrowCodeInfo[] newArray(int size) {
+                return new BorrowCodeInfo[size];
             }
         };
     }
