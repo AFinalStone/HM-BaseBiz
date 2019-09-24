@@ -176,4 +176,9 @@ public class CommApi {
                 });
     }
 
+    public static Flowable<BaseResponse<CurrRsaKeyBean>> getCurrentRsaKey() {
+        return getService().getCurrentRsaKey()
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
 }

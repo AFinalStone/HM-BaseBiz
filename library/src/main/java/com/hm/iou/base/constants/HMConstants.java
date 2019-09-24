@@ -14,6 +14,8 @@ public class HMConstants {
     public static final int ERR_CODE_TOKEN_OVERDUE = 202007;
     //用户账号被冻结
     public static final int ERR_CODE_ACCOUNT_FREEZE = 202013;
+    //加解密秘钥以及版本号需要更新
+    public static final int ERR_CODE_ENCRYPT_NEED_UPDATE = 2201002;
 
     public static final String REG_MOBILE = "^[1][0-9]{10}$";
 
@@ -30,4 +32,16 @@ public class HMConstants {
      * 专门用于WebView存储的SharedPreferences文件名
      */
     public static final String SP_WEBVIEW = "sp_webview";
+
+    /**
+     * 系统配置 SharedPreferences 文件名
+     */
+    public static final String SP_SYS_CONFIG = "sysconfig";
+    public static final String SP_KEY_RSA_KEY = "rsa_key";
+    public static final String SP_KEY_RSA_VERSION = "rsa_version";
+
+
+    public static final String RSA_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCq6i/S/uZA4Yy83XqrNzI00HaSW7U9W8W9hevRNAihAbsxy8kzBMDzadJ1Kyj+r2vEeA0P0mSRnMIgyNg3lRwxJw9T0PyrzQmag9w23u9zTViPYdwQ9F16QFhGI0g0Xx4G1jr5IWn+qrmA9AsVvKmq1A/aGyjPmBwsu5/DryovuwIDAQAB";
+    public static final String RSA_PUBLIC_VERSION = "20190923";
+
 }

@@ -52,4 +52,7 @@ public interface CommService {
     @POST("/api/behavior/v1/iou/borrow")
     Flowable<BaseResponse<Object>> userBehaviorStatistic(@Body UserBehaviorReqBean reqBean);
 
+    @GET("/api/encrypt/v1/currentRsaPublicKey")
+    Flowable<BaseResponse<CurrRsaKeyBean>> getCurrentRsaKey();
+
 }

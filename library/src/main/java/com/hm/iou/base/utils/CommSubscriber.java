@@ -3,11 +3,10 @@ package com.hm.iou.base.utils;
 import android.text.TextUtils;
 
 import com.hm.iou.base.constants.HMConstants;
+import com.hm.iou.base.event.UpdateRsaKeyEvent;
 import com.hm.iou.base.mvp.BaseContract;
 import com.hm.iou.logger.Logger;
-import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.network.exception.ApiException;
-import com.hm.iou.sharedata.UserManager;
 import com.hm.iou.sharedata.event.LogoutEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -86,6 +85,14 @@ public abstract class CommSubscriber<T> extends ResourceSubscriber<T> {
             if (("" + HMConstants.ERR_CODE_ACCOUNT_FREEZE).equals(code)) {
                 mView.showAccountFreezeDialog("官方私信", apiException.getMessage());
                 EventBus.getDefault().post(new LogoutEvent());
+                return;
+            }
+            if (("" + HMConstants.ERR_CODE_ENCRYPT_NEED_UPDATE).equals(code)) {
+                EventBus.getDefault().post(new UpdateRsaKeyEvent());
+                if (isShowCommError()) {
+                    mView.toastMessage("网络异常，请稍后重试");
+                }
+                handleException(t, null, "网络异常，请稍后重试");
                 return;
             }
             errMsg = t.getMessage();
