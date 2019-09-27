@@ -39,6 +39,8 @@ public class HMConstants {
     public static final String SP_SYS_CONFIG = "sysconfig";
     public static final String SP_KEY_RSA_KEY = "rsa_key";
     public static final String SP_KEY_RSA_VERSION = "rsa_version";
+    public static final String SP_KEY_REALNAME_CHANNEL = "realname_channel";    //保存实名认证渠道
+    public static final String SP_KEY_REALNAME_OCR_WAY = "realname_ocr_way";    //OCR是自动还是手动
 
 
     public static final String RSA_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCq6i/S/uZA4Yy83XqrNzI00HaSW7U9W8W9hevRNAihAbsxy8kzBMDzadJ1Kyj+r2vEeA0P0mSRnMIgyNg3lRwxJw9T0PyrzQmag9w23u9zTViPYdwQ9F16QFhGI0g0Xx4G1jr5IWn+qrmA9AsVvKmq1A/aGyjPmBwsu5/DryovuwIDAQAB";

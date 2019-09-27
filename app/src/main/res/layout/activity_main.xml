@@ -97,5 +97,12 @@
         android:onClick="userBehaviorStatistic"
         />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="获取实名认证方式"
+        android:onClick="getAuthWay"
+        />
+
 </LinearLayout>
 </ScrollView>

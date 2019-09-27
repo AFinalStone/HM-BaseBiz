@@ -181,4 +181,14 @@ public class CommApi {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    /**
+     * 获取OCR、实名认证方式
+     *
+     * @return
+     */
+    public static Flowable<BaseResponse<AuthWayResBean>> getAuthWay() {
+        return getService().getAuthWay()
+                .subscribeOn(Schedulers.io()).observeOn(Schedulers.io());
+    }
+
 }
