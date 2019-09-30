@@ -44,4 +44,6 @@ public class HMConstants {
     public static final String RSA_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCq6i/S/uZA4Yy83XqrNzI00HaSW7U9W8W9hevRNAihAbsxy8kzBMDzadJ1Kyj+r2vEeA0P0mSRnMIgyNg3lRwxJw9T0PyrzQmag9w23u9zTViPYdwQ9F16QFhGI0g0Xx4G1jr5IWn+qrmA9AsVvKmq1A/aGyjPmBwsu5/DryovuwIDAQAB";
     public static final String RSA_PUBLIC_VERSION = "20190923";
 
+    public static final String RSA_PUBLIC_KEY_PRODUCT = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCKpx6yJEYC8oTt5yDJIrGGIeySgJjo2kEcLnktBb+e4jfxAqO7iwqXombsvJvn1BoRJZKH/nmdJTu9tWNCzySPoH+ZRTlq2ypYYAVuRNdxMjN4RoKQleYz+HV2oJoO59TdzRGeG2hl5FkG/c9FNeLRiu0yRBezMc697x9fO1EdmwIDAQAB";
+    public static final String RSA_PUBLIC_VERSION_PRODUCT = "2.8.7";
 }

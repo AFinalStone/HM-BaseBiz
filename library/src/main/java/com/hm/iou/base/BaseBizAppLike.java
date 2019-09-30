@@ -101,8 +101,10 @@ public class BaseBizAppLike {
             e.printStackTrace();
         }
 
-        String rsaKey = SPUtil.getString(mContext, SP_SYS_CONFIG, HMConstants.SP_KEY_RSA_KEY, HMConstants.RSA_PUBLIC_KEY);
-        String rsaVersion = SPUtil.getString(mContext, SP_SYS_CONFIG, HMConstants.SP_KEY_RSA_VERSION, HMConstants.RSA_PUBLIC_VERSION);
+        String rsaKey = SPUtil.getString(mContext, SP_SYS_CONFIG, HMConstants.SP_KEY_RSA_KEY,
+                isDebug() ? HMConstants.RSA_PUBLIC_KEY : HMConstants.RSA_PUBLIC_KEY_PRODUCT);
+        String rsaVersion = SPUtil.getString(mContext, SP_SYS_CONFIG, HMConstants.SP_KEY_RSA_VERSION,
+                isDebug() ? HMConstants.RSA_PUBLIC_VERSION : HMConstants.RSA_PUBLIC_VERSION_PRODUCT);
 
         UserManager userManager = UserManager.getInstance(mContext);
         HttpRequestConfig config = new HttpRequestConfig.Builder(mContext)
