@@ -55,4 +55,7 @@ public interface CommService {
     @GET("/api/encrypt/v1/currentRsaPublicKey")
     Flowable<BaseResponse<CurrRsaKeyBean>> getCurrentRsaKey();
 
+    @GET("/api/iou/user/v1/getAuthWay")
+    Flowable<BaseResponse<AuthWayResBean>> getAuthWay();
+
 }

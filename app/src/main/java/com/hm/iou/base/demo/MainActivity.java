@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.hm.iou.base.ImageGalleryActivity;
+import com.hm.iou.base.comm.AuthWayResBean;
 import com.hm.iou.base.comm.ClipBoardBean;
 import com.hm.iou.base.comm.CommApi;
 import com.hm.iou.base.file.FileApi;
@@ -314,6 +315,23 @@ public class MainActivity extends AppCompatActivity {
 
     public void userBehaviorStatistic(View v) {
         CommApi.userBehaviorStatistic("borrow_start", "");
+    }
+
+    public void getAuthWay(View v) {
+        CommApi.getAuthWay()
+                .map(RxUtil.<AuthWayResBean>handleResponse())
+                .subscribe(new Consumer<AuthWayResBean>() {
+                    @Override
+                    public void accept(AuthWayResBean authWayResBean) throws Exception {
+                        System.out.println("Channel: " + authWayResBean.getAuthChannel());
+                        System.out.println("Way: " + authWayResBean.getTakePhotosWay());
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        throwable.printStackTrace();
+                    }
+                });
     }
 
 }
