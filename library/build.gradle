@@ -31,8 +31,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    compile 'com.trello.rxlifecycle2:rxlifecycle-navi:2.1.0'
-    compile 'com.trello.rxlifecycle2:rxlifecycle-components:2.1.0'
+    compile 'com.trello.rxlifecycle2:rxlifecycle-navi:2.2.0'
+    compile 'com.trello.rxlifecycle2:rxlifecycle-components:2.2.0'
     compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
 
     //黄油刀
