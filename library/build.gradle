@@ -23,6 +23,9 @@ android {
         }
     }
 
+    packagingOptions {
+        exclude "META-INF/proguard/coroutines.pro"
+    }
 }
 
 dependencies {
@@ -53,6 +56,8 @@ dependencies {
     compile 'com.heima.iou:hmsocialsharelocal:1.0.0'
     compile 'com.heima.iou:hmrouterlocal:1.0.0'
     compile 'com.heima.iou:hmrxpermissionlocal:1.0.0'
+
+    api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2'
 
 }
 apply from: './maven_local.gradle'
