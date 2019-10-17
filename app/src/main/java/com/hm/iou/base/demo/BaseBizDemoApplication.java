@@ -24,10 +24,8 @@ public class BaseBizDemoApplication extends Application {
         BaseBizAppLike baseBizAppLike = new BaseBizAppLike();
         baseBizAppLike.onCreate(this);
         baseBizAppLike.setDebug(true);
-        baseBizAppLike.initServer("http://branch.54jietiao.com", "http://dev.54jietiao.com",
-                "http://dev.54jietiao.com");
-//        baseBizAppLike.initServer("http://192.168.1.82:8071", "http://192.168.1.82",
-//        "http://192.168.1.82");
+//        baseBizAppLike.initServer("http://dev.54jietiao.com", "http://dev.54jietiao.com", "http://dev.54jietiao.com");
+        baseBizAppLike.initServer("http://192.168.1.82:8071", "http://192.168.1.82", "http://192.168.1.82");
 //        initNetwork();
     }
 

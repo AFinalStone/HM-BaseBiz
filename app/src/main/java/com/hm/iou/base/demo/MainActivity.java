@@ -334,4 +334,11 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    public void testCoroutine(View v) {
+        startActivity(new Intent(this, TestLoginActivity.class));
+    }
+
+    public void testCoroutineFragment(View v) {
+        startActivity(new Intent(this, TestLoginFragmentActivity.class));
+    }
 }

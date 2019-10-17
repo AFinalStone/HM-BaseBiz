@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.hm.plugin.commconfig'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
+
 
 android {
 

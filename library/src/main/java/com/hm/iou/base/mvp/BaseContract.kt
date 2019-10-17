@@ -1,81 +1,81 @@
-package com.hm.iou.base.mvp;
+package com.hm.iou.base.mvp
 
-import android.view.View;
+import android.view.View
 
 /**
- * Created by hjy on 18/4/26.<br>
+ * Created by hjy on 18/4/26.<br></br>
  */
 
-public interface BaseContract {
+interface BaseContract {
 
     interface BaseView {
 
         /**
          * 显示浮动加载进度条
          */
-        void showLoadingView();
+        fun showLoadingView()
 
         /**
          * 显示浮动加载进度条
          *
          * @param msg
          */
-        void showLoadingView(String msg);
+        fun showLoadingView(msg: String?)
 
         /**
          * 停止浮动加载进度条
          */
-        void dismissLoadingView();
+        fun dismissLoadingView()
 
         /**
          * 显示Toast信息
          *
          * @param msg
          */
-        void toastMessage(String msg);
+        fun toastMessage(msg: String?)
 
         /**
          * 错误信息提示
          *
          * @param msg
          */
-        void toastErrorMessage(String msg);
+        fun toastErrorMessage(msg: String?)
 
         /**
          * 显示Toast信息
          *
          * @param resId 资源id
          */
-        void toastMessage(int resId);
+        fun toastMessage(resId: Int)
 
         /**
          * 错误信息提示
          *
          * @param resId
          */
-        void toastErrorMessage(int resId);
+        fun toastErrorMessage(resId: Int)
 
         /**
          * 关闭当前页面
          */
-        void closeCurrPage();
+        fun closeCurrPage()
 
         /**
          * 隐藏软键盘
          */
-        void hideSoftKeyboard();
+        fun hideSoftKeyboard()
 
         /**
          * 切换软键盘的状态
          */
-        void showSoftKeyboard();
+        fun showSoftKeyboard()
 
         /**
          * 显示软键盘
          *
          * @param view
          */
-        void showSoftKeyboard(View view);
+        fun showSoftKeyboard(view: View)
 
         /**
          * 显示被踢下线对话框
@@ -83,7 +83,7 @@ public interface BaseContract {
          * @param title  标题
          * @param errMsg 错误信息
          */
-        void showKickOfflineDialog(String title, String errMsg);
+        fun showKickOfflineDialog(title: String?, errMsg: String?)
 
         /**
          * 显示账号被冻结
@@ -91,13 +91,11 @@ public interface BaseContract {
          * @param title  标题
          * @param errMsg 错误信息
          */
-        void showAccountFreezeDialog(String title, String errMsg);
+        fun showAccountFreezeDialog(title: String?, errMsg: String?)
 
-        void showTokenOverdue();
+        fun showTokenOverdue()
     }
 
-    interface BasePresenter {
-
-    }
+    interface BasePresenter
 
 }
