@@ -14,10 +14,15 @@ interface FileService {
 
     @Multipart
     @POST("/api/fs/v1/upload")
-    fun upload(@Part file: MultipartBody.Part, @QueryMap params: Map<String, Any>): Flowable<BaseResponse<FileUploadResult>>
+    fun upload(@Part file: MultipartBody.Part, @QueryMap params: Map<String, Int>): Flowable<BaseResponse<FileUploadResult>>
 
     @Streaming
     @GET
     fun downLoadFile(@Url url: String): Flowable<ResponseBody>
+
+    //suspend 函数，在 coroutine 中使用
+    @Multipart
+    @POST("/api/fs/v1/upload")
+    suspend fun uploadFile(@Part file: MultipartBody.Part, @QueryMap params: Map<String, Int>): BaseResponse<FileUploadResult>
 
 }

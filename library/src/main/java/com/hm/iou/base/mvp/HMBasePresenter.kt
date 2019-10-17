@@ -29,6 +29,7 @@ open class HMBasePresenter<T : BaseContract.BaseView>(protected var mContext: Co
     /**
      * 处理http请求的返回结果，只有当正常返回 retCode = 0时，返回真实的数据结果，如果 retCode != 0，则会抛出 ApiException 异常
      */
+    @Throws(Exception::class)
     fun <T> handleResponse(response: BaseResponse<T>): T? {
         if (response.errorCode == 0) {
             return response.data

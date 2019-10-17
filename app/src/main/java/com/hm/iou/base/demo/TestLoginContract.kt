@@ -10,7 +10,13 @@ interface TestLoginContract {
 
     interface Presenter: BaseContract.BasePresenter {
 
-        fun login(moible: String, pwd: String)
+        fun login(mobile: String, pwd: String)
+
+        fun testUploadImage(file: String)
+
+        fun testAsycMethod()
+
+        fun testDelay()
     }
 
 

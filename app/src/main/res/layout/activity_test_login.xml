@@ -10,7 +10,28 @@
         android:id="@+id/btn_test"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="登录"
+        android:text="通过协程登录"
+        />
+
+    <Button
+        android:id="@+id/btn_test_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="通过协程文件上传"
+        />
+
+    <Button
+        android:id="@+id/btn_test_async"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="支持协程的异步方法"
+        />
+
+    <Button
+        android:id="@+id/btn_test_delay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测试延时"
         />
 
 </LinearLayout>

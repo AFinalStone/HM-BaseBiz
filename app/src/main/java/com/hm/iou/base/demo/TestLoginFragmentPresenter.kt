@@ -20,4 +20,14 @@ class TestLoginFragmentPresenter(context: Context, view: TestLoginContract.View)
         }
     }
 
+    override fun testUploadImage(file: String) {
+    }
+
+    override fun testAsycMethod() {
+
+    }
+
+    override fun testDelay() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }
