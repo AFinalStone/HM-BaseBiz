@@ -164,18 +164,12 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Photo", "拍照返回结果....");
                 String path = PhotoUtil.getCameraPhotoPath();
 
-/*                Log.d("Photo", "camera path: " + path);
-                Bitmap bitmap = BitmapFactory.decodeFile(path);
-                Log.d("Photo", "bitmap is " + (bitmap == null ? "null" : " exists"));
-                mIvPhoto.setImageBitmap(bitmap);*/
-
-                initImageCropper();
-                mImageCropper.crop(path, 150, 100, true, "crop");
+                compressPic(path);
             }
         } else if (requestCode == 101) {
             if (resultCode == RESULT_OK) {
                 Log.d("Photo", "相册图片返回结果....");
-                String path = PhotoUtil.getPath(this, data.getData());
+                final String path = PhotoUtil.getPath(this, data.getData());
                 Log.d("Photo", "album path: " + path);
 /*                Bitmap bitmap = BitmapFactory.decodeFile(path);
                 mIvPhoto.setImageBitmap(bitmap);*/
@@ -187,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 ImageCropper.Helper.with(this).setTranslucentStatusHeight(displayDeviceHeight).setCallback(new ImageCropper.Callback() {
                     @Override
                     public void onPictureCropOut(Bitmap bitmap, String tag) {
-                        mIvPhoto.setImageBitmap(bitmap);
+                        compressPic(path);
                     }
                 }).create().crop(path, 200, 200, false, "");
 
@@ -214,15 +208,20 @@ public class MainActivity extends AppCompatActivity {
             public void onCompressPicSuccess(File file) {
                 getBitmapInfo(file.getPath());
                 Logger.d("图片压缩成功....");
-                Map<String, Object> map = new HashMap<>();
+                Map<String, Integer> map = new HashMap<>();
                 map.put("bizType", 27);//记债本业务
                 map.put("fileType", 1);
-                FileApi.upload(file, map)
+                FileApi.INSTANCE.upload(file, map)
                         .map(RxUtil.<FileUploadResult>handleResponse())
                         .subscribe(new Consumer<FileUploadResult>() {
                             @Override
                             public void accept(FileUploadResult fileUploadResult) throws Exception {
 
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                throwable.printStackTrace();
                             }
                         })
                 ;
@@ -334,4 +333,11 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    public void testCoroutine(View v) {
+        startActivity(new Intent(this, TestLoginActivity.class));
+    }
+
+    public void testCoroutineFragment(View v) {
+        startActivity(new Intent(this, TestLoginFragmentActivity.class));
+    }
 }

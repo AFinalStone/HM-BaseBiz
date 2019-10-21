@@ -10,6 +10,20 @@
     android:paddingTop="24dip"
     tools:context="com.hm.iou.base.demo.MainActivity">
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测试协程Activity"
+        android:onClick="testCoroutine"
+        />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测试协程Fragment"
+        android:onClick="testCoroutineFragment"
+        />
+
     <EditText
         android:id="@+id/et_h5Url"
         android:layout_width="match_parent"

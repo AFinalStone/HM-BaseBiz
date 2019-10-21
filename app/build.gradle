@@ -1,12 +1,16 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.hm.plugin.commconfig'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
+
 
 android {
-    compileSdkVersion 26
+
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.hm.iou.base.demo"
-        minSdkVersion 19
-        targetSdkVersion 26
+        minSdkVersion 21
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -34,6 +38,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    compile project(':library')
+    implementation project(':library')
 
 }
