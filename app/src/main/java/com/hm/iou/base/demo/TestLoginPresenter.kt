@@ -99,11 +99,16 @@ class TestLoginPresenter(context: Context, view: TestLoginContract.View) :
 
     //测试间隔 4 秒 toast
     override fun testDelay() {
+        println("job111: ${coroutineContext[Job]}")
         launch {
+
+            println("job222: ${coroutineContext[Job]}")
+
             //在协程内需要用 isActivity 来作为退出循环的标记
             while (isActive) {
                 delay(4000)
                 mView.toastMessage("延迟4秒后显示")
+                println("job333: ${coroutineContext[Job]}")
             }
         }
     }
