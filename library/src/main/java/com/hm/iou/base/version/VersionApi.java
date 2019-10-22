@@ -1,6 +1,5 @@
 package com.hm.iou.base.version;
 
-import com.hm.iou.base.BaseBizAppLike;
 import com.hm.iou.network.HttpReqManager;
 import com.hm.iou.sharedata.model.BaseResponse;
 
@@ -16,9 +15,7 @@ public class VersionApi {
      * @return
      */
     public static Flowable<BaseResponse<CheckVersionResBean>> checkVersion() {
-        String apiServer = BaseBizAppLike.getInstance().getApiServer();
-        apiServer = apiServer.replace("https", "http");
-        VersionService service = HttpReqManager.getInstance().getService(VersionService.class, apiServer);
+        VersionService service = HttpReqManager.getInstance().getService(VersionService.class);
         return service.checkVersion().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
