@@ -202,6 +202,8 @@ public class ClipBoardBean implements Parcelable {
 
     public static class BorrowCodeInfo implements Serializable, Parcelable {
 
+        public String avatarUrl;
+        public String nickName;
         public String title;
         public String amount;
         public String deadline;
@@ -216,6 +218,8 @@ public class ClipBoardBean implements Parcelable {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(this.avatarUrl);
+            dest.writeString(this.nickName);
             dest.writeString(this.title);
             dest.writeString(this.amount);
             dest.writeString(this.deadline);
@@ -227,6 +231,8 @@ public class ClipBoardBean implements Parcelable {
         }
 
         protected BorrowCodeInfo(Parcel in) {
+            this.avatarUrl = in.readString();
+            this.nickName = in.readString();
             this.title = in.readString();
             this.amount = in.readString();
             this.deadline = in.readString();
