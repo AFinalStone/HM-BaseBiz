@@ -2,6 +2,8 @@ package com.hm.iou.base.mvp
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.pm.ActivityInfo
+import android.content.res.TypedArray
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +18,7 @@ import com.hm.iou.base.ActivityManager
 import com.hm.iou.base.R
 import com.hm.iou.base.utils.StatusBarUtil
 import com.hm.iou.base.utils.TraceUtil
+import com.hm.iou.logger.Logger
 import com.hm.iou.network.HttpReqManager
 import com.hm.iou.router.Router
 import com.hm.iou.sharedata.UserManager
@@ -53,6 +56,11 @@ abstract class HMBaseActivity<T : HMBasePresenter<*>> : RxAppCompatActivity(), B
     protected abstract fun initEventAndData(savedInstanceState: Bundle?)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O && isTranslucentOrFloating()) {
+            val result = fixOrientation()
+            Logger.i("onCreate fixOrientation : $result")
+        }
+
         super.onCreate(savedInstanceState)
         mContext = this
         val layoutId = getLayoutId()
@@ -269,6 +277,37 @@ abstract class HMBaseActivity<T : HMBasePresenter<*>> : RxAppCompatActivity(), B
         ActivityManager.getInstance().exitAllActivities()
         Router.getInstance().buildWithUrl("hmiou://m.54jietiao.com/login/selecttype")
                 .navigation(this@HMBaseActivity)
+    }
+
+    private fun isTranslucentOrFloating(): Boolean {
+        var isTranslucentOrFloating = false
+        try {
+            val styleableRes = Class.forName("com.android.internal.R\$styleable").getField("Window").get(null) as IntArray
+            val ta = obtainStyledAttributes(styleableRes)
+            val m = ActivityInfo::class.java.getMethod("isTranslucentOrFloating", TypedArray::class.java)
+            m.isAccessible = true
+            isTranslucentOrFloating = m.invoke(null, ta) as Boolean
+            m.isAccessible = false
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return isTranslucentOrFloating
+    }
+
+    private fun fixOrientation(): Boolean {
+        try {
+            val field = Activity::class.java.getDeclaredField("mActivityInfo")
+            field.isAccessible = true
+            val o = field.get(this) as ActivityInfo
+            o.screenOrientation = -1
+            field.isAccessible = false
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return false
     }
 
 }
