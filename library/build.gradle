@@ -42,19 +42,19 @@ dependencies {
     //黄油刀
     api 'com.jakewharton:butterknife:8.4.0'
     //EventBus
-    api 'org.greenrobot:eventbus:3.0.0'
+    implementation 'org.greenrobot:eventbus:3.0.0'
     //luban压缩图片
     api 'top.zibin:Luban:1.1.3'
-    api 'com.github.chrisbanes:PhotoView:2.0.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
 
-    api 'com.heima.iou:hmsharedatalocal:1.0.0'
-    api 'com.heima.iou:hmnetworklocal:1.0.0'
-    api 'com.heima.iou:hmloggerlocal:1.0.0'
-    api 'com.heima.iou:hmtoolslocal:1.0.0'
-    api 'com.heima.iou:hmuikitlocal:1.0.0'
-    api 'com.heima.iou:hmsocialsharelocal:1.0.0'
-    api 'com.heima.iou:hmrouterlocal:1.0.0'
-    api 'com.heima.iou:hmrxpermissionlocal:1.0.0'
-    
+    implementation 'com.heima.iou:hmsharedatalocal:1.0.0'
+    implementation 'com.heima.iou:hmnetworklocal:1.0.0'
+    implementation 'com.heima.iou:hmloggerlocal:1.0.0'
+    implementation 'com.heima.iou:hmtoolslocal:1.0.0'
+    implementation 'com.heima.iou:hmuikitlocal:1.0.0'
+    implementation 'com.heima.iou:hmsocialsharelocal:1.0.0'
+    implementation 'com.heima.iou:hmrouterlocal:1.0.0'
+    implementation 'com.heima.iou:hmrxpermissionlocal:1.0.0'
+
 }
 apply from: './maven_local.gradle'
