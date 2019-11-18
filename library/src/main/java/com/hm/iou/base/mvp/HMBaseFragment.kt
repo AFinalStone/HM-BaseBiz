@@ -23,16 +23,13 @@ import com.hm.iou.tools.ToastUtil
 import com.hm.iou.uikit.dialog.HMAlertDialog
 import com.hm.iou.uikit.loading.LoadingDialogUtil
 import com.trello.rxlifecycle2.components.support.RxFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
 import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by hjy on 18/4/26.<br></br>
  */
 
-abstract class HMBaseFragment<T : HMBaseFragmentPresenter<*>> : RxFragment(), BaseContract.BaseView, CoroutineScope by MainScope() {
+abstract class HMBaseFragment<T : HMBaseFragmentPresenter<*>> : RxFragment(), BaseContract.BaseView {
 
     protected val mPresenter: T by lazy { initPresenter() }
 
@@ -70,6 +67,7 @@ abstract class HMBaseFragment<T : HMBaseFragmentPresenter<*>> : RxFragment(), Ba
         }
         val parent = mContentView?.parent as? ViewGroup
         parent?.removeView(mContentView)
+        mPresenter.onCreateView()
         return mContentView
     }
 
@@ -82,8 +80,6 @@ abstract class HMBaseFragment<T : HMBaseFragmentPresenter<*>> : RxFragment(), Ba
 
     override fun onDestroyView() {
         super.onDestroyView()
-        //在 View 被销毁的时候，取消协程里的所有 Job
-        cancel()
         mPresenter.onDestroyView()
     }
 

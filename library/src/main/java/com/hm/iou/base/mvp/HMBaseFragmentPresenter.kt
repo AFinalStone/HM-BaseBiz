@@ -1,8 +1,6 @@
 package com.hm.iou.base.mvp
 
 import android.content.Context
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.isActive
 
 /**
  * Created by hjy on 19/10/17.<br></br>
@@ -15,16 +13,11 @@ import kotlinx.coroutines.isActive
 open class HMBaseFragmentPresenter<T : BaseContract.BaseView>(context: Context, view: T)
     : HMBasePresenter<T>(context, view) {
 
-    open fun onViewCreated() {}
+    open fun onCreateView() { }
 
-    open fun onDestroyView() {
-        if (isActive) {
-            cancel()
-        }
-    }
+    open fun onViewCreated() { }
 
-    override fun onDestroy() {
-    }
+    open fun onDestroyView() { }
 
 }
 
