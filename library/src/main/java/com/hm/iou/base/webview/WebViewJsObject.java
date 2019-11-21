@@ -42,6 +42,10 @@ import com.hm.iou.tools.SystemUtil;
 import com.hm.iou.tools.ToastUtil;
 import com.hm.iou.uikit.HMTopBarView;
 import com.hm.iou.uikit.dialog.HMAlertDialog;
+import com.tencent.mm.opensdk.modelpay.PayReq;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 
@@ -74,6 +78,8 @@ public class WebViewJsObject {
     private UMShareUtil mUMShareUtil;
     private List<SharePlatformDialog> mShareList = new ArrayList<>();
 
+    private IWXAPI mIWXAPI;
+
     public WebViewJsObject(Activity activity) {
         mActivity = activity;
         mHandler = new Handler(Looper.getMainLooper());
@@ -88,6 +94,10 @@ public class WebViewJsObject {
             dialog.onDestroy();
         }
         mShareList.clear();
+        if (mIWXAPI != null) {
+            mIWXAPI.detach();
+            mIWXAPI = null;
+        }
         mWebView = null;
     }
 
@@ -727,6 +737,62 @@ public class WebViewJsObject {
     @JavascriptInterface
     public void setNavigationBarLeftMenu(String btnText, String functionName, String params) {
         EventBus.getDefault().post(new WebViewLeftButtonEvent(mPageTag, btnText, functionName, params));
+    }
+
+    /**
+     * 唤起微信支付
+     *
+     * @param payReqStr
+     */
+    @JavascriptInterface
+    public void toPayByWeixin(final String payReqStr) {
+        if (TextUtils.isEmpty(payReqStr)) {
+            return;
+        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                String partnerId = null;
+                String prepayid = null;
+                String packageValue = null;
+                String nonceStr = null;
+                String timeStamp = null;
+                String sign = null;
+                try {
+                    JSONObject obj = new JSONObject(payReqStr);
+                    partnerId = obj.getString("partnerid");
+                    prepayid = obj.getString("prepayid");
+                    packageValue = obj.getString("package");
+                    nonceStr = obj.getString("noncestr");
+                    timeStamp = obj.getString("timestamp");
+                    sign = obj.getString("sign");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (partnerId == null || packageValue == null)
+                    return;
+
+                PlatformConfig.APPIDPlatform weixin = (PlatformConfig.APPIDPlatform) PlatformConfig.configs.get(SHARE_MEDIA.WEIXIN);
+                String appId = weixin.appId;
+                if (mIWXAPI == null) {
+                    mIWXAPI = WXAPIFactory.createWXAPI(mActivity, appId);
+                }
+                if (!mIWXAPI.isWXAppInstalled()) {
+                    ToastUtil.showMessage(mActivity, "当前手机未安装微信");
+                    return;
+                }
+
+                PayReq request = new PayReq();
+                request.appId = appId;
+                request.partnerId = partnerId;
+                request.prepayId = prepayid;
+                request.packageValue = packageValue;
+                request.nonceStr = nonceStr;
+                request.timeStamp = timeStamp;
+                request.sign = sign;
+                mIWXAPI.sendReq(request);
+            }
+        });
     }
 
     private static class DialogConfig {
