@@ -362,6 +362,8 @@ public class WebViewJsObject {
                     return;
                 }
 
+                if (mActivity.isFinishing())
+                    return;
                 SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setPicUrl(imageUrl)
                         .setPlatforms(list)
@@ -407,6 +409,8 @@ public class WebViewJsObject {
                     return;
                 }
 
+                if (mActivity.isFinishing())
+                    return;
                 SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setWebUrlTitle(title)
                         .setWebUrlDesc(desc)
@@ -453,6 +457,8 @@ public class WebViewJsObject {
                     return;
                 }
 
+                if (mActivity.isFinishing())
+                    return;
                 SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setText(text)
                         .setPlatforms(list)
@@ -513,6 +519,8 @@ public class WebViewJsObject {
                     return;
                 }
 
+                if (mActivity.isFinishing())
+                    return;
                 SharePlatformDialog dialog = new SharePlatformDialog.Builder(mActivity)
                         .setBitmap(bmp)
                         .setPlatforms(list)
@@ -603,6 +611,8 @@ public class WebViewJsObject {
                         if (config.getButtons() == null || config.getButtons().isEmpty()) {
                             return;
                         }
+                        if (mActivity.isFinishing())
+                            return;
                         HMAlertDialog.Builder builder = new HMAlertDialog.Builder(mActivity);
                         builder.setTitle(config.getTitle());
                         builder.setMessage(config.getMsg());
