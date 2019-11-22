@@ -91,7 +91,10 @@ public class WebViewJsObject {
             mUMShareUtil = null;
         }
         for (SharePlatformDialog dialog : mShareList) {
-            dialog.onDestroy();
+            if (dialog != null) {
+                dialog.onDestroy();
+                dialog.dismiss();
+            }
         }
         mShareList.clear();
         if (mIWXAPI != null) {
