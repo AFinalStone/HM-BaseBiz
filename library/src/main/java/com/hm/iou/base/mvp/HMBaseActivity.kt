@@ -310,4 +310,12 @@ abstract class HMBaseActivity<T : HMBasePresenter<*>> : RxAppCompatActivity(), B
         return false
     }
 
+    override fun setRequestedOrientation(requestedOrientation: Int) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O && isTranslucentOrFloating()) {
+            Logger.d("avoid calling setRequestedOrientation when Oreo.")
+            return
+        }
+        super.setRequestedOrientation(requestedOrientation)
+    }
+
 }

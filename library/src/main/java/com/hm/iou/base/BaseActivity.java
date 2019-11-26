@@ -330,6 +330,11 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
         return isTranslucentOrFloating;
     }
 
+    /**
+     * Android8.0系统，透明Activity不能固定它的方向,否则直接闪退，这里解决这个BUG
+     *
+     * @return
+     */
     private boolean fixOrientation() {
         try {
             Field field = Activity.class.getDeclaredField("mActivityInfo");
@@ -342,6 +347,20 @@ public abstract class BaseActivity<T extends MvpActivityPresenter> extends RxApp
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * Android8.0系统，透明Activity不能固定它的方向,否则直接闪退，这里解决这个BUG
+     *
+     * @return
+     */
+    @Override
+    public void setRequestedOrientation(int requestedOrientation) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O && isTranslucentOrFloating()) {
+            Logger.d("avoid calling setRequestedOrientation when Oreo.");
+            return;
+        }
+        super.setRequestedOrientation(requestedOrientation);
     }
 
 }
